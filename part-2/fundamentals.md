@@ -1,3 +1,7 @@
+# Введение
+
+> Оригинал: https://simpleisbetterthancomplex.com/series/2017/09/04/a-complete-beginners-guide-to-django-part-1.html
+
 Welcome to the second part of our Django Tutorial! In the previous lesson, we installed everything that we needed. Hopefully, you are all setup with Python 3.6 installed and Django 1.11 running inside a Virtual Environment. We already created the project we are going to play around. In this lesson, we are going to keep writing code in the same project.
 
 In the next section, we are going to talk a little bit about the project we are going to develop, so to give you some context. Then after that, you are going to learn all the Django fundamentals: models, admin, views, templates, and URLs.
@@ -126,6 +130,7 @@ The models are basically a representation of your application’s database layou
 
 We will do all the work inside the boards/models.py file. Here is how we represent our class diagram (see Figure 4). in a Django application:
 
+```python
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -149,6 +154,8 @@ class Post(models.Model):
     updated_at = models.DateTimeField(null=True)
     created_by = models.ForeignKey(User, related_name='posts')
     updated_by = models.ForeignKey(User, null=True, related_name='+')
+```
+
 All models are subclass of the django.db.models.Model class. Each class will be transformed into database tables. Each field is represented by instances of django.db.models.Field subclasses (built-in Django core) and will be translated into database columns.
 
 The fields CharField, DateTimeField, etc., are all subclasses of django.db.models.Field and they come included in the Django core – ready to be used.
@@ -184,6 +191,7 @@ Open the Terminal , activate the virtual environment, go to the folder where the
 python manage.py makemigrations
 As an output you will get something like this:
 
+```bash
 Migrations for 'boards':
   boards/migrations/0001_initial.py
     - Create model Board
@@ -191,6 +199,8 @@ Migrations for 'boards':
     - Create model Topic
     - Add field topic to post
     - Add field updated_by to post
+```
+
 At this point, Django created a file named 0001_initial.py inside the boards/migrations directory. It represents the current state of our application’s models. In the next step, Django will use this file to create the tables and columns.
 
 The migration files are translated into SQL statements. If you are familiar with SQL, you can run the following command to inspect the SQL instructions that will be executed in the database:
@@ -200,9 +210,13 @@ If you’re not familiar with SQL, don’t worry. We won’t be working directly
 
 The next step now is to apply the migration we generated to the database:
 
+```bash
 python manage.py migrate
+```
+
 The output should be something like this:
 
+```bash
 Operations to perform:
   Apply all migrations: admin, auth, boards, contenttypes, sessions
 Running migrations:
@@ -220,6 +234,8 @@ Running migrations:
   Applying auth.0008_alter_user_username_max_length... OK
   Applying boards.0001_initial... OK
   Applying sessions.0001_initial... OK
+```
+
 Because this is the first time we are migrating the database, the migrate command also applied the existing migration files from the Django contrib apps, listed in the INSTALLED_APPS. This is expected.
 
 The line Applying boards.0001_initial... OK is the migration we generated in the previous step.
@@ -228,7 +244,7 @@ That’s it! Our database is ready to be used.
 
 SQLite
 
- Note: It's important to note that SQLite is a production-quality database. SQLite is used by many companies across thousands of products, like all Android and iOS devices, all major Web browsers, Windows 10, macOS, etc.
+> Note: It's important to note that SQLite is a production-quality database. SQLite is used by many companies across thousands of products, like all Android and iOS devices, all major Web browsers, Windows 10, macOS, etc.
 
 It's just not suitable for all cases. SQLite doesn't compare with databases like MySQL, PostgreSQL or Oracle. High-volume websites, write-intensive applications, very large datasets, high concurrency, are some situations that will eventually result in a problem by using SQLite.
 
@@ -239,23 +255,35 @@ One of the great advantages of developing with Python is the interactive shell. 
 
 You can start a Python shell with our project loaded using the manage.py utility:
 
+```bash
 python manage.py shell
 Python 3.6.2 (default, Jul 17 2017, 23:14:31)
 [GCC 5.4.0 20160609] on linux
 Type "help", "copyright", "credits" or "license" for more information.
 (InteractiveConsole)
 >>>
+```
+
 This is very similar to calling the interactive console just by typing python, except when we use python manage.py shell, we are adding our project to the sys.path and loading Django. That means we can import our models and any other resource within the project and play with it.
 
 Let’s start by importing the Board class:
 
+```python
 from boards.models import Board
+```
+
 To create a new board object, we can do the following:
 
+```python
 board = Board(name='Django', description='This is a board about Django.')
+```
+
 To persist this object in the database, we have to call the save method:
 
+```python
 board.save()
+```
+
 The save method is used both to create and update objects. Here Django created a new object because the Board instance had no id. After saving it for the first time, Django will set the id automatically:
 
 board.id
@@ -290,49 +318,77 @@ First, exit the interactive console:
 exit()
 Now edit the models.py file inside the boards app:
 
+```python
 class Board(models.Model):
     name = models.CharField(max_length=30, unique=True)
     description = models.CharField(max_length=100)
 
     def __str__(self):
         return self.name
+```
+
 Let’s try the query again. Open the interactive console again:
 
+```bash
 python manage.py shell
+```
+
+```python
 from boards.models import Board
 
 Board.objects.all()
 <QuerySet [<Board: Django>, <Board: Python>]>
+```
+
 Much better, right?
 
 We can treat this QuerySet like a list. Let’s say we wanted to iterate over it and print the description of each board:
 
+```python
 boards_list = Board.objects.all()
 for board in boards_list:
     print(board.description)
+```
+
 The result would be:
 
 Django discussion board.
 General discussion about Python.
 Similarly, we can use the model Manager to query the database and return a single object. For that we use the get method:
 
+```python
 django_board = Board.objects.get(id=1)
 
 django_board.name
+```
+
+```bash
 'Django'
+```
+
 But we have to be careful with this kind of operation. If we try to get an object that doesn’t exist, for example, a board with id=3, it will raise an exception:
 
+```python
 board = Board.objects.get(id=3)
+```
 
 boards.models.DoesNotExist: Board matching query does not exist.
 We can use the get method with any model field, but preferably use a field that can uniquely identify an object. Otherwise, the query may return more than one object, which will cause an exception.
 
+```python
 Board.objects.get(name='Django')
 <Board: Django>
+```
+
 Note that the query is case sensitive, a lower case “django” would not match:
 
+```python
 Board.objects.get(name='django')
+```
+```bash
 boards.models.DoesNotExist: Board matching query does not exist.
+```
+
 Summary of Model’s Operations
 
 Find below a summary of the methods and operations we learned in this section, using the Board model as a reference. Uppercase Board refers to the class, lowercase board refers to an instance (or object) of the Board model class:
@@ -349,6 +405,7 @@ Views, Templates, and Static Files
 
 At the moment we already have a view named home displaying “Hello, World!” in the homepage of our application.
 
+```python
 myproject/urls.py
 
 from django.conf.urls import url
@@ -366,12 +423,15 @@ from django.http import HttpResponse
 
 def home(request):
     return HttpResponse('Hello, World!')
+```
+
 We can use this as our starting point. If you recall our wireframes, the Figure 5 showed how the homepage should look like. What we want to do is display a list of boards in a table alongside with some other information.
 
 The first thing to do is import the Board model and list all the existing boards:
 
 boards/views.py
 
+```python
 from django.http import HttpResponse
 from .models import Board
 
@@ -385,6 +445,8 @@ def home(request):
     response_html = '<br>'.join(boards_names)
 
     return HttpResponse(response_html)
+```
+
 And the result would be this simple HTML page:
 
 Boards Homepage HttpResponse
@@ -710,9 +772,9 @@ templates/home.html
 
 First we load the Static Files App template tags by using the `{% load static %}` in the beginning of the template.
 
-The template tag {% static %} is used to compose the URL where the resource lives. In this case, the `{% static 'css/bootstrap.min.css' %}` will return /static/css/bootstrap.min.css, which is equivalent to http://127.0.0.1:8000/static/css/bootstrap.min.css.
+The template tag `{% static %}` is used to compose the URL where the resource lives. In this case, the `{% static 'css/bootstrap.min.css' %}` will return /static/css/bootstrap.min.css, which is equivalent to http://127.0.0.1:8000/static/css/bootstrap.min.css.
 
-The {% static %} template tag uses the STATIC_URL configuration in the settings.py to compose the final URL. For example, if you hosted your static files in a subdomain like https://static.example.com/, we would set the STATIC_URL=https://static.example.com/ then the `{% static 'css/bootstrap.min.css' %}` would return https://static.example.com/css/bootstrap.min.css.
+The `{% static %}` template tag uses the STATIC_URL configuration in the settings.py to compose the final URL. For example, if you hosted your static files in a subdomain like https://static.example.com/, we would set the STATIC_URL=https://static.example.com/ then the `{% static 'css/bootstrap.min.css' %}` would return https://static.example.com/css/bootstrap.min.css.
 
 If none of this makes sense for you at the moment, don’t worry. Just remember to use the `{% static %}` whenever you need to refer to a CSS, JavaScript or image file. Later on, when we start working with Deployment, we will discuss more it. For now, we are all set up.
 
@@ -836,3 +898,4 @@ The source code of the project is available on GitHub. The current state of the 
 
 https://github.com/sibtc/django-beginners-guide/tree/v0.2-lw
 
+> Оригинал: https://simpleisbetterthancomplex.com/series/2017/09/04/a-complete-beginners-guide-to-django-part-1.html
