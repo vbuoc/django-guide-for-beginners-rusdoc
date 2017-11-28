@@ -4,6 +4,7 @@ If you are following this tutorial series since the first part, coding your proj
 
 boards/models.py
 
+```python
 class Topic(models.Model):
     # other fields...
     # Add `auto_now_add=True` to the `last_updated` field
@@ -13,6 +14,8 @@ class Post(models.Model):
     # other fields...
     # Add `null=True` to the `updated_by` field
     updated_by = models.ForeignKey(User, null=True, related_name='+')
+```
+
 Now run the commands with the virtualenv activated:
 
 python manage.py makemigrations
@@ -39,6 +42,7 @@ We will start by editing the urls.py inside the myproject folder:
 
 myproject/urls.py
 
+```python
 from django.conf.urls import url
 from django.contrib import admin
 
@@ -49,6 +53,8 @@ urlpatterns = [
     url(r'^boards/(?P<pk>\d+)/$', views.board_topics, name='board_topics'),
     url(r'^admin/', admin.site.urls),
 ]
+```
+
 This time let’s take a moment and analyze the urlpatterns and url.
 
 The URL dispatcher and URLconf (URL configuration) are fundamental parts of a Django application. In the beginning, it can look confusing; I remember having a hard time when I first started developing with Django.
@@ -59,7 +65,10 @@ A project can have many urls.py distributed among the apps. But Django needs a u
 
 myproject/settings.py
 
+```python
 ROOT_URLCONF = 'myproject.urls'
+```
+
 It already comes configured, so you don’t need to change anything here.
 
 When Django receives a request, it starts searching for a match in the project’s URLconf. It starts with the first entry of the urlpatterns variable, and test the requested URL against each url entry.
@@ -80,6 +89,7 @@ Basic URLs
 
 Basic URLs are very simple to create. It’s just a matter of matching strings. For example, let’s say we wanted to create an “about” page, it could be defined like this:
 
+```python
 from django.conf.urls import url
 from boards import views
 
@@ -87,8 +97,11 @@ urlpatterns = [
     url(r'^$', views.home, name='home'),
     url(r'^about/$', views.about, name='about'),
 ]
+```
+
 We can also create deeper URL structures:
 
+```python
 from django.conf.urls import url
 from boards import views
 
@@ -101,8 +114,11 @@ urlpatterns = [
     url(r'^about/author/erica/$', views.about_erica, name='about_erica'),
     url(r'^privacy/$', views.privacy_policy, name='privacy_policy'),
 ]
+```
+
 Those are some examples of simple URL routing. For all the examples above, the view function will follow this structure:
 
+```python
 def about(request):
     # do something...
     return render(request, 'about.html')
@@ -111,12 +127,15 @@ def about_company(request):
     # do something else...
     # return some data along with the view...
     return render(request, 'about_company.html', {'company_name': 'Simple Complex'})
+```
+
 Advanced URLs
 
 A more advanced usage of URL routing is achieved by taking advantage of the regex to match certain types of data and create dynamic URLs.
 
 For example, to create a profile page, like many services do like github.com/vitorfs or twitter.com/vitorfs, where “vitorfs” is my username, we can do the following:
 
+```python
 from django.conf.urls import url
 from boards import views
 
@@ -124,10 +143,13 @@ urlpatterns = [
     url(r'^$', views.home, name='home'),
     url(r'^(?P<username>[\w.@+-]+)/$', views.user_profile, name='user_profile'),
 ]
+```
+
 This will match all valid usernames for a Django User model.
 
 Now observe that the example above is a very permissive URL. That means it will match lots of URL patterns because it is defined in the root of the URL, with no prefix like /profile/<username>/. In this case, if we wanted to define a URL named /about/, we would have do define it before the username URL pattern:
 
+```python
 from django.conf.urls import url
 from boards import views
 
@@ -136,6 +158,8 @@ urlpatterns = [
     url(r'^about/$', views.about, name='about'),
     url(r'^(?P<username>[\w.@+-]+)/$', views.user_profile, name='user_profile'),
 ]
+```
+
 If the “about” page was defined after the username URL pattern, Django would never find it, because the word “about” would match the username regex, and the view user_profile would be processed instead of the about view function.
 
 There are some side effects to that. For example, from now on, we would have to treat “about” as a forbidden username, because if a user picked “about” as their username, this person would never see their profile page.
@@ -156,8 +180,11 @@ The regex \d+ will match an integer of arbitrary size. This integer will be used
 
 Here is how we write a view function for it:
 
+```python
 def board_topics(request, pk):
     # do something...
+```
+
 Because we used the (?P<pk>\d+) regex, the keyword argument in the board_topics must be named pk.
 
 If we wanted to use any name, we could do it like this:
@@ -188,6 +215,7 @@ First, edit the urls.py adding our new URL route:
 
 myproject/urls.py
 
+```python
 from django.conf.urls import url
 from django.contrib import admin
 
@@ -198,10 +226,13 @@ urlpatterns = [
     url(r'^boards/(?P<pk>\d+)/$', views.board_topics, name='board_topics'),
     url(r'^admin/', admin.site.urls),
 ]
+```
+
 Now let’s create the view function board_topics:
 
 boards/views.py
 
+```python
 from django.shortcuts import render
 from .models import Board
 
@@ -211,10 +242,13 @@ def home(request):
 def board_topics(request, pk):
     board = Board.objects.get(pk=pk)
     return render(request, 'topics.html', {'board': board})
+```
+
 In the templates folder, create a new template named topics.html:
 
 templates/topics.html
 
+```html
 {% load static %}<!DOCTYPE html>
 <html>
   <head>
@@ -231,7 +265,8 @@ templates/topics.html
     </div>
   </body>
 </html>
- Note: For now we are simply creating new HTML templates. No worries, in the following section I will show you how to create reusable templates.
+```
+> Note: For now we are simply creating new HTML templates. No worries, in the following section I will show you how to create reusable templates.
 Now check the URL http://127.0.0.1:8000/boards/1/ in a web browser. The result should be the following page:
 
 Topics Page
@@ -240,6 +275,7 @@ Time to write some tests! Edit the tests.py file and add the following tests in 
 
 boards/tests.py
 
+```python
 from django.core.urlresolvers import reverse
 from django.urls import resolve
 from django.test import TestCase
@@ -266,6 +302,8 @@ class BoardTopicsTests(TestCase):
     def test_board_topics_url_resolves_board_topics_view(self):
         view = resolve('/boards/1/')
         self.assertEquals(view.func, board_topics)
+```
+
 A few things to note here. This time we used the setUp method. In the setup method, we created a Board instance to use in the tests. We have to do that because the Django testing suite doesn’t run your tests against the current database. To run the tests Django creates a new database on the fly, applies all the model migrations, runs the tests, and when done, destroys the testing database.
 
 So in the setUp method, we prepare the environment to run the tests, so to simulate a scenario.
@@ -278,6 +316,7 @@ Now it’s time to run the tests:
 python manage.py test
 And the output:
 
+```bash
 Creating test database for alias 'default'...
 System check identified no issues (0 silenced).
 .E...
@@ -293,6 +332,8 @@ Ran 5 tests in 0.093s
 
 FAILED (errors=1)
 Destroying test database for alias 'default'...
+```
+
 The test test_board_topics_view_not_found_status_code failed. We can see in the Traceback it returned an exception “boards.models.DoesNotExist: Board matching query does not exist.”
 
 Topics Error 500 Page
@@ -303,6 +344,7 @@ We want to show a 404 Page Not Found. So let’s refactor our view:
 
 boards/views.py
 
+```python
 from django.shortcuts import render
 from django.http import Http404
 from .models import Board
@@ -327,6 +369,8 @@ Ran 5 tests in 0.042s
 
 OK
 Destroying test database for alias 'default'...
+```
+
 Yay! Now it’s working as expected.
 
 Topics Error 404 Page
@@ -337,6 +381,7 @@ Now that’s a very common use case. In fact, Django has a shortcut to try to ge
 
 So let’s refactor the board_topics view again:
 
+```python
 from django.shortcuts import render, get_object_or_404
 from .models import Board
 
@@ -346,8 +391,11 @@ def home(request):
 def board_topics(request, pk):
     board = get_object_or_404(Board, pk=pk)
     return render(request, 'topics.html', {'board': board})
+```
+
 Changed the code? Test it.
 
+```bash
 python manage.py test
 Creating test database for alias 'default'...
 System check identified no issues (0 silenced).
@@ -357,6 +405,8 @@ Ran 5 tests in 0.052s
 
 OK
 Destroying test database for alias 'default'...
+```
+
 Didn’t break anything. We can proceed with the development.
 
 The next step now is to create the navigation links in the screens. The homepage should have a link to take the visitor to the topics page of a given Board. Similarly, the topics page should have a link back to the homepage.
@@ -367,6 +417,7 @@ We can start by writing some tests for the HomeTests class:
 
 boards/tests.py
 
+```python
 class HomeTests(TestCase):
     def setUp(self):
         self.board = Board.objects.create(name='Django', description='Django board.')
@@ -383,12 +434,15 @@ class HomeTests(TestCase):
     def test_home_view_contains_link_to_topics_page(self):
         board_topics_url = reverse('board_topics', kwargs={'pk': self.board.pk})
         self.assertContains(self.response, 'href="{0}"'.format(board_topics_url))
+```
+
 Observe that now we added a setUp method for the HomeTests as well. That’s because now we are going to need a Board instance and also we moved the url and response to the setUp, so we can reuse the same response in the new test.
 
 The new test here is the test_home_view_contains_link_to_topics_page. Here we are using the assertContains method to test if the response body contains a given text. The text we are using in the test, is the href part of an a tag. So basically we are testing if the response body has the text href="/boards/1/".
 
 Let’s run the tests:
 
+```bash
 python manage.py test
 Creating test database for alias 'default'...
 System check identified no issues (0 silenced).
@@ -405,12 +459,15 @@ Ran 6 tests in 0.034s
 
 FAILED (failures=1)
 Destroying test database for alias 'default'...
+```
+
 Now we can write the code that will make this test pass.
 
 Edit the home.html template:
 
 templates/home.html
 
+```html
 <!-- code suppressed for brevity -->
 <tbody>
   {% for board in boards %}
@@ -426,18 +483,22 @@ templates/home.html
   {% endfor %}
 </tbody>
 <!-- code suppressed for brevity -->
+```
+
 So basically we changed the line:
 
-{{ board.name }}
+`{{ board.name }}`
 To:
 
-<a href="{% url 'board_topics' board.pk %}">{{ board.name }}</a>
+`<a href="{% url 'board_topics' board.pk %}">{{ board.name }}</a>`
+
 Always use the {% url %} template tag to compose the applications URLs. The first parameter is the name of the URL (defined in the URLconf, i.e., the urls.py), then you can pass an arbitrary number of arguments as needed.
 
 If it were a simple URL, like the homepage, it would be just {% url 'home' %}.
 
 Save the file and run the tests again:
 
+```bash
 python manage.py test
 Creating test database for alias 'default'...
 System check identified no issues (0 silenced).
@@ -447,6 +508,8 @@ Ran 6 tests in 0.037s
 
 OK
 Destroying test database for alias 'default'...
+```
+
 Good! Now we can check how it looks in the web browser:
 
 Boards with Link
@@ -455,6 +518,7 @@ Now the link back. We can write the test first:
 
 boards/tests.py
 
+```python
 class BoardTopicsTests(TestCase):
     # code suppressed for brevity...
 
@@ -463,8 +527,11 @@ class BoardTopicsTests(TestCase):
         response = self.client.get(board_topics_url)
         homepage_url = reverse('home')
         self.assertContains(response, 'href="{0}"'.format(homepage_url))
+```
+
 Run the tests:
 
+```bash
 python manage.py test
 Creating test database for alias 'default'...
 System check identified no issues (0 silenced).
@@ -482,10 +549,13 @@ Ran 7 tests in 0.054s
 
 FAILED (failures=1)
 Destroying test database for alias 'default'...
+```
+
 Update the board topics template:
 
 templates/topics.html
 
+```html
 {% load static %}<!DOCTYPE html>
 <html>
   <head><!-- code suppressed for brevity --></head>
@@ -498,8 +568,11 @@ templates/topics.html
     </div>
   </body>
 </html>
+```
+
 Run the tests:
 
+```bash
 python manage.py test
 Creating test database for alias 'default'...
 System check identified no issues (0 silenced).
@@ -509,6 +582,8 @@ Ran 7 tests in 0.061s
 
 OK
 Destroying test database for alias 'default'...
+```
+
 Board Topics with Link
 
 As I mentioned before, URL routing is a fundamental part of a web application. With this knowledge, we should be able to proceed with the development. Next, to complete the section about URLs, you will find a summary of useful URL patterns.
@@ -559,6 +634,7 @@ Create a new file named base.html in the templates folder:
 
 templates/base.html
 
+```html
 {% load static %}<!DOCTYPE html>
 <html>
   <head>
@@ -577,6 +653,8 @@ templates/base.html
     </div>
   </body>
 </html>
+```
+
 This is going to be our master page. Every template we create, is going to extend this special template. Observe now we introduced the {% block %} tag. It is used to reserve a space in the template, which a “child” template (which extends the master page) can insert code and HTML within that space.
 
 In the case of the {% block title %} we are also setting a default value, which is “Django Boards.” It will be used if we don’t set a value for the {% block title %} in a child template.
@@ -585,6 +663,7 @@ Now let’s refactor our two templates: home.html and topics.html.
 
 templates/home.html
 
+```html
 {% extends 'base.html' %}
 
 {% block breadcrumb %}
@@ -616,10 +695,13 @@ templates/home.html
     </tbody>
   </table>
 {% endblock %}
+```
+
 The first line in the home.html template is {% extends 'base.html' %}. This tag is telling Django to use the base.html template as a master page. After that, we are using the the blocks to put the unique content of the page.
 
 templates/topics.html
 
+```html
 {% extends 'base.html' %}
 
 {% block title %}
@@ -634,6 +716,8 @@ templates/topics.html
 {% block content %}
     <!-- just leaving it empty for now. we will add core here soon. -->
 {% endblock %}
+```
+
 In the topics.html template, we are changing the {% block title %} default value. Notice that we can reuse the default value of the block by calling {{ block.super }}. So here we are playing with the website title, which we defined in the base.html as “Django Boards.” So for the “Python” board page, the title will be “Python - Django Boards,” for the “Random” board the title will be “Random - Django Boards.”
 
 Now let’s run the tests and see we didn’t break anything:
@@ -653,6 +737,7 @@ Now that we have the base.html template, we can easily add a top bar with a menu
 
 templates/base.html
 
+```html
 {% load static %}<!DOCTYPE html>
 <html>
   <head>
@@ -678,6 +763,8 @@ templates/base.html
     </div>
   </body>
 </html>
+```
+
 Django Boards Header
 
 Django Boards Header
@@ -692,6 +779,7 @@ Google Fonts
 
 Add the font in the base.html template:
 
+```html
 {% load static %}<!DOCTYPE html>
 <html>
   <head>
@@ -705,13 +793,18 @@ Add the font in the base.html template:
     <!-- code suppressed for brevity -->
   </body>
 </html>
+```
+
 Now create a new CSS file named app.css inside the static/css folder:
 
 static/css/app.css
 
+```css
 .navbar-brand {
   font-family: 'Peralta', cursive;
 }
+```
+
 Django Boards Logo
 
 Forms
@@ -744,6 +837,7 @@ First thing, let’s create a new URL route named new_topic:
 
 myproject/urls.py
 
+```python
 from django.conf.urls import url
 from django.contrib import admin
 
@@ -755,24 +849,30 @@ urlpatterns = [
     url(r'^boards/(?P<pk>\d+)/new/$', views.new_topic, name='new_topic'),
     url(r'^admin/', admin.site.urls),
 ]
+```
+
 The way we are building the URL will help us identify the correct Board.
 
 Now let’s create the new_topic view function:
 
 boards/views.py
 
+```python
 from django.shortcuts import render, get_object_or_404
 from .models import Board
 
 def new_topic(request, pk):
     board = get_object_or_404(Board, pk=pk)
     return render(request, 'new_topic.html', {'board': board})
+```
+
 For now, the new_topic view function is looking exactly the same as the board_topics. That’s on purpose, let’s take a step at a time.
 
 Now we just need a template named new_topic.html to see some code working:
 
 templates/new_topic.html
 
+```html
 {% extends 'base.html' %}
 
 {% block title %}Start a New Topic{% endblock %}
@@ -786,6 +886,8 @@ templates/new_topic.html
 {% block content %}
 
 {% endblock %}
+```
+
 For now we just have the breadcrumb assuring the navigation. Observe that we included the URL back to the board_topics view.
 
 Open the URL http://127.0.0.1:8000/boards/1/new/. The result, for now, is the following page:
