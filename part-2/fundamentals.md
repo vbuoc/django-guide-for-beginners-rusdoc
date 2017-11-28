@@ -708,13 +708,13 @@ templates/home.html
 </html>
 ```
 
-First we load the Static Files App template tags by using the {% load static %} in the beginning of the template.
+First we load the Static Files App template tags by using the `{% load static %}` in the beginning of the template.
 
-The template tag {% static %} is used to compose the URL where the resource lives. In this case, the {% static 'css/bootstrap.min.css' %} will return /static/css/bootstrap.min.css, which is equivalent to http://127.0.0.1:8000/static/css/bootstrap.min.css.
+The template tag {% static %} is used to compose the URL where the resource lives. In this case, the `{% static 'css/bootstrap.min.css' %}` will return /static/css/bootstrap.min.css, which is equivalent to http://127.0.0.1:8000/static/css/bootstrap.min.css.
 
-The {% static %} template tag uses the STATIC_URL configuration in the settings.py to compose the final URL. For example, if you hosted your static files in a subdomain like https://static.example.com/, we would set the STATIC_URL=https://static.example.com/ then the {% static 'css/bootstrap.min.css' %} would return https://static.example.com/css/bootstrap.min.css.
+The {% static %} template tag uses the STATIC_URL configuration in the settings.py to compose the final URL. For example, if you hosted your static files in a subdomain like https://static.example.com/, we would set the STATIC_URL=https://static.example.com/ then the `{% static 'css/bootstrap.min.css' %}` would return https://static.example.com/css/bootstrap.min.css.
 
-If none of this makes sense for you at the moment, don’t worry. Just remember to use the {% static %} whenever you need to refer to a CSS, JavaScript or image file. Later on, when we start working with Deployment, we will discuss more it. For now, we are all set up.
+If none of this makes sense for you at the moment, don’t worry. Just remember to use the `{% static %}` whenever you need to refer to a CSS, JavaScript or image file. Later on, when we start working with Deployment, we will discuss more it. For now, we are all set up.
 
 Refreshing the page 127.0.0.1:8000 we can see it worked:
 
