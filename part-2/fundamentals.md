@@ -406,6 +406,7 @@ Now within the templates folder, create an HTML file named home.html:
 
 templates/home.html
 
+```html
 <!DOCTYPE html>
 <html>
   <head>
@@ -421,12 +422,15 @@ templates/home.html
 
   </body>
 </html>
-In the example above we are mixing raw HTML with some special tags {% for ... in ... %} and {{ variable }}. They are part of the Django Template Language. The example above shows how to iterate over a list of objects using a for. The {{ board.name }} renders the name of the board in the HTML template, generating a dynamic HTML document.
+```
+
+In the example above we are mixing raw HTML with some special tags `{% for ... in ... %}` and `{{ variable }}`. They are part of the Django Template Language. The example above shows how to iterate over a list of objects using a for. The {{ board.name }} renders the name of the board in the HTML template, generating a dynamic HTML document.
 
 Before we can use this HTML page, we have to tell Django where to find our application’s templates.
 
 Open the settings.py inside the myproject directory and search for the TEMPLATES variable and set the DIRS key to os.path.join(BASE_DIR, 'templates'):
 
+```python
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -444,6 +448,8 @@ TEMPLATES = [
         },
     },
 ]
+```
+
 Basically what this line is doing is finding the full path of your project directory and appending “/templates” to it.
 
 We can debug this using the Python shell:
@@ -478,6 +484,7 @@ We can improve the HTML template to use a table instead:
 
 templates/home.html
 
+```html
 <!DOCTYPE html>
 <html>
   <head>
@@ -512,6 +519,8 @@ templates/home.html
     </table>
   </body>
 </html>
+```
+
 Boards Homepage render
 
 Testing the Homepage
@@ -542,6 +551,7 @@ If there were an uncaught exception, syntax error, or anything, Django would ret
 
 To execute the Django’s test suite:
 
+```bash
 python manage.py test
 Creating test database for alias 'default'...
 System check identified no issues (0 silenced).
@@ -551,12 +561,15 @@ Ran 1 test in 0.041s
 
 OK
 Destroying test database for alias 'default'...
+```
+
 Now we can test if Django returned the correct view function for the requested URL. This is also a useful test because as we progress with the development, you will see that the urls.py module can get very big and complex. The URL conf is all about resolving regex. There are some cases where we have a very permissive URL, so Django can end up returning the wrong view function.
 
 Here’s how we do it:
 
 boards/tests.py
 
+```python
 from django.core.urlresolvers import reverse
 from django.urls import resolve
 from django.test import TestCase
@@ -571,10 +584,13 @@ class HomeTests(TestCase):
     def test_home_url_resolves_home_view(self):
         view = resolve('/')
         self.assertEquals(view.func, home)
+```
+
 In the second test, we are making use of the resolve function. Django uses it to match a requested URL with a list of URLs listed in the urls.py module. This test will make sure the URL /, which is the root URL, is returning the home view.
 
 Test it again:
 
+```bash
 python manage.py test
 Creating test database for alias 'default'...
 System check identified no issues (0 silenced).
@@ -584,8 +600,11 @@ Ran 2 tests in 0.027s
 
 OK
 Destroying test database for alias 'default'...
+```
+
 To see more detail about the test execution, set the verbosity to a higher level:
 
+```bash
 python manage.py test --verbosity=2
 Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
 Operations to perform:
@@ -618,6 +637,8 @@ Ran 2 tests in 0.017s
 
 OK
 Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+```
+
 Verbosity determines the amount of notification and debug information that will be printed to the console; 0 is no output, 1 is normal output, and 2 is verbose output.
 
 Static Files Setup
@@ -659,17 +680,21 @@ myproject/
  +-- venv/
 The next step is to instruct Django where to find the static files. Open the settings.py, scroll to the bottom of the file and just after the STATIC_URL, add the following:
 
+```python
 STATIC_URL = '/static/'
 
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
 ]
+```
+
 Same thing as the TEMPLATES directory, remember?
 
 Now we have to load the static files (the Bootstrap CSS file) in our template:
 
 templates/home.html
 
+```html
 {% load static %}<!DOCTYPE html>
 <html>
   <head>
@@ -681,6 +706,8 @@ templates/home.html
     <!-- body suppressed for brevity ... -->
   </body>
 </html>
+```
+
 First we load the Static Files App template tags by using the {% load static %} in the beginning of the template.
 
 The template tag {% static %} is used to compose the URL where the resource lives. In this case, the {% static 'css/bootstrap.min.css' %} will return /static/css/bootstrap.min.css, which is equivalent to http://127.0.0.1:8000/static/css/bootstrap.min.css.
@@ -695,6 +722,7 @@ Boards Homepage Bootstrap
 
 Now we can edit the template so to take advantage of the Bootstrap CSS:
 
+```html
 {% load static %}<!DOCTYPE html>
 <html>
   <head>
@@ -733,6 +761,7 @@ Now we can edit the template so to take advantage of the Bootstrap CSS:
     </div>
   </body>
 </html>
+```
 The result now:
 
 Boards Homepage Bootstrap
