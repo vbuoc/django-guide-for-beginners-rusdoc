@@ -28,4 +28,4 @@
 
 [https://github.com/sibtc/django-beginners-guide/tree/v0.1-lw](https://github.com/sibtc/django-beginners-guide/tree/v0.1-lw)
 
-[Следующая часть >>](/part-2/fundamentals.md)
+> [Следующая часть >>](/part-2/fundamentals.md)

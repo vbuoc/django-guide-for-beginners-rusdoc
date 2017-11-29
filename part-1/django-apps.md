@@ -1,5 +1,7 @@
 # Приложения Django
 
+> Оригинал: https://simpleisbetterthancomplex.com/series/2017/09/04/a-complete-beginners-guide-to-django-part-1.html
+
 В философии Django мы имеет две важные концепции:
 
 * `app` - приложение, которое что-то делает. Приложение обычно состоит из моделей(таблиц БД), представлений, шаблонов, тестов.
