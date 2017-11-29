@@ -1,3 +1,4 @@
+
 <p>Proceeding with the development of our application, now we have to implement a new page to list all the topics that
 belong to a given <strong>Board</strong>. Just to recap, below you can see the wireframe we drew in the previous tutorial:</p>
 
