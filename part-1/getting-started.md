@@ -12,11 +12,11 @@
 
 Так что не просто читайте руководств, делайте. Так вы научитесь намного большему.
 
-* [Почему Django](part-1/why-django.md)
-* [Установка](part-1/installation.md)
-* [Начинаем новый прокт](part-1/new-project.md)
-* [Приложения Django](part-1/django-apps.md)
-* ["Hello World"](part-1/hwllo-world.md)
+* [Почему Django](/part-1/why-django.md)
+* [Установка](/part-1/installation.md)
+* [Начинаем новый прокт](/part-1/new-project.md)
+* [Приложения Django](/part-1/django-apps.md)
+* ["Hello World"](/part-1/hwllo-world.md)
 
 # Выводы
 
