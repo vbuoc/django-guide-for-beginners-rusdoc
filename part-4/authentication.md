@@ -1,3 +1,7 @@
+# Авторизация
+
+> Оригинал: https://simpleisbetterthancomplex.com/series/2017/09/25/a-complete-beginners-guide-to-django-part-4.html
+
 This tutorial is going to be all about Django’s authentication system. We are going to implement the whole thing: registration, login, logout, password reset, and password change.
 
 You are also going to get a brief introduction on how to protect some views from non-authorized users and how to access the information of the logged in user.
