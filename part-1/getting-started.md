@@ -2,17 +2,15 @@
 
 > Оригинал: https://simpleisbetterthancomplex.com/series/2017/09/04/a-complete-beginners-guide-to-django-part-1.html
 
-Today I’m starting a new tutorial series about Django fundamentals. It’s a complete beginner’s guide to start learning Django. The material is divided into seven parts. We’re going to explore all the basic concepts in great detail, from installation, preparation of the development environment, models, views, templates, URLs to more advanced topics such as migrations, testing, and deployment.
+Это полное руководство для новичка по изучению Django. Материал поделен на 7 частей. Мы изучим все базовые концепции в мельчайших деталях, от установки, подготовки окружения, моделей, представлений, шаблонов, URL-ов до таких продвинутых тем, как миграции, тесты и разработка.
 
-I wanted to do something different. A tutorial that would be easy to follow, informative and fun to read. That was when I came up with the idea to create some comics along the text to illustrate some concepts and scenarios. I hope you enjoy the reading!
+Надеюсь, вам понравится.
 
-But before we start…
+Но перед тем, как мы начнем...
 
-Back when I worked as a substitute professor in a university, I used to teach an introduction to web development discipline for the newcomer students in the Computer Science course. And I would always start new classes with this Confucius quote:
+> Я слышу и забуду. Я вижу и я запомню. Я делаю и я понимаю.
 
-Confucius Quote
-
-So, hands on! Don’t just read the tutorials. Let’s do it together! You will learn much more by doing and practicing.
+Так что не просто читайте руководств, делайте. Так вы научитесь намного большему.
 
 * [Почему Django](part-1/why-django.md)
 * [Установка](part-1/installation.md)
@@ -20,13 +18,14 @@ So, hands on! Don’t just read the tutorials. Let’s do it together! You will 
 * [Приложения Django](part-1/django-apps.md)
 * ["Hello World"](part-1/hwllo-world.md)
 
-Conclusions
+# Выводы
 
-That was the first part of this tutorial series. In this tutorial, we learned how to install the latest Python version and how to setup the development environment. We also had an introduction to virtual environments and started our very first Django project and already created our initial app.
+Это первая часть серии руководств. В этой части мы узнали, как установить последнюю версию Python и как настроить окружение. Мы так же узнали о виртуальных окружениях и начали наш первый Django проект и сознали первое приложение.
 
-I hope you enjoyed the first part! The second part is coming out next week, on Sep 11, 2017. It’s going to be about models, views, templates, and URLs. We will explore together all the Django fundamentals! If you would like to get notified when the second part is out, you can subscribe to our mailing list.
+Я надеюсь, вам понравилось! Во второй части мы поговорим о моделях, представлениях, шаблонах и URL-ах. Мы изучим все основы Django.
 
-Just so we can stay on the same page, I made the source code available on GitHub. The current state of the project can be found under the release tag v0.1-lw. The link below will take you to the right place:
+Исходный код доступен на Github. Проект на данной стадии  доступен под номером релиза `v0.1-lw`:
 
-https://github.com/sibtc/django-beginners-guide/tree/v0.1-lw
+[https://github.com/sibtc/django-beginners-guide/tree/v0.1-lw](https://github.com/sibtc/django-beginners-guide/tree/v0.1-lw)
 
+[Следующая часть >>](/part-2/fundamentals.md)
