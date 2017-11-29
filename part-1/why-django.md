@@ -1,21 +1,21 @@
 # Почему Django?
 
-Django is a Web framework written in Python. A Web framework is a software that supports the development of dynamic Web sites, applications, and services. It provides a set of tools and functionalities that solves many common problems associated with Web development, such as security features, database access, sessions, template processing, URL routing, internationalization, localization, and much more.
+Django - Web-фреймворк, написанный на Python. Web-фреймворк - ПО, которое способствует разработке динамических Web-сайтов, Web-приложений и Web-сервисов. Оно предоставляет набор инструментов и функционала, который решает множество проблем, связанных с Web-разработкий, таких, как безопасность, доступ в БД, сессии, обработка шаблонов, маршрутизация URL-ов, интернационализация, локализация и многие другие.
 
-Using a Web framework, such as Django, enables us to develop secure and reliable Web applications very quickly in a standardized way, without having to reinvent the wheel.
+Использование Web-фреймворка, такого как Django, поволяет нам разрабатывать безопасные и надежные Web-приложения очень быстро без изобретения велосипедов.
 
-So, what’s so special about Django? For starters, it’s a Python Web framework, which means you can benefit from wide a range of open source libraries out there. The Python Package Index repository hosts over 116K packages (as per 6 of Sep. 2017). If you need to solve a specific problem, the chances are someone has already implemented a library for it.
+Что же такого особенного в Django? Для начала, это Python Web-фреймворк, что позволяет вам использовать широкий спектр различных OpenSource библиотек. В пакетном хранилище Python больше 116 тысяч пакетов(на момент 6.10.2017). Если вам необходимо решить особенную задачу, есть шансы, что кто-то это уже сделал.
 
-Django is one of the most popular Web frameworks written in Python. It’s definitely the most complete, offering a wide range of features out-of-the-box, such as a standalone Web server for development and testing, caching, middleware system, ORM, template engine, form processing, interface with Python’s unit testing tools. Django also comes with battery included, offering built-in applications such as an authentication system, an administrative interface with automatically generated pages for CRUD operations, generation of syndication feeds (RSS/Atom), sitemaps. There’s even a Geographic Information System (GIS) framework built within Django.
+Django - один из самых популярынх Web-фреймворков, написанных на Python. Он, определенно, наиболее полный, предлагающий большое количество различного функционала "из коробки", такого как сервер разработки и тестирования, кэширование, систему `Middleware`, ORM, движок шаблонов, обработку форм, работу с модульным тестированием Python. Django так же поставляется "с батарейками", предлагая встроенные приложения, такие как авторизация, интерфейс администратора с автоматически генерируемым интерфейсом, генерирование лент новостей(RSS/Atom), sitemaps. Так же в него встроен географическая система (GIS).
 
-The development of Django is supported by the Django Software Foundation, and it’s sponsored by companies like JetBrains and Instagram. Django has also been around for quite some time now. It’s under active development for more than 12 years now, proving to be a mature, reliable and secure Web framework.
+Разработка Django поддерживается Django Software Foundation, и спонсируется такими компаниями, как JetBrains и Instagram. Так же он существует довольно давно - в разработке более 12 лет.
 
 ## Кто использует Django?
 
-It’s good to know who is using Django out there, so to have an idea what you can do with it. Among the biggest Web sites using Django we have: Instagram, Disqus, Mozilla, Bitbucket, Last.fm, National Geographic.
+Неплохо бы узнать, кто использует Django, чтобы понять, что можно с ним делать. Среди крупнейших Web-сайтов и Web-приложений - Instagram, Disqus, Mozilla, Bitbucket, Last.fm, National Geographic.
 
-For more examples you can see the Django Sites database, they offer a list of over 5K Django-powered Web sites.
+Можно посмотреть базу данных [Django Sites](https://www.djangosites.org/), там перечисленно более 5 тысяч Web-сайтов на Django.
 
-By the way, last year, in the Django Under The Hood 2016 conference, Carl Meyer, a Django core developer, and Instagram employee, gave a talk on how Instagram use Django at scale and how it supported their growth. It’s a one hour talk, but if you are interested in learning more, it was an entertaining talk.
+Кстати, в прошлом году на конференции "Django Under The Hood 2016", Карл Мейер(Carl Meyer), разработчик ядра Django и работник Instagram, рассказал, как они используют Django. Это часовой доклад, но если вам интересно, это достаточно увлекательный рассказ
 
 [Установка](/part-1/installation.md)
