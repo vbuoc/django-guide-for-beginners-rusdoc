@@ -16,7 +16,7 @@
 * [Установка](/part-1/installation.md)
 * [Начинаем новый прокт](/part-1/new-project.md)
 * [Приложения Django](/part-1/django-apps.md)
-* ["Hello World"](/part-1/hwllo-world.md)
+* ["Hello World"](/part-1/hello-world.md)
 
 # Выводы
 

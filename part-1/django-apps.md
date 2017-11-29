@@ -1,22 +1,27 @@
-Django Apps
+# Приложения Django
 
-In the Django philosophy we have two important concepts:
+В философии Django мы имеет две важные концепции:
 
-app: is a Web application that does something. An app usually is composed of a set of models (database tables), views, templates, tests.
-project: is a collection of configurations and apps. One project can be composed of multiple apps, or a single app.
-It’s important to note that you can’t run a Django app without a project. Simple websites like a blog can be written entirely inside a single app, which could be named blog or weblog for example.
+* `app` - приложение, которое что-то делает. Приложение обычно состоит из моделей(таблиц БД), представлений, шаблонов, тестов.
+* `project` - набор настрое и приложений. Один проект может состоять из нескольких приложений или даже из одного.
 
-Django Apps
+Важно помнить, что вы не можете запустить Django приложение без проекта. Простые приложения могут быть написаны внутри одного приложение, которое может быть названо **blog** или **weblog**, например.
 
-It’s a way to organize the source code. In the beginning, it’s not very trivial to determine what is an app or what is not. How to organize the code and so on. But don’t worry much about that right now! Let’s first get comfortable with Django’s API and the fundamentals.
+![Django Apps](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-1/Pixton_Comic_Django_Apps.png)
 
-Alright! So, to illustrate let’s create a simple Web Forum or Discussion Board. To create our first app, go to the directory where the manage.py file is and executes the following command:
+Это способ организовать исходный код. В начале, определить, что является приложением, а что нет - не самая простая задача. Как организовать код и т.д. Но не вонуйтесь об этом. Давайте лучше освоимся в API Django и основами.
 
+Давайте создадим простой Web-форум или "Доски обсуждения". Для создания нашего первого приложения пройдите в папку, содержащую `manage.py` и выполните следующую команду:
+
+```bash
 django-admin startapp boards
-Notice that we used the command startapp this time.
+```
 
-This will give us the following directory structure:
+Обратите внимание, что мы использовали команду `startapp`.
 
+Эта команда стоздаст нам следующую структуру:
+
+```
 myproject/
  |-- myproject/
  |    |-- boards/                <-- our new django app!
@@ -35,20 +40,23 @@ myproject/
  |    |    |-- wsgi.py
  |    +-- manage.py
  +-- venv/
-So, let’s first explore what each file does:
+```
 
-migrations/: here Django store some files to keep track of the changes you create in the models.py file, so to keep the database and the models.py synchronized.
-admin.py: this is a configuration file for a built-in Django app called Django Admin.
-apps.py: this is a configuration file of the app itself.
-models.py: here is where we define the entities of our Web application. The models are translated automatically by Django into database tables.
-tests.py: this file is used to write unit tests for the app.
-views.py: this is the file where we handle the request/response cycle of our Web application.
-Now that we created our first app, let’s configure our project to use it.
+Давайте разберемся, что делает каждый файл:
 
-To do that, open the settings.py and try to find the INSTALLED_APPS variable:
+* `migrations /`: здесь Django хранит некоторые файлы, чтобы отслеживать изменения, которые вы создаете в файле `models.py`, чтобы поддерживать синхронизацию базы данных и `models.py`.
+* `admin.py`: это файл конфигурации для встроенного приложения Django под названием **Django Admin**.
+* `apps.py`: это файл конфигурации самого приложения.
+* `models.py`: здесь мы определяем сущности нашего веб-приложения. Модели автоматически переводятся Django в таблицы базы данных.
+* `tests.py`: этот файл используется для написания модульных тестов приложения.
+* `views.py`: это файл, в котором мы обрабатываем цикл запросов / ответов нашего веб-приложения.
 
-settings.py
+Теперь, когда мы создали наше приложение, давайте настроим проект, чтобы иметь возможность его использовать.
 
+Для этого откройте `settings.py` и найдите переменную `INSTALLED_APPS`: 
+
+**settings.py**
+```python
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -57,10 +65,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
-As you can see, Django already come with 6 built-in apps installed. They offer common functionalities that most Web applications need, like authentication, sessions, static files management (images, javascripts, css, etc.) and so on.
+```
 
-We will explore those apps as we progress in this tutorial series. But for now, let them be and just add our boards app to the list of INSTALLED_APPS:
+Как вы можете видеть, Django уже идет с 6 установленными приложениями. Они реализуют общий функционал, требуемый большинством Web-приложений, такой как авториазция, сессии, статика и т.д.
 
+Мы будем изучать эти приложения по мере продвижения в этом руководстве. Но пока, просто добавьте наше приложение к списку INSTALLED_APPS:
+
+```python
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -71,4 +82,8 @@ INSTALLED_APPS = [
 
     'boards',
 ]
-Using the analogy of the square and circles from the previous comic, the yellow circle would be our boards app, and the django.contrib.admin, django.contrib.auth, etc, would be the red circles.
+```
+
+По аналогии с квадратами и кругами из предыдущей иллюстрации, желтый круг - наше приложение `boards`, а `django.contrib.admin` или `django.contrib.auth` - красные круги.
+
+> ["Hello World"](/part-1/hello-world.md)

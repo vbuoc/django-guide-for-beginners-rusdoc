@@ -2,109 +2,140 @@
 
 > Оригинал: https://simpleisbetterthancomplex.com/series/2017/09/04/a-complete-beginners-guide-to-django-part-1.html
 
-The first thing we need to do is install some programs on our machine so to be able to start playing with Django. The basic setup consists of installing Python, Virtualenv, and Django.
+Первое, что нам необходимо сделать - усановить некоторые программы, чтобы можно было "поиграть" с Django. Базовая установка состоит из **Python**, **Virtualenv** и, собственно, **Django**.
 
-Basic Setup
+![Basic Setup](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-1/Pixton_Comic_Basic_Setup.png)
 
-Using virtual environments is not mandatory, but it’s highly recommended. If you are just getting started, it’s better to start with the right foot.
+Использование виртуальных окружений - не жесткое требование, однако, крайне рекомендуемое. Если вы только начинаете, было бы неплохо начинать правильно.
 
-When developing Web sites or Web projects with Django, it’s very common to have to install external libraries to support the development. Using virtual environments, each project you develop will have its isolated environment. So the dependencies won’t clash. It also allows you to maintain in your local machine projects that run on different Django versions.
+При разработке веб-сайтов или веб-проектов с помощью Django очень часто приходится устанавливать внешние библиотеки для поддержки разработки. Используя виртуальные среды, каждый проект, который вы разрабатываете, будет иметь свою изолированную среду. Таким образом, зависимости не будут конфликтовать. Он также позволяет поддерживать локальные проекты, которые выполняются в разных версиях Django.
 
-It’s very straightforward to use it, you will see!
+Их очень просто использовать, вы увидите!
 
-Installing Python 3.6.2
+## Установка Python 3.6.2
 
-The first thing we want to do is install the latest Python distribution, which is Python 3.6.2. At least it was, by the time I was writing this tutorial. If there’s a newer version out there, go with it. The next steps should remain more or less the same.
+Первое, что мы хотим сделать, это установить последний дистрибутив Python, который является Python 3.6.2(на момент написания этого руководства). Если есть более новая версия, используйте ее. Следующие шаги должны оставаться более или менее одинаковыми.
 
-We are going to use Python 3 because the most important Python libraries have already been ported to Python 3 and also the next major Django version (2.x) won’t support Python 2 anymore. So Python 3 is the way to go.
+Мы будем использовать Python 3, потому что наиболее важные библиотеки Python уже перенесены на Python 3, а также следующая мажорная версия Django (2.x) больше не будет поддерживать Python 2. Таким образом, Python 3 - верный путь.
 
-For this tutorial, I will be using Ubuntu 16.04 as an example. Ubuntu 16.04 already comes with both Python 2 (available as python), and Python 3 (available as python3) installed. We can test the installation by opening the Terminal and checking the versions:
+Для этого урока я буду использовать Ubuntu 16.04 в качестве примера. Ubuntu 16.04 уже поставляется как с Python 2 (доступен как python), так и с Python 3 (доступен как python3). Мы можем протестировать установку, открыв терминал и проверив версии:
 
+```bash
 python --version
 Python 2.7.12
 
 python3 --version
 Python 3.5.2
-Test Python Version
+```
 
-So all we have to do is install a newer Python 3 version. But we don’t want to mess with the current Python 3.5.2, as the OS makes use of it. We’re simply going to install Python 3.6.2 under the name python3.6 and let the older version be.
+![Test Python Version](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-1/linux/test-python.png)
 
-If you are using Ubuntu 16.04 or an older version, first add the following repository:
+Итак, все, что нам нужно сделать, это установить новую версию Python 3. Но мы не хотим связываться с текущим Python 3.5.2, поскольку ОС его использует. Мы просто собираемся установить Python 3.6.2 под именем python3.6 и оставим старую версию.
 
+Если вы используете Ubuntu **16.04** или более старую версию, сначала добавьте следующий репозиторий:
+
+```bash
 sudo add-apt-repository ppa:deadsnakes/ppa
-If you are using Ubuntu 16.10, 17.04 or 17.10 you don’t need to perform the step above.
+```
 
-Now everyone executes the following commands to install the latest Python 3 distribution:
+Если вы используете Ubuntu **16.10**, **17.04** или **17.10**, вам не нужно выполнять вышеуказанный шаг.
 
+Теперь, для установки последней версии Python 3 необходимо выполнить следующие команды:
+
+```bash
 sudo apt-get update
 sudo apt-get install python3.6
-The new installation will be available under python3.6, which is fine:
+```
 
-Test Python Version 3.6
+Новый интерпретатор будет доступен по команде `python3.6`:
 
-Great, Python is up and running. Next step: Virtual Environments!
+![Test Python Version 3.6](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-1/linux/test-python36.png)
 
-Installing Virtualenv
+Отлично, Python установлен. Следующий шаг - виртуальное окружение.
 
-For the next step, we are going to use pip, a tool to manage and install Python packages, to install virtualenv.
+## Установка Virtualenv
 
-First let’s install pip for our Python 3.6.2 version:
+На следующем шаге мы будем использовать `pip`(инструмент управления и установки пакетов Python), для установки virtualenv.
 
+Сначала давайте установим `pip` для нашей версии Python 3.6.2:
+
+```bash
 wget https://bootstrap.pypa.io/get-pip.py
 sudo python3.6 get-pip.py
-Now we can install virtualenv:
+```
 
+Теперь мы можем установить virtualenv:
+
+```bash
 sudo pip3.6 install virtualenv
-pip3.6 install virtualenv
+```
 
-So far the installations that we performed was system-wide. From now on, everything we install, including Django itself, will be installed inside a Virtual Environment.
+![pip3.6 install virtualenv](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-1/linux/pip-virtualenv.png)
 
-Think of it like this: for each Django project you start, you will first create a Virtual Environment for it. It’s like having a sandbox for each Django project. So you can play around, install packages, uninstall packages without breaking anything.
+Пока что установки, которые мы выполняли, были общесистемными. Отныне все, что мы устанавливаем, включая сам Django, будет установлено внутри виртуального окружения.
 
-I like to create a folder named Development on my personal computer. Then, I use it to organize all my projects and websites. But you can follow the next steps creating the directories wherever it feels right for you.
+Подумайте об этом так: для каждого запускаемого проекта Django вы сначала создадите для него виртуальное окружение. Это похоже на наличие песочницы для каждого проекта Django. Таким образом, вы можете играть, устанавливать пакеты, удалять пакеты, ничего не сломав.
 
-Usually, I start by creating a new folder with the project name inside my Development folder. Since this is going to be our very first project, we don’t need to pick a fancy name or anything. For now, we can call it myproject.
+Мне нравится создавать папку под названием `Development` на моем компьютере. Затем я использую его для организации всех моих проектов и веб-сайтов. Но вы можете следовать следующим шагам, создавая каталоги везде, где вам будет удобно.
 
+Обычно я начинаю с создания новой папки с именем проекта внутри моей папки разработки. Поскольку это будет наш самый первый проект, нам не нужно выбирать причудливое имя или что-то еще. На данный момент мы можем назвать это `myproject`.
+
+```bash
 mkdir myproject
 cd myproject
-Create myproject folder
+```
 
-This folder is the higher level directory that will store all the files and things related to our Django project, including its virtual environment.
+![Create myproject folder](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-1/linux/myproject.png)
 
-So let’s start by creating our very first virtual environment and installing Django.
+Эта папка - каталог более высокого уровня, в котором будут храниться все файлы и вещи, связанные с нашим проектом Django, включая его виртуальное окружение.
 
-Inside the myproject folder:
+Итак, давайте начнем с создания нашего первого виртуального окружения и установки Django.
 
+Внутри папки myproject:
+
+```bash
 virtualenv venv -p python3.6
-Virtualenv
+```
 
-Our virtual environment is created. Now before we start using it, we need to activate:
+![Virtualenv](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-1/linux/venv.png)
 
+Наше окружение создано. Для того, чтобы начать им пользоваться, нужно его активировать:
+
+```bash
 source venv/bin/activate
-You will know it worked if you see (venv) in front of the command line, like this:
+```
 
-Virtualenv activate
+Вы будете знать, что оно работает, если увидите `(venv)` в начале командной строки, примерно так:
 
-Let’s try to understand what happened here. We created a special folder named venv. It contains a copy of Python inside this folder. After we activated the venv environment, when we run the python command, it will use our local copy, stored inside venv, instead of the other one we installed earlier.
+![Virtualenv activate](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-1/linux/activate.png)
 
-Another important thing is that the pip program is already installed as well, and when we use it to install a Python package, like Django, it will be installed inside the venv environment.
+Попытаемся понять, что здесь произошло. Мы создали специальную папку с именем `venv`. Внутри она содержит копию Python. После активации окружения venv, когда мы запускаем команду `python`, она будет использовать нашу локальную копию, хранящуюся внутри `venv`, а не другую, которую мы установили ранее.
 
-Note that when we have the venv activated, we will use the command python (instead of python3.6) to refer to Python 3.6.2, and just pip (instead of pip3.6) to install packages.
+Еще одна важная деталь заключается в том, что программа pip уже установлена, а когда мы ее используем для установки пакета Python, такого как Django, он будет установлен внутри среды venv.
 
-By the way, to deactivate the venv run the command below:
+Обратите внимание, что когда мы активируем `venv`, мы будем использовать команду `python` (вместо `python3.6`) для ссылки на **Python 3.6.2** и просто `pip` (вместо `pip3.6`) для установки пакетов.
 
+Кстати, для дезактивации `venv` выполните приведенную ниже команду:
+
+```bash
 deactivate
-But let’s keep it activated for the next steps.
+```
 
-Installing Django 1.11.4
+Но давайте оставим ее активированной для последующих шагов.
 
-It’s very straightforward. Now that we have the venv activated, run the following command to install Django:
+## Установка Django 1.11.4
 
+Это очень просто. Теперь, когда мы активировали venv, запустите следующую команду для установки Django:
+
+```bash
 pip install django
-pip install django
+```
 
-We are all set up now!
+![pip install django](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-1/linux/pip-django.png)
 
-End Installation
+
+Теперь все готово!
+
+![End Installation](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-1/Pixton_Comic_End_Installation.png)
 
 [Новый проект](/part-1/new-project.md)

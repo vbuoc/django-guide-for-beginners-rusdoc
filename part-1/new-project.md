@@ -2,15 +2,19 @@
 
 > Оригинал: https://simpleisbetterthancomplex.com/series/2017/09/04/a-complete-beginners-guide-to-django-part-1.html
 
-To start a new Django project, run the command below:
+Для создания нового проекта Django, выполните команду:
 
+```bash
 django-admin startproject myproject
-The command-line utility django-admin is automatically installed with Django.
+```
 
-After we run the command above, it will generate the base folder structure for a Django project.
+Утилита командной строки `django-admin` автоматически устанавливается с помощью Django.
 
-Right now, our myproject directory looks like this:
+После того, как мы выполним приведенную выше команду, она создаст структуру базовых папок для проекта Django.
 
+Прямо сейчас наш каталог myproject выглядит так:
+
+```
 myproject/                  <-- higher level folder
  |-- myproject/             <-- django project folder
  |    |-- myproject/
@@ -20,24 +24,28 @@ myproject/                  <-- higher level folder
  |    |    |-- wsgi.py
  |    +-- manage.py
  +-- venv/                  <-- virtual environment folder
-Our initial project structure is composed of five files:
+```
 
-manage.py: a shortcut to use the django-admin command-line utility. It’s used to run management commands related to our project. We will use it to run the development server, run tests, create migrations and much more.
-__init__.py: this empty file tells Python that this folder is a Python package.
-settings.py: this file contains all the project’s configuration. We will refer to this file all the time!
-urls.py: this file is responsible for mapping the routes and paths in our project. For example, if you want to show something in the URL /about/, you have to map it here first.
-wsgi.py: this file is a simple gateway interface used for deployment. You don’t have to bother about it. Just let it be for now.
-Django comes with a simple web server installed. It’s very convenient during the development, so we don’t have to install anything else to run the project locally. We can test it by executing the command:
+Наша первоначальная структура проекта состоит из пяти файлов:
 
+* `manage.py`: интерфейс для использования служебной программы командной строки django-admin. Он используется для запуска команд управления, связанных с нашим проектом. Мы будем использовать его для запуска сервера разработки, запуска тестов, создания миграции и многого другого.
+* `__init __. py`: этот пустой файл сообщает Python, что эта папка представляет собой пакет Python.
+* `settings.py`: этот файл содержит всю конфигурацию проекта. Мы будем ссылаться на этот файл все время!
+* `urls.py`: этот файл отвечает за отображение маршрутов и путей в нашем проекте. Например, если вы хотите показать что-то в URL `/ about /`, вам сначала нужно отобразить его здесь.
+* `wsgi.py`: этот файл представляет собой простой интерфейс шлюза, используемый для развертывания. Вам не нужно это беспокоиться. Просто пусть это пока.
+
+Django поставляется с простым веб-сервером. Это очень удобно во время разработки, поэтому нам не нужно устанавливать что-либо еще для локального запуска проекта. Мы можем проверить его, выполнив команду:
+
+```bash
 python manage.py runserver
-For now, you can ignore the migration errors; we will get to that later.
+```
 
-Now open the following URL in a Web browser: http://127.0.0.1:8000 and you should see the following page:
+На данный момент вы можете проигнорировать ошибки миграций, мы вернемся к ним позже.
 
-It worked!
+Теперь откройте в браузере адрес `http://127.0.0.1:8000`. Вы должны увидеть следующее:
 
-Hit Control + C to stop the development server.
+![It worked!](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-1/it-worked.png)
 
+Нажмите `Control + C` для остановки сервера разработки.
 
-
-
+> [Приложения Django](/part-1/django-apps.md)
