@@ -13,22 +13,16 @@ Hands on!
 * [Представления, Шаблоны, статика](/part-2/views-templates-static-files.md)
 * [Введение в интерфейс администратора Django](/part-2/django-admin.md)
 
-<h4 id="conclusions">Conclusions</h4>
+#### Conclusions
 
-<p>In this tutorial, we explored many new concepts. We defined some requirements for our project, created the first models,
-migrated the database, started playing with the Models API. We created our very first view and wrote some unit tests.
-We also configured the Django Template Engine, Static Files, and added the Bootstrap 4 library to the project. Finally,
-we had a very brief introduction the Django Admin interface.</p>
+In this tutorial, we explored many new concepts. We defined some requirements for our project, created the first models, migrated the database, started playing with the Models API. We created our very first view and wrote some unit tests. We also configured the Django Template Engine, Static Files, and added the Bootstrap 4 library to the project. Finally, we had a very brief introduction the Django Admin interface.
 
-<p>I hope you enjoyed the second part of this tutorial series! The third part is coming out next week, on Sep 18, 2017.
-In the next part, we are going to explore Django’s URL routing, the forms API, reusable templates, and more testing. If
-you would like to get notified when the third part is out, you can <a href="http://eepurl.com/b0gR51" target="_blank">subscribe to our mailing list</a>.</p>
+I hope you enjoyed the second part of this tutorial series! The third part is coming out next week, on Sep 18, 2017. In the next part, we are going to explore Django’s URL routing, the forms API, reusable templates, and more testing. If you would like to get notified when the third part is out, you can [subscribe to our mailing list](http://eepurl.com/b0gR51).
 
-<p>The source code of the project is available on GitHub. The current state of the project can be found under the release
-tag <strong>v0.2-lw</strong>. The link below will take you to the right place:</p>
+The source code of the project is available on GitHub. The current state of the project can be found under the release tag **v0.2-lw**. The link below will take you to the right place:
 
-<p><a href="https://github.com/sibtc/django-beginners-guide/tree/v0.2-lw" target="_blank">https://github.com/sibtc/django-beginners-guide/tree/v0.2-lw</a></p>
+[https://github.com/sibtc/django-beginners-guide/tree/v0.2-lw](https://github.com/sibtc/django-beginners-guide/tree/v0.2-lw)
 
-<hr />
+* * *
 
 > [Модели](/part-2/models.md) 

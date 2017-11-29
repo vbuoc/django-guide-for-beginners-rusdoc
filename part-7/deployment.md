@@ -1,29 +1,21 @@
-<h4 id="introduction">Introduction</h4>
+#### Introduction
 
-<p>Welcome to the last part of our tutorial series! In this tutorial, we are going to deploy our Django application to a
-production server. We are also going to configure an Email service and HTTPS certificates for our servers.</p>
+Welcome to the last part of our tutorial series! In this tutorial, we are going to deploy our Django application to a production server. We are also going to configure an Email service and HTTPS certificates for our servers.
 
-<p>At first, I thought about given an example using a Virtual Private Server (VPS), which is more generic and then using
-one Platform as a Service such as Heroku. But it was too much detail, so I ended up creating this tutorial focused on
-VPSs.</p>
+At first, I thought about given an example using a Virtual Private Server (VPS), which is more generic and then using one Platform as a Service such as Heroku. But it was too much detail, so I ended up creating this tutorial focused on VPSs.
 
-<p>Our project is live! If you want to check online before you go through the text, this is the application we are going
-to deploy: <a href="https://www.djangoboards.com" target="_blank" rel="noopener">www.djangoboards.com</a>.</p>
+Our project is live! If you want to check online before you go through the text, this is the application we are going to deploy: [www.djangoboards.com](https://www.djangoboards.com).
 
-<hr />
+* * *
 
-<h4 id="conclusions">Conclusions</h4>
+#### Conclusions
 
-<p>Thanks a lot for all those who followed this tutorial series, giving comments and feedback! I really appreciate!
-This was the last tutorial of the series. I hope you enjoyed it!</p>
+Thanks a lot for all those who followed this tutorial series, giving comments and feedback! I really appreciate! This was the last tutorial of the series. I hope you enjoyed it!
 
-<p>Even though this was the last part of the tutorial series, I plan to write a few follow-up tutorials exploring other
-interesting topics as well, such as database optimization and adding more features on top of what we have at the
-moment.</p>
+Even though this was the last part of the tutorial series, I plan to write a few follow-up tutorials exploring other interesting topics as well, such as database optimization and adding more features on top of what we have at the moment.
 
-<p>By the way, if you are interested in contributing to the project, few free to submit pull requests!
-The source code of the project is available on GitHub: <a href="https://github.com/sibtc/django-beginners-guide/" target="_blank">https://github.com/sibtc/django-beginners-guide/</a></p>
+By the way, if you are interested in contributing to the project, few free to submit pull requests! The source code of the project is available on GitHub: [https://github.com/sibtc/django-beginners-guide/](https://github.com/sibtc/django-beginners-guide/)
 
-<p>And please let me know what else you would like to see next! :-)</p>
+And please let me know what else you would like to see next! :-)
 
-<hr />
+* * *

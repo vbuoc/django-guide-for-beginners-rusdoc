@@ -1,43 +1,48 @@
-<h4 id="deploying-to-a-vps-digital-ocean">Deploying to a VPS (Digital Ocean)</h4>
+#### Deploying to a VPS (Digital Ocean)
 
-<p>You may use any other VPS (Virtual Private Server) you like. The configuration should be very similar, after all, we
-are going to use Ubuntu 16.04 as our server.</p>
+You may use any other VPS (Virtual Private Server) you like. The configuration should be very similar, after all, we are going to use Ubuntu 16.04 as our server.
 
-<p>First, let’s create a new server (on Digital Ocean they call it “Droplet”). Select Ubuntu 16.04:</p>
+First, let’s create a new server (on Digital Ocean they call it “Droplet”). Select Ubuntu 16.04:
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-7/do1.png" alt="Digital Ocean" /></p>
+![Digital Ocean](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-7/do1.png)
 
-<p>Pick the size. The smallest droplet is enough:</p>
+Pick the size. The smallest droplet is enough:
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-7/do2.png" alt="Digital Ocean" /></p>
+![Digital Ocean](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-7/do2.png)
 
-<p>Then choose a hostname for your droplet (in my case “django-boards”):</p>
+Then choose a hostname for your droplet (in my case “django-boards”):
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-7/do3.png" alt="Digital Ocean" /></p>
+![Digital Ocean](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-7/do3.png)
 
-<p>If you have an SSH key, you can add it to your account. Then you will be able to log in the server using it. Otherwise,
-they will email you the root password.</p>
+If you have an SSH key, you can add it to your account. Then you will be able to log in the server using it. Otherwise, they will email you the root password.
 
-<p>Now pick the server’s IP address:</p>
+Now pick the server’s IP address:
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-7/do4.png" alt="Digital Ocean" /></p>
+![Digital Ocean](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-7/do4.png)
 
-<p>Before we log in to the server, let’s point our domain name to this IP address. This will save some time because
-DNS settings usually take a few minutes to propagate.</p>
+Before we log in to the server, let’s point our domain name to this IP address. This will save some time because DNS settings usually take a few minutes to propagate.
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-7/namecheap.png" alt="Namecheap" /></p>
+![Namecheap](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-7/namecheap.png)
 
-<p>So here we added two A records, one pointing to the naked domain “djangoboards.com” and the other one for
-“www.djangoboards.com”. We will use NGINX to configure a canonical URL.</p>
+So here we added two A records, one pointing to the naked domain “djangoboards.com” and the other one for “www.djangoboards.com”. We will use NGINX to configure a canonical URL.
 
-<p>Now let’s log in to the server using your terminal:</p>
+Now let’s log in to the server using your terminal:
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">ssh root@45.55.144.54
-root@45.55.144.54's password:</code></pre></figure>
+<figure class="highlight">
 
-<p>Then you should see the following message:</p>
+```
+ssh root@45.55.144.54
+root@45.55.144.54's password:
+```
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">You are required to change your password immediately (root enforced)
+</figure>
+
+Then you should see the following message:
+
+<figure class="highlight">
+
+```
+You are required to change your password immediately (root enforced)
 Welcome to Ubuntu 16.04.3 LTS (GNU/Linux 4.4.0-93-generic x86_64)
 
  * Documentation:  https://help.ubuntu.com
@@ -50,127 +55,263 @@ Welcome to Ubuntu 16.04.3 LTS (GNU/Linux 4.4.0-93-generic x86_64)
 0 packages can be updated.
 0 updates are security updates.
 
-
 Last login: Sun Oct 15 18:39:21 2017 from 82.128.188.51
 Changing password for root.
-(current) UNIX password:</code></pre></figure>
+(current) UNIX password:
+```
 
-<p>Set the new password, and let’s start to configure the server.</p>
+</figure>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">sudo apt-get update
-sudo apt-get -y upgrade</code></pre></figure>
+Set the new password, and let’s start to configure the server.
 
-<p>If you get any prompt during the upgrade, select the option “keep the local version currently installed”.</p>
+<figure class="highlight">
 
-<p><strong>Python 3.6</strong></p>
-
-<figure class="highlight"><pre><code class="language-text" data-lang="text">sudo add-apt-repository ppa:deadsnakes/ppa
+```
 sudo apt-get update
-sudo apt-get install python3.6</code></pre></figure>
+sudo apt-get -y upgrade
+```
 
-<p><strong>PostgreSQL</strong></p>
+</figure>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">sudo apt-get -y install postgresql postgresql-contrib</code></pre></figure>
+If you get any prompt during the upgrade, select the option “keep the local version currently installed”.
 
-<p><strong>NGINX</strong></p>
+**Python 3.6**
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">sudo apt-get -y install nginx</code></pre></figure>
+<figure class="highlight">
 
-<p><strong>Supervisor</strong></p>
+```
+sudo add-apt-repository ppa:deadsnakes/ppa
+sudo apt-get update
+sudo apt-get install python3.6
+```
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">sudo apt-get -y install supervisor
+</figure>
+
+**PostgreSQL**
+
+<figure class="highlight">
+
+```
+sudo apt-get -y install postgresql postgresql-contrib
+```
+
+</figure>
+
+**NGINX**
+
+<figure class="highlight">
+
+```
+sudo apt-get -y install nginx
+```
+
+</figure>
+
+**Supervisor**
+
+<figure class="highlight">
+
+```
+sudo apt-get -y install supervisor
 
 sudo systemctl enable supervisor
-sudo systemctl start supervisor</code></pre></figure>
+sudo systemctl start supervisor
+```
 
-<p><strong>Virtualenv</strong></p>
+</figure>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">wget https://bootstrap.pypa.io/get-pip.py
+**Virtualenv**
+
+<figure class="highlight">
+
+```
+wget https://bootstrap.pypa.io/get-pip.py
 sudo python3.6 get-pip.py
-sudo pip3.6 install virtualenv</code></pre></figure>
+sudo pip3.6 install virtualenv
+```
 
-<h5 id="application-user">Application User</h5>
+</figure>
 
-<p>Create a new user with the command below:</p>
+##### Application User
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">adduser boards</code></pre></figure>
+Create a new user with the command below:
 
-<p>Usually, I just pick the name of the application. Enter a password and optionally add some extra info to the prompt.</p>
+<figure class="highlight">
 
-<p>Now add the user to the sudoers list:</p>
+```
+adduser boards
+```
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">gpasswd -a boards sudo</code></pre></figure>
+</figure>
 
-<h5 id="postgresql-database-setup">PostgreSQL Database Setup</h5>
+Usually, I just pick the name of the application. Enter a password and optionally add some extra info to the prompt.
 
-<p>First switch to the postgres user:</p>
+Now add the user to the sudoers list:
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">sudo su - postgres</code></pre></figure>
+<figure class="highlight">
 
-<p>Create a database user:</p>
+```
+gpasswd -a boards sudo
+```
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">createuser u_boards</code></pre></figure>
+</figure>
 
-<p>Create a new database and set the user as the owner:</p>
+##### PostgreSQL Database Setup
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">createdb django_boards --owner u_boards</code></pre></figure>
+First switch to the postgres user:
 
-<p>Define a strong password for the user:</p>
+<figure class="highlight">
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">psql -c "ALTER USER u_boards WITH PASSWORD 'BcAZoYWsJbvE7RMgBPzxOCexPRVAq'"</code></pre></figure>
+```
+sudo su - postgres
+```
 
-<p>We can now exit the postgres user:</p>
+</figure>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">exit</code></pre></figure>
+Create a database user:
 
-<h5 id="django-project-setup">Django Project Setup</h5>
+<figure class="highlight">
 
-<p>Switch to the application user:</p>
+```
+createuser u_boards
+```
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">sudo su - boards</code></pre></figure>
+</figure>
 
-<p>First, we can check where we are:</p>
+Create a new database and set the user as the owner:
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">pwd
-/home/boards</code></pre></figure>
+<figure class="highlight">
 
-<p>First, let’s clone the repository with our code:</p>
+```
+createdb django_boards --owner u_boards
+```
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">git clone https://github.com/sibtc/django-beginners-guide.git</code></pre></figure>
+</figure>
 
-<p>Start a virtual environment:</p>
+Define a strong password for the user:
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">virtualenv venv -p python3.6</code></pre></figure>
+<figure class="highlight">
 
-<p>Initialize the virtualenv:</p>
+```
+psql -c "ALTER USER u_boards WITH PASSWORD 'BcAZoYWsJbvE7RMgBPzxOCexPRVAq'"
+```
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">source venv/bin/activate</code></pre></figure>
+</figure>
 
-<p>Install the requirements:</p>
+We can now exit the postgres user:
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">pip install -r django-beginners-guide/requirements.txt</code></pre></figure>
+<figure class="highlight">
 
-<p>We will have to add two extra libraries here, the Gunicorn and the PostgreSQL driver:</p>
+```
+exit
+```
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">pip install gunicorn
-pip install psycopg2</code></pre></figure>
+</figure>
 
-<p>Now inside the <strong>/home/boards/django-beginners-guide</strong> folder, let’s create a <strong>.env</strong> file to store the database
-credentials, the secret key and everything else:</p>
+##### Django Project Setup
 
-<p><strong>/home/boards/django-beginners-guide/.env</strong></p>
+Switch to the application user:
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">SECRET_KEY=rqr_cjv4igscyu8&amp;&amp;(0ce(=sy=f2)p=f_wn&amp;@0xsp7m$@!kp=d
+<figure class="highlight">
+
+```
+sudo su - boards
+```
+
+</figure>
+
+First, we can check where we are:
+
+<figure class="highlight">
+
+```
+pwd
+/home/boards
+```
+
+</figure>
+
+First, let’s clone the repository with our code:
+
+<figure class="highlight">
+
+```
+git clone https://github.com/sibtc/django-beginners-guide.git
+```
+
+</figure>
+
+Start a virtual environment:
+
+<figure class="highlight">
+
+```
+virtualenv venv -p python3.6
+```
+
+</figure>
+
+Initialize the virtualenv:
+
+<figure class="highlight">
+
+```
+source venv/bin/activate
+```
+
+</figure>
+
+Install the requirements:
+
+<figure class="highlight">
+
+```
+pip install -r django-beginners-guide/requirements.txt
+```
+
+</figure>
+
+We will have to add two extra libraries here, the Gunicorn and the PostgreSQL driver:
+
+<figure class="highlight">
+
+```
+pip install gunicorn
+pip install psycopg2
+```
+
+</figure>
+
+Now inside the **/home/boards/django-beginners-guide** folder, let’s create a **.env** file to store the database credentials, the secret key and everything else:
+
+**/home/boards/django-beginners-guide/.env**
+
+<figure class="highlight">
+
+```
+SECRET_KEY=rqr_cjv4igscyu8&&(0ce(=sy=f2)p=f_wn&@0xsp7m$@!kp=d
 ALLOWED_HOSTS=.djangoboards.com
-DATABASE_URL=postgres://u_boards:BcAZoYWsJbvE7RMgBPzxOCexPRVAq@localhost:5432/django_boards</code></pre></figure>
+DATABASE_URL=postgres://u_boards:BcAZoYWsJbvE7RMgBPzxOCexPRVAq@localhost:5432/django_boards
+```
 
-<p>Here is the syntax of the database URL: postgres://<code class="highlighter-rouge">db_user</code>:<code class="highlighter-rouge">db_password</code>@<code class="highlighter-rouge">db_host</code>:<code class="highlighter-rouge">db_port</code>/<code class="highlighter-rouge">db_name</code>.</p>
+</figure>
 
-<p>Now let’s migrate the database, collect the static files and create a super user:</p>
+Here is the syntax of the database URL: postgres://`db_user`:`db_password`@`db_host`:`db_port`/`db_name`.
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">cd django-beginners-guide</code></pre></figure>
+Now let’s migrate the database, collect the static files and create a super user:
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">python manage.py migrate
+<figure class="highlight">
+
+```
+cd django-beginners-guide
+```
+
+</figure>
+
+<figure class="highlight">
+
+```
+python manage.py migrate
 
 Operations to perform:
   Apply all migrations: admin, auth, boards, contenttypes, sessions
@@ -190,11 +331,17 @@ Running migrations:
   Applying boards.0001_initial... OK
   Applying boards.0002_auto_20170917_1618... OK
   Applying boards.0003_topic_views... OK
-  Applying sessions.0001_initial... OK</code></pre></figure>
+  Applying sessions.0001_initial... OK
+```
 
-<p>Now the static files:</p>
+</figure>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">python manage.py collectstatic
+Now the static files:
+
+<figure class="highlight">
+
+```
+python manage.py collectstatic
 
 Copying '/home/boards/django-beginners-guide/static/js/jquery-3.2.1.min.js'
 Copying '/home/boards/django-beginners-guide/static/js/popper.min.js'
@@ -206,22 +353,33 @@ Copying '/home/boards/django-beginners-guide/static/css/accounts.css'
 Copying '/home/boards/django-beginners-guide/static/css/simplemde.min.css'
 Copying '/home/boards/django-beginners-guide/static/img/avatar.svg'
 Copying '/home/boards/django-beginners-guide/static/img/shattered.png'
-...</code></pre></figure>
+...
+```
 
-<p>This command copy all the static assets to an external directory where NGINX can serve the files for us. More on that
-later.</p>
+</figure>
 
-<p>Now create a super user for the application:</p>
+This command copy all the static assets to an external directory where NGINX can serve the files for us. More on that later.
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">python manage.py createsuperuser</code></pre></figure>
+Now create a super user for the application:
 
-<h5 id="configuring-gunicorn">Configuring Gunicorn</h5>
+<figure class="highlight">
 
-<p>So, Gunicorn is the one responsible for executing the Django code behind a proxy server.</p>
+```
+python manage.py createsuperuser
+```
 
-<p>Create a new file named <strong>gunicorn_start</strong> inside <strong>/home/boards</strong>:</p>
+</figure>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">#!/bin/bash
+##### Configuring Gunicorn
+
+So, Gunicorn is the one responsible for executing the Django code behind a proxy server.
+
+Create a new file named **gunicorn_start** inside **/home/boards**:
+
+<figure class="highlight">
+
+```
+#!/bin/bash
 
 NAME="django_boards"
 DIR=/home/boards/django-beginners-guide
@@ -246,66 +404,125 @@ exec ../venv/bin/gunicorn ${DJANGO_WSGI_MODULE}:application \
   --group=$GROUP \
   --bind=$BIND \
   --log-level=$LOG_LEVEL \
-  --log-file=-</code></pre></figure>
+  --log-file=-
+```
 
-<p>This script will start the application server. We are providing some information such as where the Django project is,
-which application user to be used to run the server, and so on.</p>
+</figure>
 
-<p>Now make this file executable:</p>
+This script will start the application server. We are providing some information such as where the Django project is, which application user to be used to run the server, and so on.
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">chmod u+x gunicorn_start</code></pre></figure>
+Now make this file executable:
 
-<p>Create two empty folders, one for the socket file and one to store the logs:</p>
+<figure class="highlight">
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">mkdir run logs</code></pre></figure>
+```
+chmod u+x gunicorn_start
+```
 
-<p>Right now the directory structure inside <strong>/home/boards</strong> should look like this:</p>
+</figure>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">django-beginners-guide/
+Create two empty folders, one for the socket file and one to store the logs:
+
+<figure class="highlight">
+
+```
+mkdir run logs
+```
+
+</figure>
+
+Right now the directory structure inside **/home/boards** should look like this:
+
+<figure class="highlight">
+
+```
+django-beginners-guide/
 gunicorn_start
 logs/
 run/
 staticfiles/
-venv/</code></pre></figure>
+venv/
+```
 
-<p>The <strong>staticfiles</strong> folder was created by the <strong>collectstatic</strong> command.</p>
+</figure>
 
-<h5 id="configuring-supervisor">Configuring Supervisor</h5>
+The **staticfiles** folder was created by the **collectstatic** command.
 
-<p>First, create an empty log file inside the <strong>/home/boards/logs/</strong> folder:</p>
+##### Configuring Supervisor
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">touch logs/gunicorn.log</code></pre></figure>
+First, create an empty log file inside the **/home/boards/logs/** folder:
 
-<p>Now create a new supervisor file:</p>
+<figure class="highlight">
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">sudo vim /etc/supervisor/conf.d/boards.conf</code></pre></figure>
+```
+touch logs/gunicorn.log
+```
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">[program:boards]
+</figure>
+
+Now create a new supervisor file:
+
+<figure class="highlight">
+
+```
+sudo vim /etc/supervisor/conf.d/boards.conf
+```
+
+</figure>
+
+<figure class="highlight">
+
+```
+[program:boards]
 command=/home/boards/gunicorn_start
 user=boards
 autostart=true
 autorestart=true
 redirect_stderr=true
-stdout_logfile=/home/boards/logs/gunicorn.log</code></pre></figure>
+stdout_logfile=/home/boards/logs/gunicorn.log
+```
 
-<p>Save the file and run the commands below:</p>
+</figure>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">sudo supervisorctl reread
-sudo supervisorctl update</code></pre></figure>
+Save the file and run the commands below:
 
-<p>Now check the status:</p>
+<figure class="highlight">
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">sudo supervisorctl status boards</code></pre></figure>
+```
+sudo supervisorctl reread
+sudo supervisorctl update
+```
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">boards                           RUNNING   pid 308, uptime 0:00:07</code></pre></figure>
+</figure>
 
-<h5 id="configuring-nginx">Configuring NGINX</h5>
+Now check the status:
 
-<p>Next step is to set up the NGINX server to serve the static files and to pass the requests to Gunicorn:</p>
+<figure class="highlight">
 
-<p>Add a new configuration file named <strong>boards</strong> inside <strong>/etc/nginx/sites-available/</strong>:</p>
+```
+sudo supervisorctl status boards
+```
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">upstream app_server {
+</figure>
+
+<figure class="highlight">
+
+```
+boards                           RUNNING   pid 308, uptime 0:00:07
+```
+
+</figure>
+
+##### Configuring NGINX
+
+Next step is to set up the NGINX server to serve the static files and to pass the requests to Gunicorn:
+
+Add a new configuration file named **boards** inside **/etc/nginx/sites-available/**:
+
+<figure class="highlight">
+
+```
+upstream app_server {
     server unix:/home/boards/run/gunicorn.sock fail_timeout=0;
 }
 
@@ -334,22 +551,43 @@ server {
       proxy_redirect off;
       proxy_pass http://app_server;
     }
-}</code></pre></figure>
+}
+```
 
-<p>Create a symbolic link to the <strong>sites-enabled</strong> folder:</p>
+</figure>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">sudo ln -s /etc/nginx/sites-available/boards /etc/nginx/sites-enabled/boards</code></pre></figure>
+Create a symbolic link to the **sites-enabled** folder:
 
-<p>Remove the default NGINX website:</p>
+<figure class="highlight">
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">sudo rm /etc/nginx/sites-enabled/default</code></pre></figure>
+```
+sudo ln -s /etc/nginx/sites-available/boards /etc/nginx/sites-enabled/boards
+```
 
-<p>Restart the NGINX service:</p>
+</figure>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">sudo service nginx restart</code></pre></figure>
+Remove the default NGINX website:
 
-<p>At this point, if the DNS have already propagated, the website should be available on the URL www.djangoboards.com.</p>
+<figure class="highlight">
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-7/django-boards.png" alt="Django Boards" /></p>
+```
+sudo rm /etc/nginx/sites-enabled/default
+```
 
-<hr />
+</figure>
+
+Restart the NGINX service:
+
+<figure class="highlight">
+
+```
+sudo service nginx restart
+```
+
+</figure>
+
+At this point, if the DNS have already propagated, the website should be available on the URL www.djangoboards.com.
+
+![Django Boards](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-7/django-boards.png)
+
+* * *

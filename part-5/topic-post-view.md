@@ -1,213 +1,245 @@
-<h4 id="topic-posts-view">Topic Posts View</h4>
+#### Topic Posts View
 
-<p>Let’s take the time now to implement the posts listing page, accordingly to the wireframe below:</p>
+Let’s take the time now to implement the posts listing page, accordingly to the wireframe below:
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-5/wireframe-posts.png" alt="Wireframe Posts" /></p>
+![Wireframe Posts](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-5/wireframe-posts.png)
 
-<p>First, we need a route:</p>
+First, we need a route:
 
-<p><strong>myproject/urls.py</strong>
-<small><a href="https://gist.github.com/vitorfs/aede6d3b7dc3494cf0df48f796075403#file-urls-py-L38" target="_blank" rel="noopener nofollow">(view complete file contents)</a></small></p>
+**myproject/urls.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/aede6d3b7dc3494cf0df48f796075403#file-urls-py-L38)</small>
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">url</span><span class="p">(</span><span class="s">r'^boards/(?P&lt;pk&gt;</span><span class="err">\</span><span class="s">d+)/topics/(?P&lt;topic_pk&gt;</span><span class="err">\</span><span class="s">d+)/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">topic_posts</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'topic_posts'</span><span class="p">),</span></code></pre></figure>
+<figure class="highlight">
 
-<p>Observe that now we are dealing with two keyword arguments: <code class="highlighter-rouge">pk</code> which is used to identify the Board, and now we have
-the <code class="highlighter-rouge">topic_pk</code> which is used to identify which topic to retrieve from the database.</p>
+    url(r'^boards/(?P<pk>\d+)/topics/(?P<topic_pk>\d+)//figure>, views.topic_posts, name='topic_posts'),
 
-<p>The matching view would be like this:</p>
+</figure>
 
-<p><strong>boards/views.py</strong>
-<small><a href="https://gist.github.com/vitorfs/3d73ef25a01eceea07ef3ad8538437cf#file-views-py-L39" target="_blank" rel="noopener nofollow">(view complete file contents)</a></small></p>
+Observe that now we are dealing with two keyword arguments: `pk` which is used to identify the Board, and now we have the `topic_pk` which is used to identify which topic to retrieve from the database.
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">get_object_or_404</span><span class="p">,</span> <span class="n">render</span>
-<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Topic</span>
+The matching view would be like this:
 
-<span class="k">def</span> <span class="nf">topic_posts</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="p">,</span> <span class="n">topic_pk</span><span class="p">):</span>
-    <span class="n">topic</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Topic</span><span class="p">,</span> <span class="n">board__pk</span><span class="o">=</span><span class="n">pk</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">topic_pk</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s">'topic_posts.html'</span><span class="p">,</span> <span class="p">{</span><span class="s">'topic'</span><span class="p">:</span> <span class="n">topic</span><span class="p">})</span></code></pre></figure>
+**boards/views.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/3d73ef25a01eceea07ef3ad8538437cf#file-views-py-L39)</small>
 
-<p>Note that we are indirectly retrieving the current board. Remember that the topic model is related to the board model,
-so we can access the current board. You will see in the next snippet:</p>
+<figure class="highlight">
 
-<p><strong>templates/topic_posts.html</strong>
-<small><a href="https://gist.github.com/vitorfs/17e583f4f0068850c5929bd307dd436a" target="_blank" rel="noopener nofollow">(view complete file contents)</a></small></p>
+    from django.shortcuts import get_object_or_404, render
+    from .models import Topic
 
-<figure class="highlight"><pre><code class="language-django" data-lang="django"><span class="cp">{%</span> <span class="k">extends</span> <span class="s1">'base.html'</span> <span class="cp">%}</span>
+    def topic_posts(request, pk, topic_pk):
+        topic = get_object_or_404(Topic, board__pk=pk, pk=topic_pk)
+        return render(request, 'topic_posts.html', {'topic': topic})
 
-<span class="cp">{%</span> <span class="k">block</span> <span class="nv">title</span> <span class="cp">%}{{</span> <span class="nv">topic.subject</span> <span class="cp">}}{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
+</figure>
 
-<span class="cp">{%</span> <span class="k">block</span> <span class="nv">breadcrumb</span> <span class="cp">%}</span>
-  <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">"breadcrumb-item"</span><span class="nt">&gt;&lt;a</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="nv">url</span> <span class="s1">'home'</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span>Boards<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
-  <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">"breadcrumb-item"</span><span class="nt">&gt;&lt;a</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="nv">url</span> <span class="s1">'board_topics'</span> <span class="nv">topic.board.pk</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span><span class="cp">{{</span> <span class="nv">topic.board.name</span> <span class="cp">}}</span><span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
-  <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">"breadcrumb-item active"</span><span class="nt">&gt;</span><span class="cp">{{</span> <span class="nv">topic.subject</span> <span class="cp">}}</span><span class="nt">&lt;/li&gt;</span>
-<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
+Note that we are indirectly retrieving the current board. Remember that the topic model is related to the board model, so we can access the current board. You will see in the next snippet:
 
-<span class="cp">{%</span> <span class="k">block</span> <span class="nv">content</span> <span class="cp">%}</span>
+**templates/topic_posts.html** <small>[(view complete file contents)](https://gist.github.com/vitorfs/17e583f4f0068850c5929bd307dd436a)</small>
 
-<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span></code></pre></figure>
+<figure class="highlight">
 
-<p>Observe that now instead of using <code class="highlighter-rouge">board.name</code> in the template, we are navigating through the topic properties, using
-<code class="highlighter-rouge">topic.board.name</code>.</p>
+    {% extends 'base.html' %}
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-5/posts-1.png" alt="Posts" /></p>
+    {% block title %}{{ topic.subject }}{% endblock %}
 
-<p>Now let’s create a new test file for the <strong>topic_posts</strong> view:</p>
+    {% block breadcrumb %}
+      <li class="breadcrumb-item"><a href="{% url 'home' %}">Boards</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'board_topics' topic.board.pk %}">{{ topic.board.name }}</a></li>
+      <li class="breadcrumb-item active">{{ topic.subject }}</li>
+    {% endblock %}
 
-<p><strong>boards/tests/test_view_topic_posts.py</strong></p>
+    {% block content %}
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span>
-<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span>
-<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">resolve</span><span class="p">,</span> <span class="n">reverse</span>
+    {% endblock %}
 
-<span class="kn">from</span> <span class="nn">..models</span> <span class="kn">import</span> <span class="n">Board</span><span class="p">,</span> <span class="n">Post</span><span class="p">,</span> <span class="n">Topic</span>
-<span class="kn">from</span> <span class="nn">..views</span> <span class="kn">import</span> <span class="n">topic_posts</span>
+</figure>
 
+Observe that now instead of using `board.name` in the template, we are navigating through the topic properties, using `topic.board.name`.
 
-<span class="k">class</span> <span class="nc">TopicPostsTests</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">board</span> <span class="o">=</span> <span class="n">Board</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">'Django'</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s">'Django board.'</span><span class="p">)</span>
-        <span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create_user</span><span class="p">(</span><span class="n">username</span><span class="o">=</span><span class="s">'john'</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="s">'john@doe.com'</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s">'123'</span><span class="p">)</span>
-        <span class="n">topic</span> <span class="o">=</span> <span class="n">Topic</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s">'Hello, world'</span><span class="p">,</span> <span class="n">board</span><span class="o">=</span><span class="n">board</span><span class="p">,</span> <span class="n">starter</span><span class="o">=</span><span class="n">user</span><span class="p">)</span>
-        <span class="n">Post</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">message</span><span class="o">=</span><span class="s">'Lorem ipsum dolor sit amet'</span><span class="p">,</span> <span class="n">topic</span><span class="o">=</span><span class="n">topic</span><span class="p">,</span> <span class="n">created_by</span><span class="o">=</span><span class="n">user</span><span class="p">)</span>
-        <span class="n">url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s">'topic_posts'</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s">'pk'</span><span class="p">:</span> <span class="n">board</span><span class="o">.</span><span class="n">pk</span><span class="p">,</span> <span class="s">'topic_pk'</span><span class="p">:</span> <span class="n">topic</span><span class="o">.</span><span class="n">pk</span><span class="p">})</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+![Posts](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-5/posts-1.png)
 
-    <span class="k">def</span> <span class="nf">test_status_code</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEquals</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+Now let’s create a new test file for the **topic_posts** view:
 
-    <span class="k">def</span> <span class="nf">test_view_function</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">view</span> <span class="o">=</span> <span class="n">resolve</span><span class="p">(</span><span class="s">'/boards/1/topics/1/'</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEquals</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="n">topic_posts</span><span class="p">)</span></code></pre></figure>
+**boards/tests/test_view_topic_posts.py**
 
-<p>Note that the test setup is starting to get more complex. We can create mixins or an abstract class to reuse the code
-as needed. We can also use a third party library to setup some test data, to reduce the boilerplate code.</p>
+<figure class="highlight">
 
-<p>Also, by now we already have a significant amount of tests, and it’s gradually starting to run slower. We can instruct
-the test suite just to run tests from a given app:</p>
+    from django.contrib.auth.models import User
+    from django.test import TestCase
+    from django.urls import resolve, reverse
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">python manage.py test boards</code></pre></figure>
+    from ..models import Board, Post, Topic
+    from ..views import topic_posts
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Creating test database for alias 'default'...
-System check identified no issues (0 silenced).
-.......................
-----------------------------------------------------------------------
-Ran 23 tests in 1.246s
+    class TopicPostsTests(TestCase):
+        def setUp(self):
+            board = Board.objects.create(name='Django', description='Django board.')
+            user = User.objects.create_user(username='john', email='john@doe.com', password='123')
+            topic = Topic.objects.create(subject='Hello, world', board=board, starter=user)
+            Post.objects.create(message='Lorem ipsum dolor sit amet', topic=topic, created_by=user)
+            url = reverse('topic_posts', kwargs={'pk': board.pk, 'topic_pk': topic.pk})
+            self.response = self.client.get(url)
 
-OK
-Destroying test database for alias 'default'...</code></pre></figure>
+        def test_status_code(self):
+            self.assertEquals(self.response.status_code, 200)
 
-<p>We could also run only a specific test file:</p>
+        def test_view_function(self):
+            view = resolve('/boards/1/topics/1/')
+            self.assertEquals(view.func, topic_posts)
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">python manage.py test boards.tests.test_view_topic_posts</code></pre></figure>
+</figure>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Creating test database for alias 'default'...
-System check identified no issues (0 silenced).
-..
-----------------------------------------------------------------------
-Ran 2 tests in 0.129s
+Note that the test setup is starting to get more complex. We can create mixins or an abstract class to reuse the code as needed. We can also use a third party library to setup some test data, to reduce the boilerplate code.
 
-OK
-Destroying test database for alias 'default'...</code></pre></figure>
+Also, by now we already have a significant amount of tests, and it’s gradually starting to run slower. We can instruct the test suite just to run tests from a given app:
 
-<p>Or just a specific test case:</p>
+<figure class="highlight">
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">python manage.py test boards.tests.test_view_topic_posts.TopicPostsTests.test_status_code</code></pre></figure>
+    python manage.py test boards
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Creating test database for alias 'default'...
-System check identified no issues (0 silenced).
-.
-----------------------------------------------------------------------
-Ran 1 test in 0.100s
+</figure>
 
-OK
-Destroying test database for alias 'default'...</code></pre></figure>
+<figure class="highlight">
 
-<p>Cool, right?</p>
+    Creating test database for alias 'default'...
+    System check identified no issues (0 silenced).
+    .......................
+    ----------------------------------------------------------------------
+    Ran 23 tests in 1.246s
 
-<p>Let’s keep moving forward.</p>
+    OK
+    Destroying test database for alias 'default'...
 
-<p>Inside the <strong>topic_posts.html</strong>, we can create a for loop iterating over the topic posts:</p>
+</figure>
 
-<p><strong>templates/topic_posts.html</strong></p>
+We could also run only a specific test file:
 
-<figure class="highlight"><pre><code class="language-django" data-lang="django"><span class="cp">{%</span> <span class="k">extends</span> <span class="s1">'base.html'</span> <span class="cp">%}</span>
+<figure class="highlight">
 
-<span class="cp">{%</span> <span class="nv">load</span> <span class="nv">static</span> <span class="cp">%}</span>
+    python manage.py test boards.tests.test_view_topic_posts
 
-<span class="cp">{%</span> <span class="k">block</span> <span class="nv">title</span> <span class="cp">%}{{</span> <span class="nv">topic.subject</span> <span class="cp">}}{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
+</figure>
 
-<span class="cp">{%</span> <span class="k">block</span> <span class="nv">breadcrumb</span> <span class="cp">%}</span>
-  <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">"breadcrumb-item"</span><span class="nt">&gt;&lt;a</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="nv">url</span> <span class="s1">'home'</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span>Boards<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
-  <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">"breadcrumb-item"</span><span class="nt">&gt;&lt;a</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="nv">url</span> <span class="s1">'board_topics'</span> <span class="nv">topic.board.pk</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span><span class="cp">{{</span> <span class="nv">topic.board.name</span> <span class="cp">}}</span><span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
-  <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">"breadcrumb-item active"</span><span class="nt">&gt;</span><span class="cp">{{</span> <span class="nv">topic.subject</span> <span class="cp">}}</span><span class="nt">&lt;/li&gt;</span>
-<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
+<figure class="highlight">
 
-<span class="cp">{%</span> <span class="k">block</span> <span class="nv">content</span> <span class="cp">%}</span>
+    Creating test database for alias 'default'...
+    System check identified no issues (0 silenced).
+    ..
+    ----------------------------------------------------------------------
+    Ran 2 tests in 0.129s
 
-  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"mb-4"</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"#"</span> <span class="na">class=</span><span class="s">"btn btn-primary"</span> <span class="na">role=</span><span class="s">"button"</span><span class="nt">&gt;</span>Reply<span class="nt">&lt;/a&gt;</span>
-  <span class="nt">&lt;/div&gt;</span>
+    OK
+    Destroying test database for alias 'default'...
 
-  <span class="cp">{%</span> <span class="k">for</span> <span class="nv">post</span> <span class="ow">in</span> <span class="nv">topic.posts.all</span> <span class="cp">%}</span>
-    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"card mb-2"</span><span class="nt">&gt;</span>
-      <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"card-body p-3"</span><span class="nt">&gt;</span>
-        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"row"</span><span class="nt">&gt;</span>
-          <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"col-2"</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;img</span> <span class="na">src=</span><span class="s">"</span><span class="cp">{%</span> <span class="nv">static</span> <span class="s1">'img/avatar.svg'</span> <span class="cp">%}</span><span class="s">"</span> <span class="na">alt=</span><span class="s">"</span><span class="cp">{{</span> <span class="nv">post.created_by.username</span> <span class="cp">}}</span><span class="s">"</span> <span class="na">class=</span><span class="s">"w-100"</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;small&gt;</span>Posts: <span class="cp">{{</span> <span class="nv">post.created_by.posts.count</span> <span class="cp">}}</span><span class="nt">&lt;/small&gt;</span>
-          <span class="nt">&lt;/div&gt;</span>
-          <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"col-10"</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"row mb-3"</span><span class="nt">&gt;</span>
-              <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"col-6"</span><span class="nt">&gt;</span>
-                <span class="nt">&lt;strong</span> <span class="na">class=</span><span class="s">"text-muted"</span><span class="nt">&gt;</span><span class="cp">{{</span> <span class="nv">post.created_by.username</span> <span class="cp">}}</span><span class="nt">&lt;/strong&gt;</span>
-              <span class="nt">&lt;/div&gt;</span>
-              <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"col-6 text-right"</span><span class="nt">&gt;</span>
-                <span class="nt">&lt;small</span> <span class="na">class=</span><span class="s">"text-muted"</span><span class="nt">&gt;</span><span class="cp">{{</span> <span class="nv">post.created_at</span> <span class="cp">}}</span><span class="nt">&lt;/small&gt;</span>
-              <span class="nt">&lt;/div&gt;</span>
-            <span class="nt">&lt;/div&gt;</span>
-            <span class="cp">{{</span> <span class="nv">post.message</span> <span class="cp">}}</span>
-            <span class="cp">{%</span> <span class="k">if</span> <span class="nv">post.created_by</span> <span class="o">==</span> <span class="nv">user</span> <span class="cp">%}</span>
-              <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"mt-3"</span><span class="nt">&gt;</span>
-                <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"#"</span> <span class="na">class=</span><span class="s">"btn btn-primary btn-sm"</span> <span class="na">role=</span><span class="s">"button"</span><span class="nt">&gt;</span>Edit<span class="nt">&lt;/a&gt;</span>
-              <span class="nt">&lt;/div&gt;</span>
-            <span class="cp">{%</span> <span class="k">endif</span> <span class="cp">%}</span>
-          <span class="nt">&lt;/div&gt;</span>
-        <span class="nt">&lt;/div&gt;</span>
-      <span class="nt">&lt;/div&gt;</span>
-    <span class="nt">&lt;/div&gt;</span>
-  <span class="cp">{%</span> <span class="k">endfor</span> <span class="cp">%}</span>
+</figure>
 
-<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span></code></pre></figure>
+Or just a specific test case:
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-5/posts-2.png" alt="Posts" /></p>
+<figure class="highlight">
 
-<p>Since right now we don’t have a way to upload a user picture, let’s just have an empty image.</p>
+    python manage.py test boards.tests.test_view_topic_posts.TopicPostsTests.test_status_code
 
-<p>I downloaded a free image from <a href="https://www.iconfinder.com/search/?q=user&amp;license=2&amp;price=free" target="_blank" rel="noopener">IconFinder</a>
-and saved in the <strong>static/img</strong> folder of the project.</p>
+</figure>
 
-<p>We still haven’t really explored Django’s ORM, but the code <code class="highlighter-rouge"><span class="p">{</span><span class="err">{</span><span class="w"> </span><span class="err">post.created_by.posts.count</span><span class="w"> </span><span class="p">}</span><span class="err">}</span></code>
-is executing a <code class="highlighter-rouge">select count</code> in the database. Even though the result is correct, it is a bad approach. Right now it’s
-causing several unnecessary queries in the database. But hey, don’t worry about that right now. Let’s focus on how
-we interact with the application. Later on, we are going to improve this code, and how to diagnose heavy queries.</p>
+<figure class="highlight">
 
-<p>Another interesting point here is that we are testing if the current post belongs to the authenticated user:
-<code class="highlighter-rouge"><span class="p">{</span><span class="err">%</span><span class="w"> </span><span class="err">if</span><span class="w"> </span><span class="err">post.created_by</span><span class="w"> </span><span class="err">==</span><span class="w"> </span><span class="err">user</span><span class="w"> </span><span class="err">%</span><span class="p">}</span></code>. And we are only showing the edit button for the owner of the
-post.</p>
+    Creating test database for alias 'default'...
+    System check identified no issues (0 silenced).
+    .
+    ----------------------------------------------------------------------
+    Ran 1 test in 0.100s
 
-<p>Since we now have the URL route to the topic posts listing, update the <strong>topics.html</strong> template with the link:</p>
+    OK
+    Destroying test database for alias 'default'...
 
-<p><strong>templates/topics.html</strong>
-<small><a href="https://gist.github.com/vitorfs/cb4b7c9ff382ddeafb4114d0c84b3869" target="_blank" rel="noopener nofollow">(view complete file contents)</a></small></p>
+</figure>
 
-<figure class="highlight"><pre><code class="language-django" data-lang="django"><span class="cp">{%</span> <span class="k">for</span> <span class="nv">topic</span> <span class="ow">in</span> <span class="nv">board.topics.all</span> <span class="cp">%}</span>
-  <span class="nt">&lt;tr&gt;</span>
-    <span class="nt">&lt;td&gt;&lt;a</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="nv">url</span> <span class="s1">'topic_posts'</span> <span class="nv">board.pk</span> <span class="nv">topic.pk</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span><span class="cp">{{</span> <span class="nv">topic.subject</span> <span class="cp">}}</span><span class="nt">&lt;/a&gt;&lt;/td&gt;</span>
-    <span class="nt">&lt;td&gt;</span><span class="cp">{{</span> <span class="nv">topic.starter.username</span> <span class="cp">}}</span><span class="nt">&lt;/td&gt;</span>
-    <span class="nt">&lt;td&gt;</span>0<span class="nt">&lt;/td&gt;</span>
-    <span class="nt">&lt;td&gt;</span>0<span class="nt">&lt;/td&gt;</span>
-    <span class="nt">&lt;td&gt;</span><span class="cp">{{</span> <span class="nv">topic.last_updated</span> <span class="cp">}}</span><span class="nt">&lt;/td&gt;</span>
-  <span class="nt">&lt;/tr&gt;</span>
-<span class="cp">{%</span> <span class="k">endfor</span> <span class="cp">%}</span></code></pre></figure>
+Cool, right?
 
-<hr />
+Let’s keep moving forward.
+
+Inside the **topic_posts.html**, we can create a for loop iterating over the topic posts:
+
+**templates/topic_posts.html**
+
+<figure class="highlight">
+
+    {% extends 'base.html' %}
+
+    {% load static %}
+
+    {% block title %}{{ topic.subject }}{% endblock %}
+
+    {% block breadcrumb %}
+      <li class="breadcrumb-item"><a href="{% url 'home' %}">Boards</a></li>
+      <li class="breadcrumb-item"><a href="{% url 'board_topics' topic.board.pk %}">{{ topic.board.name }}</a></li>
+      <li class="breadcrumb-item active">{{ topic.subject }}</li>
+    {% endblock %}
+
+    {% block content %}
+
+      <div class="mb-4">
+        <a href="#" class="btn btn-primary" role="button">Reply</a>
+      </div>
+
+      {% for post in topic.posts.all %}
+        <div class="card mb-2">
+          <div class="card-body p-3">
+            <div class="row">
+              <div class="col-2">
+                <img src="{% static 'img/avatar.svg' %}" alt="{{ post.created_by.username }}" class="w-100">
+                <small>Posts: {{ post.created_by.posts.count }}</small>
+              </div>
+              <div class="col-10">
+                <div class="row mb-3">
+                  <div class="col-6">
+                    <strong class="text-muted">{{ post.created_by.username }}</strong>
+                  </div>
+                  <div class="col-6 text-right">
+                    <small class="text-muted">{{ post.created_at }}</small>
+                  </div>
+                </div>
+                {{ post.message }}
+                {% if post.created_by == user %}
+                  <div class="mt-3">
+                    <a href="#" class="btn btn-primary btn-sm" role="button">Edit</a>
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+
+    {% endblock %}
+
+</figure>
+
+![Posts](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-5/posts-2.png)
+
+Since right now we don’t have a way to upload a user picture, let’s just have an empty image.
+
+I downloaded a free image from [IconFinder](https://www.iconfinder.com/search/?q=user&license=2&price=free) and saved in the **static/img** folder of the project.
+
+We still haven’t really explored Django’s ORM, but the code `<span class="p">{</span><span class="err">{</span> <span class="w"></span> <span class="err">post.created_by.posts.count</span> <span class="w"></span> <span class="p">}</span><span class="err">}</span>` is executing a `select count` in the database. Even though the result is correct, it is a bad approach. Right now it’s causing several unnecessary queries in the database. But hey, don’t worry about that right now. Let’s focus on how we interact with the application. Later on, we are going to improve this code, and how to diagnose heavy queries.
+
+Another interesting point here is that we are testing if the current post belongs to the authenticated user: `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">if</span> <span class="w"></span> <span class="err">post.created_by</span> <span class="w"></span> <span class="err">==</span> <span class="w"></span> <span class="err">user</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>`. And we are only showing the edit button for the owner of the post.
+
+Since we now have the URL route to the topic posts listing, update the **topics.html** template with the link:
+
+**templates/topics.html** <small>[(view complete file contents)](https://gist.github.com/vitorfs/cb4b7c9ff382ddeafb4114d0c84b3869)</small>
+
+<figure class="highlight">
+
+    {% for topic in board.topics.all %}
+      <tr>
+        <td><a href="{% url 'topic_posts' board.pk topic.pk %}">{{ topic.subject }}</a></td>
+        <td>{{ topic.starter.username }}</td>
+        <td>0</td>
+        <td>0</td>
+        <td>{{ topic.last_updated }}</td>
+      </tr>
+    {% endfor %}
+
+</figure>
+
+* * *

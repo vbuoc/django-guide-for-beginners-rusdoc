@@ -1,185 +1,204 @@
+Until now we’ve been copying and pasting HTML repeating several parts of the HTML document, which is not very sustainable in the long run. It’s also a bad practice.
 
-<p>Until now we’ve been copying and pasting HTML repeating several parts of the HTML document, which is not very
-sustainable in the long run. It’s also a bad practice.</p>
+In this section we are going to refactor our HTML templates, creating a **master page** and only adding the unique part for each template.
 
-<p>In this section we are going to refactor our HTML templates, creating a <strong>master page</strong> and only adding the unique part
-for each template.</p>
+Create a new file named **base.html** in the **templates** folder:
 
-<p>Create a new file named <strong>base.html</strong> in the <strong>templates</strong> folder:</p>
+**templates/base.html**
 
-<p><strong>templates/base.html</strong></p>
+<figure class="highlight">
 
-<figure class="highlight"><pre><code class="language-django" data-lang="django"><span class="cp">{%</span> <span class="nv">load</span> <span class="nv">static</span> <span class="cp">%}&lt;!DOCTYPE html&gt;</span>
-<span class="nt">&lt;html&gt;</span>
-  <span class="nt">&lt;head&gt;</span>
-    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">"utf-8"</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;title&gt;</span><span class="cp">{%</span> <span class="k">block</span> <span class="nv">title</span> <span class="cp">%}</span>Django Boards<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span><span class="nt">&lt;/title&gt;</span>
-    <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="nv">static</span> <span class="s1">'css/bootstrap.min.css'</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span>
-  <span class="nt">&lt;/head&gt;</span>
-  <span class="nt">&lt;body&gt;</span>
-    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
-      <span class="nt">&lt;ol</span> <span class="na">class=</span><span class="s">"breadcrumb my-4"</span><span class="nt">&gt;</span>
-        <span class="cp">{%</span> <span class="k">block</span> <span class="nv">breadcrumb</span> <span class="cp">%}</span>
-        <span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
-      <span class="nt">&lt;/ol&gt;</span>
-      <span class="cp">{%</span> <span class="k">block</span> <span class="nv">content</span> <span class="cp">%}</span>
-      <span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
-    <span class="nt">&lt;/div&gt;</span>
-  <span class="nt">&lt;/body&gt;</span>
-<span class="nt">&lt;/html&gt;</span></code></pre></figure>
+    {% load static %}<!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <title>{% block title %}Django Boards{% endblock %}</title>
+        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+      </head>
+      <body>
+        <div class="container">
+          <ol class="breadcrumb my-4">
+            {% block breadcrumb %}
+            {% endblock %}
+          </ol>
+          {% block content %}
+          {% endblock %}
+        </div>
+      </body>
+    </html>
 
-<p>This is going to be our master page. Every template we create, is going to <strong>extend</strong> this special template. Observe
-now we introduced the <code class="highlighter-rouge"><span class="p">{</span><span class="err">%</span><span class="w"> </span><span class="err">block</span><span class="w"> </span><span class="err">%</span><span class="p">}</span></code> tag. It is used to reserve a space in the template, which
-a “child” template (which extends the master page) can insert code and HTML within that space.</p>
+</figure>
 
-<p>In the case of the <code class="highlighter-rouge"><span class="p">{</span><span class="err">%</span><span class="w"> </span><span class="err">block</span><span class="w"> </span><span class="err">title</span><span class="w"> </span><span class="err">%</span><span class="p">}</span></code> we are also setting a default value, which is
-“Django Boards.” It will be used if we don’t set a value for the <code class="highlighter-rouge"><span class="p">{</span><span class="err">%</span><span class="w"> </span><span class="err">block</span><span class="w"> </span><span class="err">title</span><span class="w"> </span><span class="err">%</span><span class="p">}</span></code> in a child
-template.</p>
+This is going to be our master page. Every template we create, is going to **extend** this special template. Observe now we introduced the `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">block</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>` tag. It is used to reserve a space in the template, which a “child” template (which extends the master page) can insert code and HTML within that space.
 
-<p>Now let’s refactor our two templates: <strong>home.html</strong> and <strong>topics.html</strong>.</p>
+In the case of the `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">block</span> <span class="w"></span> <span class="err">title</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>` we are also setting a default value, which is “Django Boards.” It will be used if we don’t set a value for the `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">block</span> <span class="w"></span> <span class="err">title</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>` in a child template.
 
-<p><strong>templates/home.html</strong></p>
+Now let’s refactor our two templates: **home.html** and **topics.html**.
 
-<figure class="highlight"><pre><code class="language-django" data-lang="django"><span class="cp">{%</span> <span class="k">extends</span> <span class="s1">'base.html'</span> <span class="cp">%}</span>
+**templates/home.html**
 
-<span class="cp">{%</span> <span class="k">block</span> <span class="nv">breadcrumb</span> <span class="cp">%}</span>
-  <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">"breadcrumb-item active"</span><span class="nt">&gt;</span>Boards<span class="nt">&lt;/li&gt;</span>
-<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
+<figure class="highlight">
 
-<span class="cp">{%</span> <span class="k">block</span> <span class="nv">content</span> <span class="cp">%}</span>
-  <span class="nt">&lt;table</span> <span class="na">class=</span><span class="s">"table"</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;thead</span> <span class="na">class=</span><span class="s">"thead-inverse"</span><span class="nt">&gt;</span>
-      <span class="nt">&lt;tr&gt;</span>
-        <span class="nt">&lt;th&gt;</span>Board<span class="nt">&lt;/th&gt;</span>
-        <span class="nt">&lt;th&gt;</span>Posts<span class="nt">&lt;/th&gt;</span>
-        <span class="nt">&lt;th&gt;</span>Topics<span class="nt">&lt;/th&gt;</span>
-        <span class="nt">&lt;th&gt;</span>Last Post<span class="nt">&lt;/th&gt;</span>
-      <span class="nt">&lt;/tr&gt;</span>
-    <span class="nt">&lt;/thead&gt;</span>
-    <span class="nt">&lt;tbody&gt;</span>
-      <span class="cp">{%</span> <span class="k">for</span> <span class="nv">board</span> <span class="ow">in</span> <span class="nv">boards</span> <span class="cp">%}</span>
-        <span class="nt">&lt;tr&gt;</span>
-          <span class="nt">&lt;td&gt;</span>
-            <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="nv">url</span> <span class="s1">'board_topics'</span> <span class="nv">board.pk</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span><span class="cp">{{</span> <span class="nv">board.name</span> <span class="cp">}}</span><span class="nt">&lt;/a&gt;</span>
-            <span class="nt">&lt;small</span> <span class="na">class=</span><span class="s">"text-muted d-block"</span><span class="nt">&gt;</span><span class="cp">{{</span> <span class="nv">board.description</span> <span class="cp">}}</span><span class="nt">&lt;/small&gt;</span>
-          <span class="nt">&lt;/td&gt;</span>
-          <span class="nt">&lt;td</span> <span class="na">class=</span><span class="s">"align-middle"</span><span class="nt">&gt;</span>0<span class="nt">&lt;/td&gt;</span>
-          <span class="nt">&lt;td</span> <span class="na">class=</span><span class="s">"align-middle"</span><span class="nt">&gt;</span>0<span class="nt">&lt;/td&gt;</span>
-          <span class="nt">&lt;td&gt;&lt;/td&gt;</span>
-        <span class="nt">&lt;/tr&gt;</span>
-      <span class="cp">{%</span> <span class="k">endfor</span> <span class="cp">%}</span>
-    <span class="nt">&lt;/tbody&gt;</span>
-  <span class="nt">&lt;/table&gt;</span>
-<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span></code></pre></figure>
+    {% extends 'base.html' %}
 
-<p>The first line in the <strong>home.html</strong> template is <code class="highlighter-rouge"><span class="p">{</span><span class="err">%</span><span class="w"> </span><span class="err">extends</span><span class="w"> </span><span class="err">'base.html'</span><span class="w"> </span><span class="err">%</span><span class="p">}</span></code>. This tag is telling
-Django to use the <strong>base.html</strong> template as a master page. After that, we are using the the <em>blocks</em> to put the unique
-content of the page.</p>
+    {% block breadcrumb %}
+      <li class="breadcrumb-item active">Boards</li>
+    {% endblock %}
 
-<p><strong>templates/topics.html</strong></p>
+    {% block content %}
+      <table class="table">
+        <thead class="thead-inverse">
+          <tr>
+            <th>Board</th>
+            <th>Posts</th>
+            <th>Topics</th>
+            <th>Last Post</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for board in boards %}
+            <tr>
+              <td>
+                <a href="{% url 'board_topics' board.pk %}">{{ board.name }}</a>
+                <small class="text-muted d-block">{{ board.description }}</small>
+              </td>
+              <td class="align-middle">0</td>
+              <td class="align-middle">0</td>
+              <td></td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endblock %}
 
-<figure class="highlight"><pre><code class="language-django" data-lang="django"><span class="cp">{%</span> <span class="k">extends</span> <span class="s1">'base.html'</span> <span class="cp">%}</span>
+</figure>
 
-<span class="cp">{%</span> <span class="k">block</span> <span class="nv">title</span> <span class="cp">%}</span>
-  <span class="cp">{{</span> <span class="nv">board.name</span> <span class="cp">}}</span> - <span class="cp">{{</span> <span class="nv">block.super</span> <span class="cp">}}</span>
-<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
+The first line in the **home.html** template is `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">extends</span> <span class="w"></span> <span class="err">'base.html'</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>`. This tag is telling Django to use the **base.html** template as a master page. After that, we are using the the _blocks_ to put the unique content of the page.
 
-<span class="cp">{%</span> <span class="k">block</span> <span class="nv">breadcrumb</span> <span class="cp">%}</span>
-  <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">"breadcrumb-item"</span><span class="nt">&gt;&lt;a</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="nv">url</span> <span class="s1">'home'</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span>Boards<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
-  <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">"breadcrumb-item active"</span><span class="nt">&gt;</span><span class="cp">{{</span> <span class="nv">board.name</span> <span class="cp">}}</span><span class="nt">&lt;/li&gt;</span>
-<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
+**templates/topics.html**
 
-<span class="cp">{%</span> <span class="k">block</span> <span class="nv">content</span> <span class="cp">%}</span>
-    <span class="c">&lt;!-- just leaving it empty for now. we will add core here soon. --&gt;</span>
-<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span></code></pre></figure>
+<figure class="highlight">
 
-<p>In the <strong>topics.html</strong> template, we are changing the <code class="highlighter-rouge"><span class="p">{</span><span class="err">%</span><span class="w"> </span><span class="err">block</span><span class="w"> </span><span class="err">title</span><span class="w"> </span><span class="err">%</span><span class="p">}</span></code> default value. Notice
-that we can reuse the default value of the block by calling <code class="highlighter-rouge"><span class="p">{</span><span class="err">{</span><span class="w"> </span><span class="err">block.super</span><span class="w"> </span><span class="p">}</span><span class="err">}</span></code>. So here we are
-playing with the website title, which we defined in the <strong>base.html</strong> as “Django Boards.” So for the “Python” board
-page, the title will be “Python - Django Boards,” for the “Random” board the title will be “Random - Django Boards.”</p>
+    {% extends 'base.html' %}
 
-<p>Now let’s run the tests and see we didn’t break anything:</p>
+    {% block title %}
+      {{ board.name }} - {{ block.super }}
+    {% endblock %}
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash">python manage.py <span class="nb">test</span></code></pre></figure>
+    {% block breadcrumb %}
+      <li class="breadcrumb-item"><a href="{% url 'home' %}">Boards</a></li>
+      <li class="breadcrumb-item active">{{ board.name }}</li>
+    {% endblock %}
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Creating test database for alias 'default'...
-System check identified no issues (0 silenced).
-.......
-----------------------------------------------------------------------
-Ran 7 tests in 0.067s
+    {% block content %}
+        <!-- just leaving it empty for now. we will add core here soon. -->
+    {% endblock %}
 
-OK
-Destroying test database for alias 'default'...</code></pre></figure>
+</figure>
 
-<p>Great! Everything is looking good.</p>
+In the **topics.html** template, we are changing the `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">block</span> <span class="w"></span> <span class="err">title</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>` default value. Notice that we can reuse the default value of the block by calling `<span class="p">{</span><span class="err">{</span> <span class="w"></span> <span class="err">block.super</span> <span class="w"></span> <span class="p">}</span><span class="err">}</span>`. So here we are playing with the website title, which we defined in the **base.html** as “Django Boards.” So for the “Python” board page, the title will be “Python - Django Boards,” for the “Random” board the title will be “Random - Django Boards.”
 
-<p>Now that we have the <strong>base.html</strong> template, we can easily add a top bar with a menu:</p>
+Now let’s run the tests and see we didn’t break anything:
 
-<p><strong>templates/base.html</strong></p>
+<figure class="highlight">
 
-<figure class="highlight"><pre><code class="language-django" data-lang="django"><span class="cp">{%</span> <span class="nv">load</span> <span class="nv">static</span> <span class="cp">%}&lt;!DOCTYPE html&gt;</span>
-<span class="nt">&lt;html&gt;</span>
-  <span class="nt">&lt;head&gt;</span>
-    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">"utf-8"</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;title&gt;</span><span class="cp">{%</span> <span class="k">block</span> <span class="nv">title</span> <span class="cp">%}</span>Django Boards<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span><span class="nt">&lt;/title&gt;</span>
-    <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="nv">static</span> <span class="s1">'css/bootstrap.min.css'</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span>
-  <span class="nt">&lt;/head&gt;</span>
-  <span class="nt">&lt;body&gt;</span>
+    python manage.py test
 
-    <span class="nt">&lt;nav</span> <span class="na">class=</span><span class="s">"navbar navbar-expand-lg navbar-dark bg-dark"</span><span class="nt">&gt;</span>
-      <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
-        <span class="nt">&lt;a</span> <span class="na">class=</span><span class="s">"navbar-brand"</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="nv">url</span> <span class="s1">'home'</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span>Django Boards<span class="nt">&lt;/a&gt;</span>
-      <span class="nt">&lt;/div&gt;</span>
-    <span class="nt">&lt;/nav&gt;</span>
+</figure>
 
-    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
-      <span class="nt">&lt;ol</span> <span class="na">class=</span><span class="s">"breadcrumb my-4"</span><span class="nt">&gt;</span>
-        <span class="cp">{%</span> <span class="k">block</span> <span class="nv">breadcrumb</span> <span class="cp">%}</span>
-        <span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
-      <span class="nt">&lt;/ol&gt;</span>
-      <span class="cp">{%</span> <span class="k">block</span> <span class="nv">content</span> <span class="cp">%}</span>
-      <span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
-    <span class="nt">&lt;/div&gt;</span>
-  <span class="nt">&lt;/body&gt;</span>
-<span class="nt">&lt;/html&gt;</span></code></pre></figure>
+<figure class="highlight">
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/django-boards-header-1.png" alt="Django Boards Header" /></p>
+    Creating test database for alias 'default'...
+    System check identified no issues (0 silenced).
+    .......
+    ----------------------------------------------------------------------
+    Ran 7 tests in 0.067s
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/django-boards-header-2.png" alt="Django Boards Header" /></p>
+    OK
+    Destroying test database for alias 'default'...
 
-<p>The HTML I used is part of the <a href="https://getbootstrap.com/docs/4.0/components/navbar/" target="_blank">Bootstrap 4 Navbar Component</a>.</p>
+</figure>
 
-<p>A nice touch I like to add is to change the font in the “logo” (<code class="highlighter-rouge">.navbar-brand</code>) of the page.</p>
+Great! Everything is looking good.
 
-<p>Go to <a href="https://fonts.google.com/" target="_blank">fonts.google.com</a>, type “Django Boards” or whatever name you gave
-to your project then click on <strong>apply to all fonts</strong>. Browse a bit, find one that you like.</p>
+Now that we have the **base.html** template, we can easily add a top bar with a menu:
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/google-fonts.png" alt="Google Fonts" /></p>
+**templates/base.html**
 
-<p>Add the font in the <strong>base.html</strong> template:</p>
+<figure class="highlight">
 
-<figure class="highlight"><pre><code class="language-django" data-lang="django"><span class="cp">{%</span> <span class="nv">load</span> <span class="nv">static</span> <span class="cp">%}&lt;!DOCTYPE html&gt;</span>
-<span class="nt">&lt;html&gt;</span>
-  <span class="nt">&lt;head&gt;</span>
-    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">"utf-8"</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;title&gt;</span><span class="cp">{%</span> <span class="k">block</span> <span class="nv">title</span> <span class="cp">%}</span>Django Boards<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span><span class="nt">&lt;/title&gt;</span>
-    <span class="nt">&lt;link</span> <span class="na">href=</span><span class="s">"https://fonts.googleapis.com/css?family=Peralta"</span> <span class="na">rel=</span><span class="s">"stylesheet"</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="nv">static</span> <span class="s1">'css/bootstrap.min.css'</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="nv">static</span> <span class="s1">'css/app.css'</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span>
-  <span class="nt">&lt;/head&gt;</span>
-  <span class="nt">&lt;body&gt;</span>
-    <span class="c">&lt;!-- code suppressed for brevity --&gt;</span>
-  <span class="nt">&lt;/body&gt;</span>
-<span class="nt">&lt;/html&gt;</span></code></pre></figure>
+    {% load static %}<!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <title>{% block title %}Django Boards{% endblock %}</title>
+        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+      </head>
+      <body>
 
-<p>Now create a new CSS file named <strong>app.css</strong> inside the <strong>static/css</strong> folder:</p>
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+          <div class="container">
+            <a class="navbar-brand" href="{% url 'home' %}">Django Boards</a>
+          </div>
+        </nav>
 
-<p><strong>static/css/app.css</strong></p>
+        <div class="container">
+          <ol class="breadcrumb my-4">
+            {% block breadcrumb %}
+            {% endblock %}
+          </ol>
+          {% block content %}
+          {% endblock %}
+        </div>
+      </body>
+    </html>
 
-<figure class="highlight"><pre><code class="language-css" data-lang="css"><span class="nc">.navbar-brand</span> <span class="p">{</span>
-  <span class="nl">font-family</span><span class="p">:</span> <span class="s2">'Peralta'</span><span class="p">,</span> <span class="nb">cursive</span><span class="p">;</span>
-<span class="p">}</span></code></pre></figure>
+</figure>
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/boards-logo.png" alt="Django Boards Logo" /></p>
+![Django Boards Header](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/django-boards-header-1.png)
 
-<hr />
+![Django Boards Header](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/django-boards-header-2.png)
+
+The HTML I used is part of the [Bootstrap 4 Navbar Component](https://getbootstrap.com/docs/4.0/components/navbar/).
+
+A nice touch I like to add is to change the font in the “logo” (`.navbar-brand`) of the page.
+
+Go to [fonts.google.com](https://fonts.google.com/), type “Django Boards” or whatever name you gave to your project then click on **apply to all fonts**. Browse a bit, find one that you like.
+
+![Google Fonts](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/google-fonts.png)
+
+Add the font in the **base.html** template:
+
+<figure class="highlight">
+
+    {% load static %}<!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <title>{% block title %}Django Boards{% endblock %}</title>
+        <link href="https://fonts.googleapis.com/css?family=Peralta" rel="stylesheet">
+        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/app.css' %}">
+      </head>
+      <body>
+        <!-- code suppressed for brevity -->
+      </body>
+    </html>
+
+</figure>
+
+Now create a new CSS file named **app.css** inside the **static/css** folder:
+
+**static/css/app.css**
+
+<figure class="highlight">
+
+    .navbar-brand {
+      font-family: 'Peralta', cursive;
+    }
+
+</figure>
+
+![Django Boards Logo](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/boards-logo.png)
+
+* * *

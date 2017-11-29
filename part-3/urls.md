@@ -1,781 +1,1007 @@
-
-<p>Proceeding with the development of our application, now we have to implement a new page to list all the topics that
-belong to a given <strong>Board</strong>. Just to recap, below you can see the wireframe we drew in the previous tutorial:</p>
+Proceeding with the development of our application, now we have to implement a new page to list all the topics that belong to a given **Board**. Just to recap, below you can see the wireframe we drew in the previous tutorial:
 
 <div id="figure-1">
-  <p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/wireframe-topics.png" alt="Wireframe Topics" /></p>
-  <p style="text-align: center">
-    <small>Figure 1: Boards project wireframe listing all topics in the Django board.</small>
-  </p>
+
+![Wireframe Topics](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/wireframe-topics.png)
+
+<small>Figure 1: Boards project wireframe listing all topics in the Django board.</small>
+
 </div>
 
-<p>We will start by editing the <strong>urls.py</strong> inside the <strong>myproject</strong> folder:</p>
+We will start by editing the **urls.py** inside the **myproject** folder:
 
-<p><strong>myproject/urls.py</strong></p>
+**myproject/urls.py**
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
-<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<figure class="highlight">
 
-<span class="kn">from</span> <span class="nn">boards</span> <span class="kn">import</span> <span class="n">views</span>
+    from django.conf.urls import url
+    from django.contrib import admin
 
-<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">url</span><span class="p">(</span><span class="s">r'^$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">home</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'home'</span><span class="p">),</span>
-    <span class="n">url</span><span class="p">(</span><span class="s">r'^boards/(?P&lt;pk&gt;</span><span class="err">\</span><span class="s">d+)/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">board_topics</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'board_topics'</span><span class="p">),</span>
-    <span class="n">url</span><span class="p">(</span><span class="s">r'^admin/'</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">urls</span><span class="p">),</span>
-<span class="p">]</span></code></pre></figure>
+    from boards import views
 
-<p>This time let’s take a moment and analyze the <code class="highlighter-rouge">urlpatterns</code> and <code class="highlighter-rouge">url</code>.</p>
+    urlpatterns = [
+        url(r'^/figure>, views.home, name='home'),
+        url(r'^boards/(?P<pk>\d+)//figure>, views.board_topics, name='board_topics'),
+        url(r'^admin/', admin.site.urls),
+    ]
 
-<p>The URL dispatcher and <strong>URLconf</strong> (URL configuration) are fundamental parts of a Django application. In the beginning,
-it can look confusing; I remember having a hard time when I first started developing with Django.</p>
+</figure>
 
-<p>In fact, right now the Django Developers are working on a <a href="https://github.com/django/deps/blob/master/accepted/0201-simplified-routing-syntax.rst" target="_blank">proposal to make simplified routing syntax</a>.
-But for now, as per the version 1.11, that’s what we have. So let’s try to understand how it works.</p>
+This time let’s take a moment and analyze the `urlpatterns` and `url`.
 
-<p>A project can have many <strong>urls.py</strong> distributed among the apps. But Django needs a <strong>url.py</strong> to use as a starting
-point. This special <strong>urls.py</strong> is called <strong>root URLconf</strong>. It’s defined in the <strong>settings.py</strong> file.</p>
+The URL dispatcher and **URLconf** (URL configuration) are fundamental parts of a Django application. In the beginning, it can look confusing; I remember having a hard time when I first started developing with Django.
 
-<p><strong>myproject/settings.py</strong></p>
+In fact, right now the Django Developers are working on a [proposal to make simplified routing syntax](https://github.com/django/deps/blob/master/accepted/0201-simplified-routing-syntax.rst). But for now, as per the version 1.11, that’s what we have. So let’s try to understand how it works.
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">ROOT_URLCONF</span> <span class="o">=</span> <span class="s">'myproject.urls'</span></code></pre></figure>
+A project can have many **urls.py** distributed among the apps. But Django needs a **url.py** to use as a starting point. This special **urls.py** is called **root URLconf**. It’s defined in the **settings.py** file.
 
-<p>It already comes configured, so you don’t need to change anything here.</p>
+**myproject/settings.py**
 
-<p>When Django receives a request, it starts searching for a match in the project’s URLconf. It starts with the first
-entry of the <code class="highlighter-rouge">urlpatterns</code> variable, and test the requested URL against each <code class="highlighter-rouge">url</code> entry.</p>
+<figure class="highlight">
 
-<p>If Django finds a match, it will pass the request to the <strong>view function</strong>, which is the second parameter of the
-<code class="highlighter-rouge">url</code>. The order in the <code class="highlighter-rouge">urlpatterns</code> matters, because Django will stop searching as soon as it finds a match. Now, if
-Django doesn’t find a match in the URLconf, it will raise a <strong>404</strong> exception, which is the error code for
-<strong>Page Not Found</strong>.</p>
+    ROOT_URLCONF = 'myproject.urls'
 
-<p>This is the anatomy of the <code class="highlighter-rouge">url</code> function:</p>
+</figure>
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">url</span><span class="p">(</span><span class="n">regex</span><span class="p">,</span> <span class="n">view</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
-    <span class="c"># ...</span></code></pre></figure>
+It already comes configured, so you don’t need to change anything here.
 
-<ul>
-  <li><strong>regex</strong>: A regular expression for matching URL patterns in strings. Note that these regular expressions do not
-search <strong>GET</strong> or <strong>POST</strong> parameters. In a request to <strong>http://127.0.0.1:8000/boards/?page=2</strong> only <strong>/boards/</strong> will
-be processed.</li>
-  <li><strong>view</strong>: A view function used to process the user request for a matched URL. It also accepts the return of the
-<strong>django.conf.urls.include</strong> function, which is used to reference an external <strong>urls.py</strong> file. You can, for example,
-use it to define a set of app specific URLs, and include it in the root URLconf using a prefix. We will explore more
-on this concept later on.</li>
-  <li><strong>kwargs</strong>: Arbitrary keyword arguments that’s passed to the target view. It is normally used to do some simple
-customization on reusable views. We don’t use it very often.</li>
-  <li><strong>name</strong>: A unique identifier for a given URL. This is a very important feature. Always remember to name your URLs.
-With this, you can change a specific URL in the whole project by just changing the regex. So it’s important to never
-hard code URLs in the views or templates, and always refer to the URLs by its name.</li>
-</ul>
+When Django receives a request, it starts searching for a match in the project’s URLconf. It starts with the first entry of the `urlpatterns` variable, and test the requested URL against each `url` entry.
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/Pixton_Comic_URL_Patterns.png" alt="Matching URL patterns" /></p>
+If Django finds a match, it will pass the request to the **view function**, which is the second parameter of the `url`. The order in the `urlpatterns` matters, because Django will stop searching as soon as it finds a match. Now, if Django doesn’t find a match in the URLconf, it will raise a **404** exception, which is the error code for **Page Not Found**.
 
-<h5 id="basic-urls">Basic URLs</h5>
+This is the anatomy of the `url` function:
 
-<p>Basic URLs are very simple to create. It’s just a matter of matching strings. For example, let’s say we wanted to
-create an “about” page, it could be defined like this:</p>
+<figure class="highlight">
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
-<span class="kn">from</span> <span class="nn">boards</span> <span class="kn">import</span> <span class="n">views</span>
+    def url(regex, view, kwargs=None, name=None):
+        # ...
 
-<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">url</span><span class="p">(</span><span class="s">r'^$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">home</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'home'</span><span class="p">),</span>
-    <span class="n">url</span><span class="p">(</span><span class="s">r'^about/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">about</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'about'</span><span class="p">),</span>
-<span class="p">]</span></code></pre></figure>
+</figure>
 
-<p>We can also create deeper URL structures:</p>
+*   **regex**: A regular expression for matching URL patterns in strings. Note that these regular expressions do not search **GET** or **POST** parameters. In a request to **http://127.0.0.1:8000/boards/?page=2** only **/boards/** will be processed.
+*   **view**: A view function used to process the user request for a matched URL. It also accepts the return of the **django.conf.urls.include** function, which is used to reference an external **urls.py** file. You can, for example, use it to define a set of app specific URLs, and include it in the root URLconf using a prefix. We will explore more on this concept later on.
+*   **kwargs**: Arbitrary keyword arguments that’s passed to the target view. It is normally used to do some simple customization on reusable views. We don’t use it very often.
+*   **name**: A unique identifier for a given URL. This is a very important feature. Always remember to name your URLs. With this, you can change a specific URL in the whole project by just changing the regex. So it’s important to never hard code URLs in the views or templates, and always refer to the URLs by its name.
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
-<span class="kn">from</span> <span class="nn">boards</span> <span class="kn">import</span> <span class="n">views</span>
+![Matching URL patterns](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/Pixton_Comic_URL_Patterns.png)
 
-<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">url</span><span class="p">(</span><span class="s">r'^$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">home</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'home'</span><span class="p">),</span>
-    <span class="n">url</span><span class="p">(</span><span class="s">r'^about/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">about</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'about'</span><span class="p">),</span>
-    <span class="n">url</span><span class="p">(</span><span class="s">r'^about/company/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">about_company</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'about_company'</span><span class="p">),</span>
-    <span class="n">url</span><span class="p">(</span><span class="s">r'^about/author/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">about_author</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'about_author'</span><span class="p">),</span>
-    <span class="n">url</span><span class="p">(</span><span class="s">r'^about/author/vitor/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">about_vitor</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'about_vitor'</span><span class="p">),</span>
-    <span class="n">url</span><span class="p">(</span><span class="s">r'^about/author/erica/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">about_erica</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'about_erica'</span><span class="p">),</span>
-    <span class="n">url</span><span class="p">(</span><span class="s">r'^privacy/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">privacy_policy</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'privacy_policy'</span><span class="p">),</span>
-<span class="p">]</span></code></pre></figure>
+##### Basic URLs
 
-<p>Those are some examples of simple URL routing. For all the examples above, the view function will follow this
-structure:</p>
+Basic URLs are very simple to create. It’s just a matter of matching strings. For example, let’s say we wanted to create an “about” page, it could be defined like this:
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">about</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-    <span class="c"># do something...</span>
-    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s">'about.html'</span><span class="p">)</span>
+<figure class="highlight">
 
-<span class="k">def</span> <span class="nf">about_company</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-    <span class="c"># do something else...</span>
-    <span class="c"># return some data along with the view...</span>
-    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s">'about_company.html'</span><span class="p">,</span> <span class="p">{</span><span class="s">'company_name'</span><span class="p">:</span> <span class="s">'Simple Complex'</span><span class="p">})</span></code></pre></figure>
+    from django.conf.urls import url
+    from boards import views
 
-<h5 id="advanced-urls">Advanced URLs</h5>
+    urlpatterns = [
+        url(r'^/figure>, views.home, name='home'),
+        url(r'^about//figure>, views.about, name='about'),
+    ]
 
-<p>A more advanced usage of URL routing is achieved by taking advantage of the regex to match certain types of data and
-create dynamic URLs.</p>
+</figure>
 
-<p>For example, to create a profile page, like many services do like github.com/vitorfs or twitter.com/vitorfs, where
-“vitorfs” is my username, we can do the following:</p>
+We can also create deeper URL structures:
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
-<span class="kn">from</span> <span class="nn">boards</span> <span class="kn">import</span> <span class="n">views</span>
+<figure class="highlight">
 
-<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">url</span><span class="p">(</span><span class="s">r'^$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">home</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'home'</span><span class="p">),</span>
-    <span class="n">url</span><span class="p">(</span><span class="s">r'^(?P&lt;username&gt;[</span><span class="err">\</span><span class="s">w.@+-]+)/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">user_profile</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'user_profile'</span><span class="p">),</span>
-<span class="p">]</span></code></pre></figure>
+    from django.conf.urls import url
+    from boards import views
 
-<p>This will match all valid usernames for a Django User model.</p>
+    urlpatterns = [
+        url(r'^/figure>, views.home, name='home'),
+        url(r'^about//figure>, views.about, name='about'),
+        url(r'^about/company//figure>, views.about_company, name='about_company'),
+        url(r'^about/author//figure>, views.about_author, name='about_author'),
+        url(r'^about/author/vitor//figure>, views.about_vitor, name='about_vitor'),
+        url(r'^about/author/erica//figure>, views.about_erica, name='about_erica'),
+        url(r'^privacy//figure>, views.privacy_policy, name='privacy_policy'),
+    ]
 
-<p>Now observe that the example above is a very <em>permissive</em> URL. That means it will match lots of URL patterns because
-it is defined in the root of the URL, with no prefix like <strong>/profile/&lt;username&gt;/</strong>. In this case, if we wanted to
-define a URL named <strong>/about/</strong>, we would have do define it <em>before</em> the username URL pattern:</p>
+</figure>
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
-<span class="kn">from</span> <span class="nn">boards</span> <span class="kn">import</span> <span class="n">views</span>
+Those are some examples of simple URL routing. For all the examples above, the view function will follow this structure:
 
-<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">url</span><span class="p">(</span><span class="s">r'^$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">home</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'home'</span><span class="p">),</span>
-    <span class="n">url</span><span class="p">(</span><span class="s">r'^about/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">about</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'about'</span><span class="p">),</span>
-    <span class="n">url</span><span class="p">(</span><span class="s">r'^(?P&lt;username&gt;[</span><span class="err">\</span><span class="s">w.@+-]+)/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">user_profile</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'user_profile'</span><span class="p">),</span>
-<span class="p">]</span></code></pre></figure>
+<figure class="highlight">
 
-<p>If the “about” page was defined <em>after</em> the username URL pattern, Django would never find it, because the word “about”
-would match the username regex, and the view <code class="highlighter-rouge">user_profile</code> would be processed instead of the <code class="highlighter-rouge">about</code> view function.</p>
+    def about(request):
+        # do something...
+        return render(request, 'about.html')
 
-<p>There are some side effects to that. For example, from now on, we would have to treat “about” as a forbidden username,
-because if a user picked “about” as their username, this person would never see their profile page.</p>
+    def about_company(request):
+        # do something else...
+        # return some data along with the view...
+        return render(request, 'about_company.html', {'company_name': 'Simple Complex'})
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/Pixton_Comic_The_Order_Matters.png" alt="URL routing order matters" /></p>
+</figure>
+
+##### Advanced URLs
+
+A more advanced usage of URL routing is achieved by taking advantage of the regex to match certain types of data and create dynamic URLs.
+
+For example, to create a profile page, like many services do like github.com/vitorfs or twitter.com/vitorfs, where “vitorfs” is my username, we can do the following:
+
+<figure class="highlight">
+
+    from django.conf.urls import url
+    from boards import views
+
+    urlpatterns = [
+        url(r'^/figure>, views.home, name='home'),
+        url(r'^(?P<username>[\w.@+-]+)//figure>, views.user_profile, name='user_profile'),
+    ]
+
+</figure>
+
+This will match all valid usernames for a Django User model.
+
+Now observe that the example above is a very _permissive_ URL. That means it will match lots of URL patterns because it is defined in the root of the URL, with no prefix like **/profile/<username>/**. In this case, if we wanted to define a URL named **/about/**, we would have do define it _before_ the username URL pattern:
+
+<figure class="highlight">
+
+    from django.conf.urls import url
+    from boards import views
+
+    urlpatterns = [
+        url(r'^/figure>, views.home, name='home'),
+        url(r'^about//figure>, views.about, name='about'),
+        url(r'^(?P<username>[\w.@+-]+)//figure>, views.user_profile, name='user_profile'),
+    ]
+
+</figure>
+
+If the “about” page was defined _after_ the username URL pattern, Django would never find it, because the word “about” would match the username regex, and the view `user_profile` would be processed instead of the `about` view function.
+
+There are some side effects to that. For example, from now on, we would have to treat “about” as a forbidden username, because if a user picked “about” as their username, this person would never see their profile page.
+
+![URL routing order matters](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/Pixton_Comic_The_Order_Matters.png)
 
 <div class="info">
-  <p>
-    <strong><i class="fa fa-info-circle"></i> Sidenote:</strong>
-    If you want to design cool URLs for user profiles, the easiest solution to avoid URL collision is by adding a prefix
-    like <strong>/u/vitorfs/</strong>, or like Medium does <strong>/@vitorfs/</strong>, where "@" is the prefix.
-  </p>
-  <p>
-    If you want no prefix at all, consider using a list of forbidden names like this:
-    <a href="https://github.com/shouldbee/reserved-usernames/blob/master/reserved-usernames.csv" target="_blank">github.com/shouldbee/reserved-usernames</a>.
-    Or another example is an application I developed when I was learning Django; I created my list at the time:
-    <a href="https://github.com/vitorfs/parsifal/blob/master/parsifal/authentication/forms.py#L6" target="_blank">github.com/vitorfs/parsifal/</a>.
-  </p>
-  <p>
-    Those collisions are very common. Take GitHub for example; they have this URL to list all the repositories you are
-    currently watching: <a href="https://github.com/watching" target="_blank">github.com/watching</a>. Someone registered a username
-    on GitHub with the name "watching," so this person can't see his profile page. We can see a user with this
-    username exists by trying this URL: <a href="https://github.com/watching/repositories" target="_blank">github.com/watching/repositories</a>
-    which was supposed to list the user's repositories, like mine for example <a href="https://github.com/vitorfs/repositories" target="_blank">github.com/vitorfs/repositories</a>.
-  </p>
+
+**Sidenote:** If you want to design cool URLs for user profiles, the easiest solution to avoid URL collision is by adding a prefix like **/u/vitorfs/**, or like Medium does **/@vitorfs/**, where "@" is the prefix.
+
+If you want no prefix at all, consider using a list of forbidden names like this: [github.com/shouldbee/reserved-usernames](https://github.com/shouldbee/reserved-usernames/blob/master/reserved-usernames.csv). Or another example is an application I developed when I was learning Django; I created my list at the time: [github.com/vitorfs/parsifal/](https://github.com/vitorfs/parsifal/blob/master/parsifal/authentication/forms.py#L6).
+
+Those collisions are very common. Take GitHub for example; they have this URL to list all the repositories you are currently watching: [github.com/watching](https://github.com/watching). Someone registered a username on GitHub with the name "watching," so this person can't see his profile page. We can see a user with this username exists by trying this URL: [github.com/watching/repositories](https://github.com/watching/repositories) which was supposed to list the user's repositories, like mine for example [github.com/vitorfs/repositories](https://github.com/vitorfs/repositories).
+
 </div>
 
-<p>The whole idea of this kind of URL routing is to create dynamic pages where part of the URL will be used as an
-identifier for a certain resource, that will be used to compose a page. This identifier can be an integer ID or a
-string for example.</p>
+The whole idea of this kind of URL routing is to create dynamic pages where part of the URL will be used as an identifier for a certain resource, that will be used to compose a page. This identifier can be an integer ID or a string for example.
 
-<p>Initially, we will be working with the <strong>Board</strong> ID to create a dynamic page for the <strong>Topics</strong>. Let’s read again the
-example I gave at the beginning of the <strong>URLs</strong> section:</p>
+Initially, we will be working with the **Board** ID to create a dynamic page for the **Topics**. Let’s read again the example I gave at the beginning of the **URLs** section:
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">url</span><span class="p">(</span><span class="s">r'^boards/(?P&lt;pk&gt;</span><span class="err">\</span><span class="s">d+)/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">board_topics</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'board_topics'</span><span class="p">)</span></code></pre></figure>
+<figure class="highlight">
 
-<p>The regex <code class="highlighter-rouge">\d+</code> will match an integer of arbitrary size. This integer will be used to retrieve the <strong>Board</strong> from the
-database. Now observe that we wrote the regex as <code class="highlighter-rouge">(?P&lt;pk&gt;\d+)</code>, this is telling Django to capture the value into a
-keyword argument named <strong>pk</strong>.</p>
+    url(r'^boards/(?P<pk>\d+)//figure>, views.board_topics, name='board_topics')
 
-<p>Here is how we write a view function for it:</p>
+</figure>
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">board_topics</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
-    <span class="c"># do something...</span></code></pre></figure>
+The regex `\d+` will match an integer of arbitrary size. This integer will be used to retrieve the **Board** from the database. Now observe that we wrote the regex as `(?P<pk>\d+)`, this is telling Django to capture the value into a keyword argument named **pk**.
 
-<p>Because we used the <code class="highlighter-rouge">(?P&lt;pk&gt;\d+)</code> regex, the keyword argument in the <code class="highlighter-rouge">board_topics</code> must be named <strong>pk</strong>.</p>
+Here is how we write a view function for it:
 
-<p>If we wanted to use any name, we could do it like this:</p>
+<figure class="highlight">
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">url</span><span class="p">(</span><span class="s">r'^boards/(</span><span class="err">\</span><span class="s">d+)/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">board_topics</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'board_topics'</span><span class="p">)</span></code></pre></figure>
+    def board_topics(request, pk):
+        # do something...
 
-<p>Then the view function could be defined like this:</p>
+</figure>
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">board_topics</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">board_id</span><span class="p">):</span>
-    <span class="c"># do something...</span></code></pre></figure>
+Because we used the `(?P<pk>\d+)` regex, the keyword argument in the `board_topics` must be named **pk**.
 
-<p>Or like this:</p>
+If we wanted to use any name, we could do it like this:
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">def</span> <span class="nf">board_topics</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
-    <span class="c"># do something...</span></code></pre></figure>
+<figure class="highlight">
 
-<p>The name wouldn’t matter. But it’s a good practice to use named parameters because when we start composing bigger
-URLs capturing multiple IDs and variables, it will be easier to read.</p>
+    url(r'^boards/(\d+)//figure>, views.board_topics, name='board_topics')
+
+</figure>
+
+Then the view function could be defined like this:
+
+<figure class="highlight">
+
+    def board_topics(request, board_id):
+        # do something...
+
+</figure>
+
+Or like this:
+
+<figure class="highlight">
+
+    def board_topics(request, id):
+        # do something...
+
+</figure>
+
+The name wouldn’t matter. But it’s a good practice to use named parameters because when we start composing bigger URLs capturing multiple IDs and variables, it will be easier to read.
 
 <div class="info">
-  <p>
-    <strong><i class="fa fa-info-circle"></i> Sidenote:</strong> PK or ID?
-  </p>
-  <p>
-    <strong>PK</strong> stands for <strong>Primary Key</strong>. It's a shortcut for accessing a model's primary key.
-    All Django models have this attribute.
-  </p>
-  <p>
-    For the most cases, using the <code>pk</code> property is the same as <code>id</code>. That's because if we
-    don't define a primary key for a model, Django will automatically create an <code>AutoField</code> named
-    <code>id</code>, which will be its primary key.
-  </p>
-  <p>
-    If you defined a different primary key for a model, for example, let's say the field <code>email</code> is
-    your primary key. To access it you could either use <code>obj.email</code> or <code>obj.pk</code>.
-  </p>
+
+**Sidenote:** PK or ID?
+
+**PK** stands for **Primary Key**. It's a shortcut for accessing a model's primary key. All Django models have this attribute.
+
+For the most cases, using the `pk` property is the same as `id`. That's because if we don't define a primary key for a model, Django will automatically create an `AutoField` named `id`, which will be its primary key.
+
+If you defined a different primary key for a model, for example, let's say the field `email` is your primary key. To access it you could either use `obj.email` or `obj.pk`.
+
 </div>
 
-<h5 id="using-the-urls-api">Using the URLs API</h5>
+##### Using the URLs API
 
-<p>It’s time to write some code. Let’s implement the topic listing page (see <a href="#figure-1">Figure 1</a>) I mentioned at the
-beginning of the <strong>URLs</strong> section.</p>
+It’s time to write some code. Let’s implement the topic listing page (see [Figure 1](#figure-1)) I mentioned at the beginning of the **URLs** section.
 
-<p>First, edit the <strong>urls.py</strong> adding our new URL route:</p>
+First, edit the **urls.py** adding our new URL route:
 
-<p><strong>myproject/urls.py</strong></p>
+**myproject/urls.py**
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
-<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<figure class="highlight">
 
-<span class="kn">from</span> <span class="nn">boards</span> <span class="kn">import</span> <span class="n">views</span>
+    from django.conf.urls import url
+    from django.contrib import admin
 
-<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">url</span><span class="p">(</span><span class="s">r'^$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">home</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'home'</span><span class="p">),</span>
-    <span class="n">url</span><span class="p">(</span><span class="s">r'^boards/(?P&lt;pk&gt;</span><span class="err">\</span><span class="s">d+)/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">board_topics</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'board_topics'</span><span class="p">),</span>
-    <span class="n">url</span><span class="p">(</span><span class="s">r'^admin/'</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">urls</span><span class="p">),</span>
-<span class="p">]</span></code></pre></figure>
+    from boards import views
 
-<p>Now let’s create the view function <code class="highlighter-rouge">board_topics</code>:</p>
+    urlpatterns = [
+        url(r'^/figure>, views.home, name='home'),
+        url(r'^boards/(?P<pk>\d+)//figure>, views.board_topics, name='board_topics'),
+        url(r'^admin/', admin.site.urls),
+    ]
 
-<p><strong>boards/views.py</strong></p>
+</figure>
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
-<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Board</span>
+Now let’s create the view function `board_topics`:
 
-<span class="k">def</span> <span class="nf">home</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-    <span class="c"># code suppressed for brevity</span>
+**boards/views.py**
 
-<span class="k">def</span> <span class="nf">board_topics</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
-    <span class="n">board</span> <span class="o">=</span> <span class="n">Board</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s">'topics.html'</span><span class="p">,</span> <span class="p">{</span><span class="s">'board'</span><span class="p">:</span> <span class="n">board</span><span class="p">})</span></code></pre></figure>
+<figure class="highlight">
 
-<p>In the <strong>templates</strong> folder, create a new template named <strong>topics.html</strong>:</p>
+    from django.shortcuts import render
+    from .models import Board
 
-<p><strong>templates/topics.html</strong></p>
+    def home(request):
+        # code suppressed for brevity
 
-<figure class="highlight"><pre><code class="language-django" data-lang="django"><span class="cp">{%</span> <span class="nv">load</span> <span class="nv">static</span> <span class="cp">%}&lt;!DOCTYPE html&gt;</span>
-<span class="nt">&lt;html&gt;</span>
-  <span class="nt">&lt;head&gt;</span>
-    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">"utf-8"</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;title&gt;</span><span class="cp">{{</span> <span class="nv">board.name</span> <span class="cp">}}</span><span class="nt">&lt;/title&gt;</span>
-    <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="nv">static</span> <span class="s1">'css/bootstrap.min.css'</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span>
-  <span class="nt">&lt;/head&gt;</span>
-  <span class="nt">&lt;body&gt;</span>
-    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
-      <span class="nt">&lt;ol</span> <span class="na">class=</span><span class="s">"breadcrumb my-4"</span><span class="nt">&gt;</span>
-        <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">"breadcrumb-item"</span><span class="nt">&gt;</span>Boards<span class="nt">&lt;/li&gt;</span>
-        <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">"breadcrumb-item active"</span><span class="nt">&gt;</span><span class="cp">{{</span> <span class="nv">board.name</span> <span class="cp">}}</span><span class="nt">&lt;/li&gt;</span>
-      <span class="nt">&lt;/ol&gt;</span>
-    <span class="nt">&lt;/div&gt;</span>
-  <span class="nt">&lt;/body&gt;</span>
-<span class="nt">&lt;/html&gt;</span></code></pre></figure>
+    def board_topics(request, pk):
+        board = Board.objects.get(pk=pk)
+        return render(request, 'topics.html', {'board': board})
+
+</figure>
+
+In the **templates** folder, create a new template named **topics.html**:
+
+**templates/topics.html**
+
+<figure class="highlight">
+
+    {% load static %}<!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <title>{{ board.name }}</title>
+        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+      </head>
+      <body>
+        <div class="container">
+          <ol class="breadcrumb my-4">
+            <li class="breadcrumb-item">Boards</li>
+            <li class="breadcrumb-item active">{{ board.name }}</li>
+          </ol>
+        </div>
+      </body>
+    </html>
+
+</figure>
 
 <div class="info">
-  <p>
-    <strong><i class="fa fa-info-circle"></i> Note:</strong>
-    For now we are simply creating new HTML templates. No worries, in the following section I will show you how to
-    create reusable templates.
-  </p>
+
+**Note:** For now we are simply creating new HTML templates. No worries, in the following section I will show you how to create reusable templates.
+
 </div>
 
-<p>Now check the URL <strong>http://127.0.0.1:8000/boards/1/</strong> in a web browser. The result should be the following page:</p>
+Now check the URL **http://127.0.0.1:8000/boards/1/** in a web browser. The result should be the following page:
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/topics-1.png" alt="Topics Page" /></p>
+![Topics Page](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/topics-1.png)
 
-<p>Time to write some tests! Edit the <strong>tests.py</strong> file and add the following tests in the bottom of the file:</p>
+Time to write some tests! Edit the **tests.py** file and add the following tests in the bottom of the file:
 
-<p><strong>boards/tests.py</strong></p>
+**boards/tests.py**
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">django.core.urlresolvers</span> <span class="kn">import</span> <span class="n">reverse</span>
-<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">resolve</span>
-<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span>
-<span class="kn">from</span> <span class="nn">.views</span> <span class="kn">import</span> <span class="n">home</span><span class="p">,</span> <span class="n">board_topics</span>
-<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Board</span>
+<figure class="highlight">
 
-<span class="k">class</span> <span class="nc">HomeTests</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
-    <span class="c"># ...</span>
+    from django.core.urlresolvers import reverse
+    from django.urls import resolve
+    from django.test import TestCase
+    from .views import home, board_topics
+    from .models import Board
 
-<span class="k">class</span> <span class="nc">BoardTopicsTests</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">Board</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">'Django'</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s">'Django board.'</span><span class="p">)</span>
+    class HomeTests(TestCase):
+        # ...
 
-    <span class="k">def</span> <span class="nf">test_board_topics_view_success_status_code</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s">'board_topics'</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s">'pk'</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEquals</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+    class BoardTopicsTests(TestCase):
+        def setUp(self):
+            Board.objects.create(name='Django', description='Django board.')
 
-    <span class="k">def</span> <span class="nf">test_board_topics_view_not_found_status_code</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s">'board_topics'</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s">'pk'</span><span class="p">:</span> <span class="mi">99</span><span class="p">})</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEquals</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">404</span><span class="p">)</span>
+        def test_board_topics_view_success_status_code(self):
+            url = reverse('board_topics', kwargs={'pk': 1})
+            response = self.client.get(url)
+            self.assertEquals(response.status_code, 200)
 
-    <span class="k">def</span> <span class="nf">test_board_topics_url_resolves_board_topics_view</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">view</span> <span class="o">=</span> <span class="n">resolve</span><span class="p">(</span><span class="s">'/boards/1/'</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEquals</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="n">board_topics</span><span class="p">)</span></code></pre></figure>
+        def test_board_topics_view_not_found_status_code(self):
+            url = reverse('board_topics', kwargs={'pk': 99})
+            response = self.client.get(url)
+            self.assertEquals(response.status_code, 404)
 
-<p>A few things to note here. This time we used the <code class="highlighter-rouge">setUp</code> method. In the setup method, we created a <strong>Board</strong> instance
-to use in the tests. We have to do that because the Django testing suite doesn’t run your tests against the current
-database. To run the tests Django creates a new database on the fly, applies all the model migrations, runs the tests,
-and when done, destroys the testing database.</p>
+        def test_board_topics_url_resolves_board_topics_view(self):
+            view = resolve('/boards/1/')
+            self.assertEquals(view.func, board_topics)
 
-<p>So in the <code class="highlighter-rouge">setUp</code> method, we prepare the environment to run the tests, so to simulate a scenario.</p>
+</figure>
 
-<ul>
-  <li>The <code class="highlighter-rouge">test_board_topics_view_success_status_code</code> method: is testing if Django is returning a status code 200 (success)
-for an existing <strong>Board</strong>.</li>
-  <li>The <code class="highlighter-rouge">test_board_topics_view_not_found_status_code</code> method: is testing if Django is returning a status code 404
-(page not found) for a <strong>Board</strong> that doesn’t exist in the database.</li>
-  <li>The <code class="highlighter-rouge">test_board_topics_url_resolves_board_topics_view</code> method: is testing if Django is using the correct view
-function to render the topics.</li>
-</ul>
+A few things to note here. This time we used the `setUp` method. In the setup method, we created a **Board** instance to use in the tests. We have to do that because the Django testing suite doesn’t run your tests against the current database. To run the tests Django creates a new database on the fly, applies all the model migrations, runs the tests, and when done, destroys the testing database.
 
-<p>Now it’s time to run the tests:</p>
+So in the `setUp` method, we prepare the environment to run the tests, so to simulate a scenario.
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash">python manage.py <span class="nb">test</span></code></pre></figure>
+*   The `test_board_topics_view_success_status_code` method: is testing if Django is returning a status code 200 (success) for an existing **Board**.
+*   The `test_board_topics_view_not_found_status_code` method: is testing if Django is returning a status code 404 (page not found) for a **Board** that doesn’t exist in the database.
+*   The `test_board_topics_url_resolves_board_topics_view` method: is testing if Django is using the correct view function to render the topics.
 
-<p>And the output:</p>
+Now it’s time to run the tests:
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Creating test database for alias 'default'...
-System check identified no issues (0 silenced).
-.E...
-======================================================================
-ERROR: test_board_topics_view_not_found_status_code (boards.tests.BoardTopicsTests)
-----------------------------------------------------------------------
-Traceback (most recent call last):
-# ...
-boards.models.DoesNotExist: Board matching query does not exist.
+<figure class="highlight">
 
-----------------------------------------------------------------------
-Ran 5 tests in 0.093s
+    python manage.py test
 
-FAILED (errors=1)
-Destroying test database for alias 'default'...</code></pre></figure>
+</figure>
 
-<p>The test <strong>test_board_topics_view_not_found_status_code</strong> failed. We can see in the Traceback it returned an exception
-“boards.models.DoesNotExist: Board matching query does not exist.”</p>
+And the output:
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/topics-error-500.png" alt="Topics Error 500 Page" /></p>
+<figure class="highlight">
 
-<p>In production with <code class="highlighter-rouge">DEBUG=False</code>, the visitor would see a <strong>500 Internal Server Error</strong> page. But that’s not the
-behavior we want.</p>
+    Creating test database for alias 'default'...
+    System check identified no issues (0 silenced).
+    .E...
+    ======================================================================
+    ERROR: test_board_topics_view_not_found_status_code (boards.tests.BoardTopicsTests)
+    ----------------------------------------------------------------------
+    Traceback (most recent call last):
+    # ...
+    boards.models.DoesNotExist: Board matching query does not exist.
 
-<p>We want to show a <strong>404 Page Not Found</strong>. So let’s refactor our view:</p>
+    ----------------------------------------------------------------------
+    Ran 5 tests in 0.093s
 
-<p><strong>boards/views.py</strong></p>
+    FAILED (errors=1)
+    Destroying test database for alias 'default'...
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
-<span class="kn">from</span> <span class="nn">django.http</span> <span class="kn">import</span> <span class="n">Http404</span>
-<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Board</span>
+</figure>
 
-<span class="k">def</span> <span class="nf">home</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-    <span class="c"># code suppressed for brevity</span>
+The test **test_board_topics_view_not_found_status_code** failed. We can see in the Traceback it returned an exception “boards.models.DoesNotExist: Board matching query does not exist.”
 
-<span class="k">def</span> <span class="nf">board_topics</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
-    <span class="k">try</span><span class="p">:</span>
-        <span class="n">board</span> <span class="o">=</span> <span class="n">Board</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span>
-    <span class="k">except</span> <span class="n">Board</span><span class="o">.</span><span class="n">DoesNotExist</span><span class="p">:</span>
-        <span class="k">raise</span> <span class="n">Http404</span>
-    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s">'topics.html'</span><span class="p">,</span> <span class="p">{</span><span class="s">'board'</span><span class="p">:</span> <span class="n">board</span><span class="p">})</span></code></pre></figure>
+![Topics Error 500 Page](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/topics-error-500.png)
 
-<p>Let’s test again:</p>
+In production with `DEBUG=False`, the visitor would see a **500 Internal Server Error** page. But that’s not the behavior we want.
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash">python manage.py <span class="nb">test</span></code></pre></figure>
+We want to show a **404 Page Not Found**. So let’s refactor our view:
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Creating test database for alias 'default'...
-System check identified no issues (0 silenced).
-.....
-----------------------------------------------------------------------
-Ran 5 tests in 0.042s
+**boards/views.py**
 
-OK
-Destroying test database for alias 'default'...</code></pre></figure>
+<figure class="highlight">
 
-<p>Yay! Now it’s working as expected.</p>
+    from django.shortcuts import render
+    from django.http import Http404
+    from .models import Board
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/topics-error-404.png" alt="Topics Error 404 Page" /></p>
+    def home(request):
+        # code suppressed for brevity
 
-<p>This is the default page Django show while with <code class="highlighter-rouge">DEBUG=False</code>. Later on, we can customize the 404 page to show something
-else.</p>
+    def board_topics(request, pk):
+        try:
+            board = Board.objects.get(pk=pk)
+        except Board.DoesNotExist:
+            raise Http404
+        return render(request, 'topics.html', {'board': board})
 
-<p>Now that’s a very common use case. In fact, Django has a shortcut to try to get an object, or return a 404 with the
-object does not exist.</p>
+</figure>
 
-<p>So let’s refactor the <strong>board_topics</strong> view again:</p>
+Let’s test again:
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span><span class="p">,</span> <span class="n">get_object_or_404</span>
-<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Board</span>
+<figure class="highlight">
 
-<span class="k">def</span> <span class="nf">home</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-    <span class="c"># code suppressed for brevity</span>
+    python manage.py test
 
-<span class="k">def</span> <span class="nf">board_topics</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
-    <span class="n">board</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Board</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s">'topics.html'</span><span class="p">,</span> <span class="p">{</span><span class="s">'board'</span><span class="p">:</span> <span class="n">board</span><span class="p">})</span></code></pre></figure>
+</figure>
 
-<p>Changed the code? Test it.</p>
+<figure class="highlight">
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash">python manage.py <span class="nb">test</span></code></pre></figure>
+    Creating test database for alias 'default'...
+    System check identified no issues (0 silenced).
+    .....
+    ----------------------------------------------------------------------
+    Ran 5 tests in 0.042s
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Creating test database for alias 'default'...
-System check identified no issues (0 silenced).
-.....
-----------------------------------------------------------------------
-Ran 5 tests in 0.052s
+    OK
+    Destroying test database for alias 'default'...
 
-OK
-Destroying test database for alias 'default'...</code></pre></figure>
+</figure>
 
-<p>Didn’t break anything. We can proceed with the development.</p>
+Yay! Now it’s working as expected.
 
-<p>The next step now is to create the navigation links in the screens. The homepage should have a link to take the visitor
-to the topics page of a given <strong>Board</strong>. Similarly, the topics page should have a link back to the homepage.</p>
+![Topics Error 404 Page](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/topics-error-404.png)
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/wireframe-links.png" alt="Wireframe Links" /></p>
+This is the default page Django show while with `DEBUG=False`. Later on, we can customize the 404 page to show something else.
 
-<p>We can start by writing some tests for the <code class="highlighter-rouge">HomeTests</code> class:</p>
+Now that’s a very common use case. In fact, Django has a shortcut to try to get an object, or return a 404 with the object does not exist.
 
-<p><strong>boards/tests.py</strong></p>
+So let’s refactor the **board_topics** view again:
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">HomeTests</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">board</span> <span class="o">=</span> <span class="n">Board</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">'Django'</span><span class="p">,</span> <span class="n">description</span><span class="o">=</span><span class="s">'Django board.'</span><span class="p">)</span>
-        <span class="n">url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s">'home'</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
+<figure class="highlight">
 
-    <span class="k">def</span> <span class="nf">test_home_view_status_code</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEquals</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+    from django.shortcuts import render, get_object_or_404
+    from .models import Board
 
-    <span class="k">def</span> <span class="nf">test_home_url_resolves_home_view</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">view</span> <span class="o">=</span> <span class="n">resolve</span><span class="p">(</span><span class="s">'/'</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEquals</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="n">home</span><span class="p">)</span>
+    def home(request):
+        # code suppressed for brevity
 
-    <span class="k">def</span> <span class="nf">test_home_view_contains_link_to_topics_page</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">board_topics_url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s">'board_topics'</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s">'pk'</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">board</span><span class="o">.</span><span class="n">pk</span><span class="p">})</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertContains</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">,</span> <span class="s">'href="{0}"'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">board_topics_url</span><span class="p">))</span></code></pre></figure>
+    def board_topics(request, pk):
+        board = get_object_or_404(Board, pk=pk)
+        return render(request, 'topics.html', {'board': board})
 
-<p>Observe that now we added a <strong>setUp</strong> method for the <strong>HomeTests</strong> as well. That’s because now we are going to need a
-<strong>Board</strong> instance and also we moved the <strong>url</strong> and <strong>response</strong> to the <strong>setUp</strong>, so we can reuse the same response in the
-new test.</p>
+</figure>
 
-<p>The new test here is the <strong>test_home_view_contains_link_to_topics_page</strong>. Here we are using the <strong>assertContains</strong>
-method to test if the response body contains a given text. The text we are using in the test, is the <code class="highlighter-rouge">href</code> part of an
-<code class="highlighter-rouge">a</code> tag. So basically we are testing if the response body has the text <code class="highlighter-rouge">href="/boards/1/"</code>.</p>
+Changed the code? Test it.
 
-<p>Let’s run the tests:</p>
+<figure class="highlight">
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash">python manage.py <span class="nb">test</span></code></pre></figure>
+    python manage.py test
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Creating test database for alias 'default'...
-System check identified no issues (0 silenced).
-....F.
-======================================================================
-FAIL: test_home_view_contains_link_to_topics_page (boards.tests.HomeTests)
-----------------------------------------------------------------------
-# ...
+</figure>
 
-AssertionError: False is not true : Couldn't find 'href="/boards/1/"' in response
+<figure class="highlight">
 
-----------------------------------------------------------------------
-Ran 6 tests in 0.034s
+    Creating test database for alias 'default'...
+    System check identified no issues (0 silenced).
+    .....
+    ----------------------------------------------------------------------
+    Ran 5 tests in 0.052s
 
-FAILED (failures=1)
-Destroying test database for alias 'default'...</code></pre></figure>
+    OK
+    Destroying test database for alias 'default'...
 
-<p>Now we can write the code that will make this test pass.</p>
+</figure>
 
-<p>Edit the <strong>home.html</strong> template:</p>
+Didn’t break anything. We can proceed with the development.
 
-<p><strong>templates/home.html</strong></p>
+The next step now is to create the navigation links in the screens. The homepage should have a link to take the visitor to the topics page of a given **Board**. Similarly, the topics page should have a link back to the homepage.
 
-<figure class="highlight"><pre><code class="language-django" data-lang="django"><span class="c">&lt;!-- code suppressed for brevity --&gt;</span>
-<span class="nt">&lt;tbody&gt;</span>
-  <span class="cp">{%</span> <span class="k">for</span> <span class="nv">board</span> <span class="ow">in</span> <span class="nv">boards</span> <span class="cp">%}</span>
-    <span class="nt">&lt;tr&gt;</span>
-      <span class="nt">&lt;td&gt;</span>
-        <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="nv">url</span> <span class="s1">'board_topics'</span> <span class="nv">board.pk</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span><span class="cp">{{</span> <span class="nv">board.name</span> <span class="cp">}}</span><span class="nt">&lt;/a&gt;</span>
-        <span class="nt">&lt;small</span> <span class="na">class=</span><span class="s">"text-muted d-block"</span><span class="nt">&gt;</span><span class="cp">{{</span> <span class="nv">board.description</span> <span class="cp">}}</span><span class="nt">&lt;/small&gt;</span>
-      <span class="nt">&lt;/td&gt;</span>
-      <span class="nt">&lt;td</span> <span class="na">class=</span><span class="s">"align-middle"</span><span class="nt">&gt;</span>0<span class="nt">&lt;/td&gt;</span>
-      <span class="nt">&lt;td</span> <span class="na">class=</span><span class="s">"align-middle"</span><span class="nt">&gt;</span>0<span class="nt">&lt;/td&gt;</span>
-      <span class="nt">&lt;td&gt;&lt;/td&gt;</span>
-    <span class="nt">&lt;/tr&gt;</span>
-  <span class="cp">{%</span> <span class="k">endfor</span> <span class="cp">%}</span>
-<span class="nt">&lt;/tbody&gt;</span>
-<span class="c">&lt;!-- code suppressed for brevity --&gt;</span></code></pre></figure>
+![Wireframe Links](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/wireframe-links.png)
 
-<p>So basically we changed the line:</p>
+We can start by writing some tests for the `HomeTests` class:
 
-<figure class="highlight"><pre><code class="language-django" data-lang="django"><span class="cp">{{</span> <span class="nv">board.name</span> <span class="cp">}}</span></code></pre></figure>
+**boards/tests.py**
 
-<p>To:</p>
+<figure class="highlight">
 
-<figure class="highlight"><pre><code class="language-django" data-lang="django"><span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="nv">url</span> <span class="s1">'board_topics'</span> <span class="nv">board.pk</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span><span class="cp">{{</span> <span class="nv">board.name</span> <span class="cp">}}</span><span class="nt">&lt;/a&gt;</span></code></pre></figure>
+    class HomeTests(TestCase):
+        def setUp(self):
+            self.board = Board.objects.create(name='Django', description='Django board.')
+            url = reverse('home')
+            self.response = self.client.get(url)
 
-<p>Always use the <code class="highlighter-rouge"><span class="p">{</span><span class="err">%</span><span class="w"> </span><span class="err">url</span><span class="w"> </span><span class="err">%</span><span class="p">}</span></code> template tag to compose the applications URLs. The first parameter
-is the <strong>name</strong> of the URL (defined in the URLconf, i.e., the <strong>urls.py</strong>), then you can pass an arbitrary number of arguments as needed.</p>
+        def test_home_view_status_code(self):
+            self.assertEquals(self.response.status_code, 200)
 
-<p>If it were a simple URL, like the homepage, it would be just <code class="highlighter-rouge"><span class="p">{</span><span class="err">%</span><span class="w"> </span><span class="err">url</span><span class="w"> </span><span class="err">'home'</span><span class="w"> </span><span class="err">%</span><span class="p">}</span></code>.</p>
+        def test_home_url_resolves_home_view(self):
+            view = resolve('/')
+            self.assertEquals(view.func, home)
 
-<p>Save the file and run the tests again:</p>
+        def test_home_view_contains_link_to_topics_page(self):
+            board_topics_url = reverse('board_topics', kwargs={'pk': self.board.pk})
+            self.assertContains(self.response, 'href="{0}"'.format(board_topics_url))
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash">python manage.py <span class="nb">test</span></code></pre></figure>
+</figure>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Creating test database for alias 'default'...
-System check identified no issues (0 silenced).
-......
-----------------------------------------------------------------------
-Ran 6 tests in 0.037s
+Observe that now we added a **setUp** method for the **HomeTests** as well. That’s because now we are going to need a **Board** instance and also we moved the **url** and **response** to the **setUp**, so we can reuse the same response in the new test.
 
-OK
-Destroying test database for alias 'default'...</code></pre></figure>
+The new test here is the **test_home_view_contains_link_to_topics_page**. Here we are using the **assertContains** method to test if the response body contains a given text. The text we are using in the test, is the `href` part of an `a` tag. So basically we are testing if the response body has the text `href="/boards/1/"`.
 
-<p>Good! Now we can check how it looks in the web browser:</p>
+Let’s run the tests:
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/boards.png" alt="Boards with Link" /></p>
+<figure class="highlight">
 
-<p>Now the link back. We can write the test first:</p>
+    python manage.py test
 
-<p><strong>boards/tests.py</strong></p>
+</figure>
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">BoardTopicsTests</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
-    <span class="c"># code suppressed for brevity...</span>
+<figure class="highlight">
 
-    <span class="k">def</span> <span class="nf">test_board_topics_view_contains_link_back_to_homepage</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">board_topics_url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s">'board_topics'</span><span class="p">,</span> <span class="n">kwargs</span><span class="o">=</span><span class="p">{</span><span class="s">'pk'</span><span class="p">:</span> <span class="mi">1</span><span class="p">})</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">board_topics_url</span><span class="p">)</span>
-        <span class="n">homepage_url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s">'home'</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertContains</span><span class="p">(</span><span class="n">response</span><span class="p">,</span> <span class="s">'href="{0}"'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">homepage_url</span><span class="p">))</span></code></pre></figure>
+    Creating test database for alias 'default'...
+    System check identified no issues (0 silenced).
+    ....F.
+    ======================================================================
+    FAIL: test_home_view_contains_link_to_topics_page (boards.tests.HomeTests)
+    ----------------------------------------------------------------------
+    # ...
 
-<p>Run the tests:</p>
+    AssertionError: False is not true : Couldn't find 'href="/boards/1/"' in response
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash">python manage.py <span class="nb">test</span></code></pre></figure>
+    ----------------------------------------------------------------------
+    Ran 6 tests in 0.034s
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Creating test database for alias 'default'...
-System check identified no issues (0 silenced).
-.F.....
-======================================================================
-FAIL: test_board_topics_view_contains_link_back_to_homepage (boards.tests.BoardTopicsTests)
-----------------------------------------------------------------------
-Traceback (most recent call last):
-# ...
+    FAILED (failures=1)
+    Destroying test database for alias 'default'...
 
-AssertionError: False is not true : Couldn't find 'href="/"' in response
+</figure>
 
-----------------------------------------------------------------------
-Ran 7 tests in 0.054s
+Now we can write the code that will make this test pass.
 
-FAILED (failures=1)
-Destroying test database for alias 'default'...</code></pre></figure>
+Edit the **home.html** template:
 
-<p>Update the board topics template:</p>
+**templates/home.html**
 
-<p><strong>templates/topics.html</strong></p>
+<figure class="highlight">
 
-<figure class="highlight"><pre><code class="language-django" data-lang="django"><span class="cp">{%</span> <span class="nv">load</span> <span class="nv">static</span> <span class="cp">%}&lt;!DOCTYPE html&gt;</span>
-<span class="nt">&lt;html&gt;</span>
-  <span class="nt">&lt;head&gt;</span><span class="c">&lt;!-- code suppressed for brevity --&gt;</span><span class="nt">&lt;/head&gt;</span>
-  <span class="nt">&lt;body&gt;</span>
-    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
-      <span class="nt">&lt;ol</span> <span class="na">class=</span><span class="s">"breadcrumb my-4"</span><span class="nt">&gt;</span>
-        <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">"breadcrumb-item"</span><span class="nt">&gt;&lt;a</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="nv">url</span> <span class="s1">'home'</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span>Boards<span class="nt">&lt;/a&gt;&lt;/li&gt;</span>
-        <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">"breadcrumb-item active"</span><span class="nt">&gt;</span><span class="cp">{{</span> <span class="nv">board.name</span> <span class="cp">}}</span><span class="nt">&lt;/li&gt;</span>
-      <span class="nt">&lt;/ol&gt;</span>
-    <span class="nt">&lt;/div&gt;</span>
-  <span class="nt">&lt;/body&gt;</span>
-<span class="nt">&lt;/html&gt;</span></code></pre></figure>
+    <!-- code suppressed for brevity -->
+    <tbody>
+      {% for board in boards %}
+        <tr>
+          <td>
+            <a href="{% url 'board_topics' board.pk %}">{{ board.name }}</a>
+            <small class="text-muted d-block">{{ board.description }}</small>
+          </td>
+          <td class="align-middle">0</td>
+          <td class="align-middle">0</td>
+          <td></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+    <!-- code suppressed for brevity -->
 
-<p>Run the tests:</p>
+</figure>
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash">python manage.py <span class="nb">test</span></code></pre></figure>
+So basically we changed the line:
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Creating test database for alias 'default'...
-System check identified no issues (0 silenced).
-.......
-----------------------------------------------------------------------
-Ran 7 tests in 0.061s
+<figure class="highlight">
 
-OK
-Destroying test database for alias 'default'...</code></pre></figure>
+    {{ board.name }}
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/board_topics.png" alt="Board Topics with Link" /></p>
+</figure>
 
-<p>As I mentioned before, URL routing is a fundamental part of a web application. With this knowledge, we should be able
-to proceed with the development. Next, to complete the section about URLs, you will find a summary of useful URL
-patterns.</p>
+To:
 
-<h5 id="list-of-useful-url-patterns">List of Useful URL Patterns</h5>
+<figure class="highlight">
 
-<p>The trick part is the <strong>regex</strong>. So I prepared a list of the most used URL patterns. You can always refer to this
-list when you need a specific URL.</p>
+    <a href="{% url 'board_topics' board.pk %}">{{ board.name }}</a>
+
+</figure>
+
+Always use the `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">url</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>` template tag to compose the applications URLs. The first parameter is the **name** of the URL (defined in the URLconf, i.e., the **urls.py**), then you can pass an arbitrary number of arguments as needed.
+
+If it were a simple URL, like the homepage, it would be just `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">url</span> <span class="w"></span> <span class="err">'home'</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>`.
+
+Save the file and run the tests again:
+
+<figure class="highlight">
+
+    python manage.py test
+
+</figure>
+
+<figure class="highlight">
+
+    Creating test database for alias 'default'...
+    System check identified no issues (0 silenced).
+    ......
+    ----------------------------------------------------------------------
+    Ran 6 tests in 0.037s
+
+    OK
+    Destroying test database for alias 'default'...
+
+</figure>
+
+Good! Now we can check how it looks in the web browser:
+
+![Boards with Link](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/boards.png)
+
+Now the link back. We can write the test first:
+
+**boards/tests.py**
+
+<figure class="highlight">
+
+    class BoardTopicsTests(TestCase):
+        # code suppressed for brevity...
+
+        def test_board_topics_view_contains_link_back_to_homepage(self):
+            board_topics_url = reverse('board_topics', kwargs={'pk': 1})
+            response = self.client.get(board_topics_url)
+            homepage_url = reverse('home')
+            self.assertContains(response, 'href="{0}"'.format(homepage_url))
+
+</figure>
+
+Run the tests:
+
+<figure class="highlight">
+
+    python manage.py test
+
+</figure>
+
+<figure class="highlight">
+
+    Creating test database for alias 'default'...
+    System check identified no issues (0 silenced).
+    .F.....
+    ======================================================================
+    FAIL: test_board_topics_view_contains_link_back_to_homepage (boards.tests.BoardTopicsTests)
+    ----------------------------------------------------------------------
+    Traceback (most recent call last):
+    # ...
+
+    AssertionError: False is not true : Couldn't find 'href="/"' in response
+
+    ----------------------------------------------------------------------
+    Ran 7 tests in 0.054s
+
+    FAILED (failures=1)
+    Destroying test database for alias 'default'...
+
+</figure>
+
+Update the board topics template:
+
+**templates/topics.html**
+
+<figure class="highlight">
+
+    {% load static %}<!DOCTYPE html>
+    <html>
+      <head><!-- code suppressed for brevity --></head>
+      <body>
+        <div class="container">
+          <ol class="breadcrumb my-4">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">Boards</a></li>
+            <li class="breadcrumb-item active">{{ board.name }}</li>
+          </ol>
+        </div>
+      </body>
+    </html>
+
+</figure>
+
+Run the tests:
+
+<figure class="highlight">
+
+    python manage.py test
+
+</figure>
+
+<figure class="highlight">
+
+    Creating test database for alias 'default'...
+    System check identified no issues (0 silenced).
+    .......
+    ----------------------------------------------------------------------
+    Ran 7 tests in 0.061s
+
+    OK
+    Destroying test database for alias 'default'...
+
+</figure>
+
+![Board Topics with Link](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/board_topics.png)
+
+As I mentioned before, URL routing is a fundamental part of a web application. With this knowledge, we should be able to proceed with the development. Next, to complete the section about URLs, you will find a summary of useful URL patterns.
+
+##### List of Useful URL Patterns
+
+The trick part is the **regex**. So I prepared a list of the most used URL patterns. You can always refer to this list when you need a specific URL.
 
 <table style="font-size: 1.4rem">
-  <thead>
-    <tr>
-      <th colspan="2" style="font-size: 2rem">Primary Key AutoField</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>Regex</th>
-      <td><code>(?P&lt;pk&gt;\d+)</code></td>
-    </tr>
-    <tr>
-      <th>Example</th>
-      <td><code>url(r'^questions/(?P&lt;pk&gt;\d+)/$', views.question, name='question')</code></td>
-    </tr>
-    <tr>
-      <th>Valid URL</th>
-      <td><code>/questions/934/</code></td>
-    </tr>
-    <tr>
-      <th>Captures</th>
-      <td><code>{'pk': '934'}</code></td>
-    </tr>
-  </tbody>
+
+<thead>
+
+<tr>
+
+<th colspan="2" style="font-size: 2rem">Primary Key AutoField</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<th>Regex</th>
+
+<td>`(?P<pk>\d+)`</td>
+
+</tr>
+
+<tr>
+
+<th>Example</th>
+
+<td>`url(r'^questions/(?P<pk>\d+)//td>, views.question, name='question')`</td>
+
+</tr>
+
+<tr>
+
+<th>Valid URL</th>
+
+<td>`/questions/934/`</td>
+
+</tr>
+
+<tr>
+
+<th>Captures</th>
+
+<td>`{'pk': '934'}`</td>
+
+</tr>
+
+</tbody>
+
 </table>
 
 <table style="font-size: 1.4rem">
-  <thead>
-    <tr>
-      <th colspan="2" style="font-size: 2rem">Slug Field</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>Regex</th>
-      <td><code>(?P&lt;slug&gt;[-\w]+)</code></td>
-    </tr>
-    <tr>
-      <th>Example</th>
-      <td><code>url(r'^posts/(?P&lt;slug&gt;[-\w]+)/$', views.post, name='post')</code></td>
-    </tr>
-    <tr>
-      <th>Valid URL</th>
-      <td><code>/posts/hello-world/</code></td>
-    </tr>
-    <tr>
-      <th>Captures</th>
-      <td><code>{'slug': 'hello-world'}</code></td>
-    </tr>
-  </tbody>
+
+<thead>
+
+<tr>
+
+<th colspan="2" style="font-size: 2rem">Slug Field</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<th>Regex</th>
+
+<td>`(?P<slug>[-\w]+)`</td>
+
+</tr>
+
+<tr>
+
+<th>Example</th>
+
+<td>`url(r'^posts/(?P<slug>[-\w]+)//td>, views.post, name='post')`</td>
+
+</tr>
+
+<tr>
+
+<th>Valid URL</th>
+
+<td>`/posts/hello-world/`</td>
+
+</tr>
+
+<tr>
+
+<th>Captures</th>
+
+<td>`{'slug': 'hello-world'}`</td>
+
+</tr>
+
+</tbody>
+
 </table>
 
 <table style="font-size: 1.4rem">
-  <thead>
-    <tr>
-      <th colspan="2" style="font-size: 2rem">Slug Field with Primary Key</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>Regex</th>
-      <td><code>(?P&lt;slug&gt;[-\w]+)-(?P&lt;pk&gt;\d+)</code></td>
-    </tr>
-    <tr>
-      <th>Example</th>
-      <td><code>url(r'^blog/(?P&lt;slug&gt;[-\w]+)-(?P&lt;pk&gt;\d+)/$', views.blog_post, name='blog_post')</code></td>
-    </tr>
-    <tr>
-      <th>Valid URL</th>
-      <td><code>/blog/hello-world-159/</code></td>
-    </tr>
-    <tr>
-      <th>Captures</th>
-      <td><code>{'slug': 'hello-world', 'pk': '159'}</code></td>
-    </tr>
-  </tbody>
+
+<thead>
+
+<tr>
+
+<th colspan="2" style="font-size: 2rem">Slug Field with Primary Key</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<th>Regex</th>
+
+<td>`(?P<slug>[-\w]+)-(?P<pk>\d+)`</td>
+
+</tr>
+
+<tr>
+
+<th>Example</th>
+
+<td>`url(r'^blog/(?P<slug>[-\w]+)-(?P<pk>\d+)//td>, views.blog_post, name='blog_post')`</td>
+
+</tr>
+
+<tr>
+
+<th>Valid URL</th>
+
+<td>`/blog/hello-world-159/`</td>
+
+</tr>
+
+<tr>
+
+<th>Captures</th>
+
+<td>`{'slug': 'hello-world', 'pk': '159'}`</td>
+
+</tr>
+
+</tbody>
+
 </table>
 
 <table style="font-size: 1.4rem">
-  <thead>
-    <tr>
-      <th colspan="2" style="font-size: 2rem">Django User Username</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>Regex</th>
-      <td><code>(?P&lt;username&gt;[\w.@+-]+)</code></td>
-    </tr>
-    <tr>
-      <th>Example</th>
-      <td><code>url(r'^profile/(?P&lt;username&gt;[\w.@+-]+)/$', views.user_profile, name='user_profile')</code></td>
-    </tr>
-    <tr>
-      <th>Valid URL</th>
-      <td><code>/profile/vitorfs/</code></td>
-    </tr>
-    <tr>
-      <th>Captures</th>
-      <td><code>{'username': 'vitorfs'}</code></td>
-    </tr>
-  </tbody>
+
+<thead>
+
+<tr>
+
+<th colspan="2" style="font-size: 2rem">Django User Username</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<th>Regex</th>
+
+<td>`(?P<username>[\w.@+-]+)`</td>
+
+</tr>
+
+<tr>
+
+<th>Example</th>
+
+<td>`url(r'^profile/(?P<username>[\w.@+-]+)//td>, views.user_profile, name='user_profile')`</td>
+
+</tr>
+
+<tr>
+
+<th>Valid URL</th>
+
+<td>`/profile/vitorfs/`</td>
+
+</tr>
+
+<tr>
+
+<th>Captures</th>
+
+<td>`{'username': 'vitorfs'}`</td>
+
+</tr>
+
+</tbody>
+
 </table>
 
 <table style="font-size: 1.4rem">
-  <thead>
-    <tr>
-      <th colspan="2" style="font-size: 2rem">Year</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>Regex</th>
-      <td><code>(?P&lt;year&gt;[0-9]{4})</code></td>
-    </tr>
-    <tr>
-      <th>Example</th>
-      <td><code>url(r'^articles/(?P&lt;year&gt;[0-9]{4})/$', views.year_archive, name='year')</code></td>
-    </tr>
-    <tr>
-      <th>Valid URL</th>
-      <td><code>/articles/2016/</code></td>
-    </tr>
-    <tr>
-      <th>Captures</th>
-      <td><code>{'year': '2016'}</code></td>
-    </tr>
-  </tbody>
+
+<thead>
+
+<tr>
+
+<th colspan="2" style="font-size: 2rem">Year</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<th>Regex</th>
+
+<td>`(?P<year>[0-9]{4})`</td>
+
+</tr>
+
+<tr>
+
+<th>Example</th>
+
+<td>`url(r'^articles/(?P<year>[0-9]{4})//td>, views.year_archive, name='year')`</td>
+
+</tr>
+
+<tr>
+
+<th>Valid URL</th>
+
+<td>`/articles/2016/`</td>
+
+</tr>
+
+<tr>
+
+<th>Captures</th>
+
+<td>`{'year': '2016'}`</td>
+
+</tr>
+
+</tbody>
+
 </table>
 
 <table style="font-size: 1.4rem">
-  <thead>
-    <tr>
-      <th colspan="2" style="font-size: 2rem">Year / Month</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>Regex</th>
-      <td><code>(?P&lt;year&gt;[0-9]{4})/(?P&lt;month&gt;[0-9]{2})</code></td>
-    </tr>
-    <tr>
-      <th>Example</th>
-      <td><code>url(r'^articles/(?P&lt;year&gt;[0-9]{4})/(?P&lt;month&gt;[0-9]{2})/$', views.month_archive, name='month')</code></td>
-    </tr>
-    <tr>
-      <th>Valid URL</th>
-      <td><code>/articles/2016/01/</code></td>
-    </tr>
-    <tr>
-      <th>Captures</th>
-      <td><code>{'year': '2016', 'month': '01'}</code></td>
-    </tr>
-  </tbody>
+
+<thead>
+
+<tr>
+
+<th colspan="2" style="font-size: 2rem">Year / Month</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+
+<th>Regex</th>
+
+<td>`(?P<year>[0-9]{4})/(?P<month>[0-9]{2})`</td>
+
+</tr>
+
+<tr>
+
+<th>Example</th>
+
+<td>`url(r'^articles/(?P<year>[0-9]{4})/(?P<month>[0-9]{2})//td>, views.month_archive, name='month')`</td>
+
+</tr>
+
+<tr>
+
+<th>Valid URL</th>
+
+<td>`/articles/2016/01/`</td>
+
+</tr>
+
+<tr>
+
+<th>Captures</th>
+
+<td>`{'year': '2016', 'month': '01'}`</td>
+
+</tr>
+
+</tbody>
+
 </table>
 
-<p>You can find more details about those patterns in this post: <a href="/references/2016/10/10/url-patterns.html">List of Useful URL Patterns</a>.</p>
+You can find more details about those patterns in this post: [List of Useful URL Patterns](/references/2016/10/10/url-patterns.html).
 
-<hr />
+* * *

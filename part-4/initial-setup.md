@@ -1,39 +1,50 @@
-<h4 id="initial-setup">Initial Setup</h4>
+#### Initial Setup
 
-<p>To manage all this information, we can break it down in a different app. In the project root, in the same page where
-the <strong>manage.py</strong> script is, run the following command to start a new app:</p>
+To manage all this information, we can break it down in a different app. In the project root, in the same page where the **manage.py** script is, run the following command to start a new app:
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash">django-admin startapp accounts</code></pre></figure>
+<figure class="highlight">
 
-<p>The project structure should like this right now:</p>
+    django-admin startapp accounts
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash">myproject/
- |-- myproject/
- |    |-- accounts/     &lt;-- our new django app!
- |    |-- boards/
- |    |-- myproject/
- |    |-- static/
- |    |-- templates/
- |    |-- db.sqlite3
- |    +-- manage.py
- +-- venv/</code></pre></figure>
+</figure>
 
-<p>Next step, include the <strong>accounts</strong> app to the <code class="highlighter-rouge">INSTALLED_APPS</code> in the <strong>settings.py</strong> file:</p>
+The project structure should like this right now:
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">INSTALLED_APPS</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="s">'django.contrib.admin'</span><span class="p">,</span>
-    <span class="s">'django.contrib.auth'</span><span class="p">,</span>
-    <span class="s">'django.contrib.contenttypes'</span><span class="p">,</span>
-    <span class="s">'django.contrib.sessions'</span><span class="p">,</span>
-    <span class="s">'django.contrib.messages'</span><span class="p">,</span>
-    <span class="s">'django.contrib.staticfiles'</span><span class="p">,</span>
+<figure class="highlight">
 
-    <span class="s">'widget_tweaks'</span><span class="p">,</span>
+    myproject/
+     |-- myproject/
+     |    |-- accounts/     <-- our new django app!
+     |    |-- boards/
+     |    |-- myproject/
+     |    |-- static/
+     |    |-- templates/
+     |    |-- db.sqlite3
+     |    +-- manage.py
+     +-- venv/
 
-    <span class="s">'accounts'</span><span class="p">,</span>
-    <span class="s">'boards'</span><span class="p">,</span>
-<span class="p">]</span></code></pre></figure>
+</figure>
 
-<p>From now on, we will be working on the <strong>accounts</strong> app.</p>
+Next step, include the **accounts** app to the `INSTALLED_APPS` in the **settings.py** file:
 
-<hr />
+<figure class="highlight">
+
+    INSTALLED_APPS = [
+        'django.contrib.admin',
+        'django.contrib.auth',
+        'django.contrib.contenttypes',
+        'django.contrib.sessions',
+        'django.contrib.messages',
+        'django.contrib.staticfiles',
+
+        'widget_tweaks',
+
+        'accounts',
+        'boards',
+    ]
+
+</figure>
+
+From now on, we will be working on the **accounts** app.
+
+* * *

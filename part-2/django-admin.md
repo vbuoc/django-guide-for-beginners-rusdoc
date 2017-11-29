@@ -1,68 +1,74 @@
-Introduction to Django Admin
+Introduction to Django Admin > Оригинал: https://simpleisbetterthancomplex.com/series/2017/09/11/a-complete-beginners-guide-to-django-part-2.html
 
-> Оригинал: https://simpleisbetterthancomplex.com/series/2017/09/11/a-complete-beginners-guide-to-django-part-2.html
+When we start a new project, Django already comes configured with the **Django Admin** listed in the `INSTALLED_APPS`.
 
+![Django Admin Comic](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/Pixton_Comic_Django_Admin.png)
 
-<p>When we start a new project, Django already comes configured with the <strong>Django Admin</strong> listed in the <code class="highlighter-rouge">INSTALLED_APPS</code>.</p>
+A good use case of the Django Admin is for example in a blog; it can be used by the authors to write and publish articles. Another example is an e-commerce website, where the staff members can create, edit, delete products.
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/Pixton_Comic_Django_Admin.png" alt="Django Admin Comic" /></p>
+For now, we are going to configure the Django Admin to maintain our application’s boards.
 
-<p>A good use case of the Django Admin is for example in a blog; it can be used by the authors to write and publish
-articles. Another example is an e-commerce website, where the staff members can create, edit, delete products.</p>
+Let’s start by creating an administrator account:
 
-<p>For now, we are going to configure the Django Admin to maintain our application’s boards.</p>
+<figure class="highlight">
 
-<p>Let’s start by creating an administrator account:</p>
+    python manage.py createsuperuser
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash">python manage.py createsuperuser</code></pre></figure>
+</figure>
 
-<p>Follow the instructions:</p>
+Follow the instructions:
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Username (leave blank to use 'vitorfs'): admin
-Email address: admin@example.com
-Password:
-Password (again):
-Superuser created successfully.</code></pre></figure>
+<figure class="highlight">
 
-<p>Now open the URL in a web browser: <strong>http://127.0.0.1:8000/admin/</strong></p>
+    Username (leave blank to use 'vitorfs'): admin
+    Email address: admin@example.com
+    Password:
+    Password (again):
+    Superuser created successfully.
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/django-admin-login.png" alt="Django Admin Login" /></p>
+</figure>
 
-<p>Enter the <strong>username</strong> and <strong>password</strong> to log into the administration interface:</p>
+Now open the URL in a web browser: **http://127.0.0.1:8000/admin/**
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/django-admin.png" alt="Django Admin" /></p>
+![Django Admin Login](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/django-admin-login.png)
 
-<p>It already comes with some features configured. Here we can add <strong>Users</strong> and <strong>Groups</strong> to manage permissions. We will
-explore more of those concepts later on.</p>
+Enter the **username** and **password** to log into the administration interface:
 
-<p>To add the <strong>Board</strong> model is very straightforward. Open the <strong>admin.py</strong> file in the <strong>boards</strong> directory, and add
-the following code:</p>
+![Django Admin](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/django-admin.png)
 
-<p><strong>boards/admin.py</strong></p>
+It already comes with some features configured. Here we can add **Users** and **Groups** to manage permissions. We will explore more of those concepts later on.
 
-<figure class="highlight"><pre><code class="language-django" data-lang="django">from django.contrib import admin
-from .models import Board
+To add the **Board** model is very straightforward. Open the **admin.py** file in the **boards** directory, and add the following code:
 
-admin.site.register(Board)</code></pre></figure>
+**boards/admin.py**
 
-<p>Save the <strong>admin.py</strong> file, and refresh the page on your web browser:</p>
+<figure class="highlight">
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/django-admin-boards.png" alt="Django Admin Boards" /></p>
+    from django.contrib import admin
+    from .models import Board
 
-<p>And that’s it! It’s ready to be used. Click on the <strong>Boards</strong> link to see the list of existing boards:</p>
+    admin.site.register(Board)
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/django-admin-boards-list.png" alt="Django Admin Boards List" /></p>
+</figure>
 
-<p>We can add a new board by clicking on the <strong>Add Board</strong> button:</p>
+Save the **admin.py** file, and refresh the page on your web browser:
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/django-admin-boards-add.png" alt="Django Admin Boards Add" /></p>
+![Django Admin Boards](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/django-admin-boards.png)
 
-<p>Click on the <strong>save</strong> button:</p>
+And that’s it! It’s ready to be used. Click on the **Boards** link to see the list of existing boards:
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/django-admin-boards-list-2.png" alt="Django Admin Boards List" /></p>
+![Django Admin Boards List](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/django-admin-boards-list.png)
 
-<p>We can check if everything is working be opening the <strong>http://127.0.0.1:8000</strong> URL:</p>
+We can add a new board by clicking on the **Add Board** button:
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/boards-homepage-bootstrap-3.png" alt="Boards Homepage" /></p>
+![Django Admin Boards Add](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/django-admin-boards-add.png)
 
-<hr />
+Click on the **save** button:
+
+![Django Admin Boards List](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/django-admin-boards-list-2.png)
+
+We can check if everything is working be opening the **http://127.0.0.1:8000** URL:
+
+![Boards Homepage](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/boards-homepage-bootstrap-3.png)
+
+* * *

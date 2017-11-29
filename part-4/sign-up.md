@@ -1,673 +1,755 @@
-<h4 id="sign-up">Sign Up</h4>
+#### Sign Up
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/Pixton_Comic_Sign_Up_View.png" alt="Sign Up" /></p>
+![Sign Up](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/Pixton_Comic_Sign_Up_View.png)
 
-<p>Let’s start by creating the sign up view. First thing, create a new route in the <strong>urls.py</strong> file:</p>
+Let’s start by creating the sign up view. First thing, create a new route in the **urls.py** file:
 
-<p><strong>myproject/urls.py</strong></p>
+**myproject/urls.py**
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">django.conf.urls</span> <span class="kn">import</span> <span class="n">url</span>
-<span class="kn">from</span> <span class="nn">django.contrib</span> <span class="kn">import</span> <span class="n">admin</span>
+<figure class="highlight">
 
-<span class="kn">from</span> <span class="nn">accounts</span> <span class="kn">import</span> <span class="n">views</span> <span class="k">as</span> <span class="n">accounts_views</span>
-<span class="kn">from</span> <span class="nn">boards</span> <span class="kn">import</span> <span class="n">views</span>
+    from django.conf.urls import url
+    from django.contrib import admin
 
-<span class="n">urlpatterns</span> <span class="o">=</span> <span class="p">[</span>
-    <span class="n">url</span><span class="p">(</span><span class="s">r'^$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">home</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'home'</span><span class="p">),</span>
-    <span class="n">url</span><span class="p">(</span><span class="s">r'^signup/$'</span><span class="p">,</span> <span class="n">accounts_views</span><span class="o">.</span><span class="n">signup</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'signup'</span><span class="p">),</span>
-    <span class="n">url</span><span class="p">(</span><span class="s">r'^boards/(?P&lt;pk&gt;</span><span class="err">\</span><span class="s">d+)/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">board_topics</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'board_topics'</span><span class="p">),</span>
-    <span class="n">url</span><span class="p">(</span><span class="s">r'^boards/(?P&lt;pk&gt;</span><span class="err">\</span><span class="s">d+)/new/$'</span><span class="p">,</span> <span class="n">views</span><span class="o">.</span><span class="n">new_topic</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'new_topic'</span><span class="p">),</span>
-    <span class="n">url</span><span class="p">(</span><span class="s">r'^admin/'</span><span class="p">,</span> <span class="n">admin</span><span class="o">.</span><span class="n">site</span><span class="o">.</span><span class="n">urls</span><span class="p">),</span>
-<span class="p">]</span></code></pre></figure>
+    from accounts import views as accounts_views
+    from boards import views
 
-<p>Notice how we are importing the <strong>views</strong> module from the <strong>accounts</strong> app in a different way:</p>
+    urlpatterns = [
+        url(r'^/figure>, views.home, name='home'),
+        url(r'^signup//figure>, accounts_views.signup, name='signup'),
+        url(r'^boards/(?P<pk>\d+)//figure>, views.board_topics, name='board_topics'),
+        url(r'^boards/(?P<pk>\d+)/new//figure>, views.new_topic, name='new_topic'),
+        url(r'^admin/', admin.site.urls),
+    ]
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">accounts</span> <span class="kn">import</span> <span class="n">views</span> <span class="k">as</span> <span class="n">accounts_views</span></code></pre></figure>
+</figure>
 
-<p>We are giving an alias because otherwise, it would clash with the <strong>boards’</strong> views. We can improve the <strong>urls.py</strong>
-design later on. But for now, let’s focus on the authentication features.</p>
+Notice how we are importing the **views** module from the **accounts** app in a different way:
 
-<p>Now edit the <strong>views.py</strong> inside the <strong>accounts</strong> app and create a new view named <strong>signup</strong>:</p>
+<figure class="highlight">
 
-<p><strong>accounts/views.py</strong></p>
+    from accounts import views as accounts_views
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
+</figure>
 
-<span class="k">def</span> <span class="nf">signup</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s">'signup.html'</span><span class="p">)</span></code></pre></figure>
+We are giving an alias because otherwise, it would clash with the **boards’** views. We can improve the **urls.py** design later on. But for now, let’s focus on the authentication features.
 
-<p>Create the new template, named <strong>signup.html</strong>:</p>
+Now edit the **views.py** inside the **accounts** app and create a new view named **signup**:
 
-<p><strong>templates/signup.html</strong></p>
+**accounts/views.py**
 
-<figure class="highlight"><pre><code class="language-django" data-lang="django"><span class="cp">{%</span> <span class="k">extends</span> <span class="s1">'base.html'</span> <span class="cp">%}</span>
+<figure class="highlight">
 
-<span class="cp">{%</span> <span class="k">block</span> <span class="nv">content</span> <span class="cp">%}</span>
-  <span class="nt">&lt;h2&gt;</span>Sign up<span class="nt">&lt;/h2&gt;</span>
-<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span></code></pre></figure>
+    from django.shortcuts import render
 
-<p>Open the URL <strong>http://127.0.0.1:8000/signup/</strong> in the browser, check if everything is working:</p>
+    def signup(request):
+        return render(request, 'signup.html')
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/signup.png" alt="Sign up" /></p>
+</figure>
 
-<p>Time to write some tests:</p>
+Create the new template, named **signup.html**:
 
-<p><strong>accounts/tests.py</strong></p>
+**templates/signup.html**
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">django.core.urlresolvers</span> <span class="kn">import</span> <span class="n">reverse</span>
-<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">resolve</span>
-<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span>
-<span class="kn">from</span> <span class="nn">.views</span> <span class="kn">import</span> <span class="n">signup</span>
+<figure class="highlight">
 
-<span class="k">class</span> <span class="nc">SignUpTests</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">test_signup_status_code</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s">'signup'</span><span class="p">)</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEquals</span><span class="p">(</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+    {% extends 'base.html' %}
 
-    <span class="k">def</span> <span class="nf">test_signup_url_resolves_signup_view</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">view</span> <span class="o">=</span> <span class="n">resolve</span><span class="p">(</span><span class="s">'/signup/'</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEquals</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="n">signup</span><span class="p">)</span></code></pre></figure>
+    {% block content %}
+      <h2>Sign up</h2>
+    {% endblock %}
 
-<p>Testing the status code (200 = success) and if the URL <strong>/signup/</strong> is returning the correct view function.</p>
+</figure>
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash">python manage.py <span class="nb">test</span></code></pre></figure>
+Open the URL **http://127.0.0.1:8000/signup/** in the browser, check if everything is working:
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Creating test database for alias 'default'...
-System check identified no issues (0 silenced).
-..................
-----------------------------------------------------------------------
-Ran 18 tests in 0.652s
+![Sign up](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/signup.png)
 
-OK
-Destroying test database for alias 'default'...</code></pre></figure>
+Time to write some tests:
 
-<p>For the authentication views (sign up, log in, password reset, etc.) we won’t use the top bar or the breadcrumb.
-We can still use the <strong>base.html</strong> template. It just needs some tweaks:</p>
+**accounts/tests.py**
 
-<p><strong>templates/base.html</strong></p>
+<figure class="highlight">
 
-<figure class="highlight"><pre><code class="language-django" data-lang="django"><span class="cp">{%</span> <span class="nv">load</span> <span class="nv">static</span> <span class="cp">%}&lt;!DOCTYPE html&gt;</span>
-<span class="nt">&lt;html&gt;</span>
-  <span class="nt">&lt;head&gt;</span>
-    <span class="nt">&lt;meta</span> <span class="na">charset=</span><span class="s">"utf-8"</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;title&gt;</span><span class="cp">{%</span> <span class="k">block</span> <span class="nv">title</span> <span class="cp">%}</span>Django Boards<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span><span class="nt">&lt;/title&gt;</span>
-    <span class="nt">&lt;link</span> <span class="na">href=</span><span class="s">"https://fonts.googleapis.com/css?family=Peralta"</span> <span class="na">rel=</span><span class="s">"stylesheet"</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="nv">static</span> <span class="s1">'css/bootstrap.min.css'</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="nv">static</span> <span class="s1">'css/app.css'</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span>
-    <span class="cp">{%</span> <span class="k">block</span> <span class="nv">stylesheet</span> <span class="cp">%}{%</span> <span class="k">endblock</span> <span class="cp">%}</span>  <span class="c">&lt;!-- HERE --&gt;</span>
-  <span class="nt">&lt;/head&gt;</span>
-  <span class="nt">&lt;body&gt;</span>
-    <span class="cp">{%</span> <span class="k">block</span> <span class="nv">body</span> <span class="cp">%}</span>  <span class="c">&lt;!-- HERE --&gt;</span>
-      <span class="nt">&lt;nav</span> <span class="na">class=</span><span class="s">"navbar navbar-expand-lg navbar-dark bg-dark"</span><span class="nt">&gt;</span>
-        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
-          <span class="nt">&lt;a</span> <span class="na">class=</span><span class="s">"navbar-brand"</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="nv">url</span> <span class="s1">'home'</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span>Django Boards<span class="nt">&lt;/a&gt;</span>
-        <span class="nt">&lt;/div&gt;</span>
-      <span class="nt">&lt;/nav&gt;</span>
-      <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
-        <span class="nt">&lt;ol</span> <span class="na">class=</span><span class="s">"breadcrumb my-4"</span><span class="nt">&gt;</span>
-          <span class="cp">{%</span> <span class="k">block</span> <span class="nv">breadcrumb</span> <span class="cp">%}</span>
-          <span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
-        <span class="nt">&lt;/ol&gt;</span>
-        <span class="cp">{%</span> <span class="k">block</span> <span class="nv">content</span> <span class="cp">%}</span>
-        <span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
-      <span class="nt">&lt;/div&gt;</span>
-    <span class="cp">{%</span> <span class="k">endblock</span> <span class="nv">body</span> <span class="cp">%}</span>  <span class="c">&lt;!-- AND HERE --&gt;</span>
-  <span class="nt">&lt;/body&gt;</span>
-<span class="nt">&lt;/html&gt;</span></code></pre></figure>
+    from django.core.urlresolvers import reverse
+    from django.urls import resolve
+    from django.test import TestCase
+    from .views import signup
 
-<p>I marked with comments the new bits in the <strong>base.html</strong> template. The block
-<code class="highlighter-rouge"><span class="p">{</span><span class="err">%</span><span class="w"> </span><span class="err">block</span><span class="w"> </span><span class="err">stylesheet</span><span class="w"> </span><span class="err">%</span><span class="p">}{</span><span class="err">%</span><span class="w"> </span><span class="err">endblock</span><span class="w"> </span><span class="err">%</span><span class="p">}</span></code> will be used to add extra CSS, specific to some pages.</p>
+    class SignUpTests(TestCase):
+        def test_signup_status_code(self):
+            url = reverse('signup')
+            response = self.client.get(url)
+            self.assertEquals(response.status_code, 200)
 
-<p>The block <code class="highlighter-rouge"><span class="p">{</span><span class="err">%</span><span class="w"> </span><span class="err">block</span><span class="w"> </span><span class="err">body</span><span class="w"> </span><span class="err">%</span><span class="p">}</span></code> is wrapping the whole HTML document. We can use it to have an
-empty document taking advantage of the head of the <strong>base.html</strong>. Notice how we named the end block
-<code class="highlighter-rouge"><span class="p">{</span><span class="err">%</span><span class="w"> </span><span class="err">endblock</span><span class="w"> </span><span class="err">body</span><span class="w"> </span><span class="err">%</span><span class="p">}</span></code>. In cases like this, it’s a good practice to name the closing tag, so it’s
-easier to identify where it ends.</p>
+        def test_signup_url_resolves_signup_view(self):
+            view = resolve('/signup/')
+            self.assertEquals(view.func, signup)
 
-<p>Now on the <strong>signup.html</strong> template, instead of using the <code class="highlighter-rouge"><span class="p">{</span><span class="err">%</span><span class="w"> </span><span class="err">block</span><span class="w"> </span><span class="err">content</span><span class="w"> </span><span class="err">%</span><span class="p">}</span></code>, we can use the
-<code class="highlighter-rouge"><span class="p">{</span><span class="err">%</span><span class="w"> </span><span class="err">block</span><span class="w"> </span><span class="err">body</span><span class="w"> </span><span class="err">%</span><span class="p">}</span></code>.</p>
+</figure>
 
-<p><strong>templates/signup.html</strong></p>
+Testing the status code (200 = success) and if the URL **/signup/** is returning the correct view function.
 
-<figure class="highlight"><pre><code class="language-django" data-lang="django"><span class="cp">{%</span> <span class="k">extends</span> <span class="s1">'base.html'</span> <span class="cp">%}</span>
+<figure class="highlight">
 
-<span class="cp">{%</span> <span class="k">block</span> <span class="nv">body</span> <span class="cp">%}</span>
-  <span class="nt">&lt;h2&gt;</span>Sign up<span class="nt">&lt;/h2&gt;</span>
-<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span></code></pre></figure>
+    python manage.py test
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/signup-2.png" alt="Sign up" /></p>
+</figure>
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/Pixton_Comic_Empty.png" alt="Too Empty" /></p>
+<figure class="highlight">
 
-<p>Time to create the sign up form. Django has a built-in form named <strong>UserCreationForm</strong>. Let’s use it:</p>
+    Creating test database for alias 'default'...
+    System check identified no issues (0 silenced).
+    ..................
+    ----------------------------------------------------------------------
+    Ran 18 tests in 0.652s
 
-<p><strong>accounts/views.py</strong></p>
+    OK
+    Destroying test database for alias 'default'...
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">django.contrib.auth.forms</span> <span class="kn">import</span> <span class="n">UserCreationForm</span>
-<span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span>
+</figure>
 
-<span class="k">def</span> <span class="nf">signup</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-    <span class="n">form</span> <span class="o">=</span> <span class="n">UserCreationForm</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s">'signup.html'</span><span class="p">,</span> <span class="p">{</span><span class="s">'form'</span><span class="p">:</span> <span class="n">form</span><span class="p">})</span></code></pre></figure>
+For the authentication views (sign up, log in, password reset, etc.) we won’t use the top bar or the breadcrumb. We can still use the **base.html** template. It just needs some tweaks:
 
-<p><strong>templates/signup.html</strong></p>
+**templates/base.html**
 
-<figure class="highlight"><pre><code class="language-django" data-lang="django"><span class="cp">{%</span> <span class="k">extends</span> <span class="s1">'base.html'</span> <span class="cp">%}</span>
+<figure class="highlight">
 
-<span class="cp">{%</span> <span class="k">block</span> <span class="nv">body</span> <span class="cp">%}</span>
-  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;h2&gt;</span>Sign up<span class="nt">&lt;/h2&gt;</span>
-    <span class="nt">&lt;form</span> <span class="na">method=</span><span class="s">"post"</span> <span class="na">novalidate</span><span class="nt">&gt;</span>
-      <span class="cp">{%</span> <span class="nv">csrf_token</span> <span class="cp">%}</span>
-      <span class="cp">{{</span> <span class="nv">form.as_p</span> <span class="cp">}}</span>
-      <span class="nt">&lt;button</span> <span class="na">type=</span><span class="s">"submit"</span> <span class="na">class=</span><span class="s">"btn btn-primary"</span><span class="nt">&gt;</span>Create an account<span class="nt">&lt;/button&gt;</span>
-    <span class="nt">&lt;/form&gt;</span>
-  <span class="nt">&lt;/div&gt;</span>
-<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span></code></pre></figure>
+    {% load static %}<!DOCTYPE html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <title>{% block title %}Django Boards{% endblock %}</title>
+        <link href="https://fonts.googleapis.com/css?family=Peralta" rel="stylesheet">
+        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+        <link rel="stylesheet" href="{% static 'css/app.css' %}">
+        {% block stylesheet %}{% endblock %}  <!-- HERE -->
+      </head>
+      <body>
+        {% block body %}  <!-- HERE -->
+          <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+            <div class="container">
+              <a class="navbar-brand" href="{% url 'home' %}">Django Boards</a>
+            </div>
+          </nav>
+          <div class="container">
+            <ol class="breadcrumb my-4">
+              {% block breadcrumb %}
+              {% endblock %}
+            </ol>
+            {% block content %}
+            {% endblock %}
+          </div>
+        {% endblock body %}  <!-- AND HERE -->
+      </body>
+    </html>
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/signup-3.png" alt="Sign up" /></p>
+</figure>
 
-<p>Looking a little bit messy, right? We can use our <strong>form.html</strong> template to make it look better:</p>
+I marked with comments the new bits in the **base.html** template. The block `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">block</span> <span class="w"></span> <span class="err">stylesheet</span> <span class="w"></span> <span class="err">%</span><span class="p">}{</span><span class="err">%</span> <span class="w"></span> <span class="err">endblock</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>` will be used to add extra CSS, specific to some pages.
 
-<p><strong>templates/signup.html</strong></p>
+The block `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">block</span> <span class="w"></span> <span class="err">body</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>` is wrapping the whole HTML document. We can use it to have an empty document taking advantage of the head of the **base.html**. Notice how we named the end block `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">endblock</span> <span class="w"></span> <span class="err">body</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>`. In cases like this, it’s a good practice to name the closing tag, so it’s easier to identify where it ends.
 
-<figure class="highlight"><pre><code class="language-django" data-lang="django"><span class="cp">{%</span> <span class="k">extends</span> <span class="s1">'base.html'</span> <span class="cp">%}</span>
+Now on the **signup.html** template, instead of using the `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">block</span> <span class="w"></span> <span class="err">content</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>`, we can use the `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">block</span> <span class="w"></span> <span class="err">body</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>`.
 
-<span class="cp">{%</span> <span class="k">block</span> <span class="nv">body</span> <span class="cp">%}</span>
-  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;h2&gt;</span>Sign up<span class="nt">&lt;/h2&gt;</span>
-    <span class="nt">&lt;form</span> <span class="na">method=</span><span class="s">"post"</span> <span class="na">novalidate</span><span class="nt">&gt;</span>
-      <span class="cp">{%</span> <span class="nv">csrf_token</span> <span class="cp">%}</span>
-      <span class="cp">{%</span> <span class="k">include</span> <span class="s1">'includes/form.html'</span> <span class="cp">%}</span>
-      <span class="nt">&lt;button</span> <span class="na">type=</span><span class="s">"submit"</span> <span class="na">class=</span><span class="s">"btn btn-primary"</span><span class="nt">&gt;</span>Create an account<span class="nt">&lt;/button&gt;</span>
-    <span class="nt">&lt;/form&gt;</span>
-  <span class="nt">&lt;/div&gt;</span>
-<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span></code></pre></figure>
+**templates/signup.html**
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/signup-4.png" alt="Sign up" /></p>
+<figure class="highlight">
 
-<p>Uh, almost there. Currently, our <strong>form.html</strong> partial template is displaying some raw HTML. It’s a security feature.
-By default Django treats all strings as unsafe, escaping all the special characters that may cause trouble. But in this
-case, we can trust it.</p>
+    {% extends 'base.html' %}
 
-<p><strong>templates/includes/form.html</strong></p>
+    {% block body %}
+      <h2>Sign up</h2>
+    {% endblock %}
 
-<figure class="highlight"><pre><code class="language-django" data-lang="django"><span class="cp">{%</span> <span class="nv">load</span> <span class="nv">widget_tweaks</span> <span class="cp">%}</span>
+</figure>
 
-<span class="cp">{%</span> <span class="k">for</span> <span class="nv">field</span> <span class="ow">in</span> <span class="nv">form</span> <span class="cp">%}</span>
-  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"form-group"</span><span class="nt">&gt;</span>
-    <span class="cp">{{</span> <span class="nv">field.label_tag</span> <span class="cp">}}</span>
+![Sign up](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/signup-2.png)
 
-    <span class="c">&lt;!-- code suppressed for brevity --&gt;</span>
+![Too Empty](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/Pixton_Comic_Empty.png)
 
-    <span class="cp">{%</span> <span class="k">if</span> <span class="nv">field.help_text</span> <span class="cp">%}</span>
-      <span class="nt">&lt;small</span> <span class="na">class=</span><span class="s">"form-text text-muted"</span><span class="nt">&gt;</span>
-        <span class="cp">{{</span> <span class="nv">field.help_text</span><span class="o">|</span><span class="nf">safe</span> <span class="cp">}}</span>  <span class="c">&lt;!-- new code here --&gt;</span>
-      <span class="nt">&lt;/small&gt;</span>
-    <span class="cp">{%</span> <span class="k">endif</span> <span class="cp">%}</span>
-  <span class="nt">&lt;/div&gt;</span>
-<span class="cp">{%</span> <span class="k">endfor</span> <span class="cp">%}</span></code></pre></figure>
+Time to create the sign up form. Django has a built-in form named **UserCreationForm**. Let’s use it:
 
-<p>Basically, in the previous template we added the option <code class="highlighter-rouge">safe</code> to the <code class="highlighter-rouge">field.help_text</code>: <code class="highlighter-rouge"><span class="p">{</span><span class="err">{</span><span class="w"> </span><span class="err">field.help_text|safe</span><span class="w"> </span><span class="p">}</span><span class="err">}</span></code>.</p>
+**accounts/views.py**
 
-<p>Save the <strong>form.html</strong> file, and check the sign up page again:</p>
+<figure class="highlight">
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/signup-5.png" alt="Sign up" /></p>
+    from django.contrib.auth.forms import UserCreationForm
+    from django.shortcuts import render
 
-<p>Now let’s implement the business logic in the <strong>signup</strong> view:</p>
+    def signup(request):
+        form = UserCreationForm()
+        return render(request, 'signup.html', {'form': form})
 
-<p><strong>accounts/views.py</strong></p>
+</figure>
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">django.contrib.auth</span> <span class="kn">import</span> <span class="n">login</span> <span class="k">as</span> <span class="n">auth_login</span>
-<span class="kn">from</span> <span class="nn">django.contrib.auth.forms</span> <span class="kn">import</span> <span class="n">UserCreationForm</span>
-<span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span><span class="p">,</span> <span class="n">redirect</span>
+**templates/signup.html**
 
-<span class="k">def</span> <span class="nf">signup</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">'POST'</span><span class="p">:</span>
-        <span class="n">form</span> <span class="o">=</span> <span class="n">UserCreationForm</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
-            <span class="n">user</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-            <span class="n">auth_login</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s">'home'</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">form</span> <span class="o">=</span> <span class="n">UserCreationForm</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s">'signup.html'</span><span class="p">,</span> <span class="p">{</span><span class="s">'form'</span><span class="p">:</span> <span class="n">form</span><span class="p">})</span></code></pre></figure>
+<figure class="highlight">
 
-<p>A basic form processing with a small detail: the <strong>login</strong> function (renamed to <strong>auth_login</strong> to avoid clashing with
-the built-in login view).</p>
+    {% extends 'base.html' %}
+
+    {% block body %}
+      <div class="container">
+        <h2>Sign up</h2>
+        <form method="post" novalidate>
+          {% csrf_token %}
+          {{ form.as_p }}
+          <button type="submit" class="btn btn-primary">Create an account</button>
+        </form>
+      </div>
+    {% endblock %}
+
+</figure>
+
+![Sign up](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/signup-3.png)
+
+Looking a little bit messy, right? We can use our **form.html** template to make it look better:
+
+**templates/signup.html**
+
+<figure class="highlight">
+
+    {% extends 'base.html' %}
+
+    {% block body %}
+      <div class="container">
+        <h2>Sign up</h2>
+        <form method="post" novalidate>
+          {% csrf_token %}
+          {% include 'includes/form.html' %}
+          <button type="submit" class="btn btn-primary">Create an account</button>
+        </form>
+      </div>
+    {% endblock %}
+
+</figure>
+
+![Sign up](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/signup-4.png)
+
+Uh, almost there. Currently, our **form.html** partial template is displaying some raw HTML. It’s a security feature. By default Django treats all strings as unsafe, escaping all the special characters that may cause trouble. But in this case, we can trust it.
+
+**templates/includes/form.html**
+
+<figure class="highlight">
+
+    {% load widget_tweaks %}
+
+    {% for field in form %}
+      <div class="form-group">
+        {{ field.label_tag }}
+
+        <!-- code suppressed for brevity -->
+
+        {% if field.help_text %}
+          <small class="form-text text-muted">
+            {{ field.help_text|safe }}  <!-- new code here -->
+          </small>
+        {% endif %}
+      </div>
+    {% endfor %}
+
+</figure>
+
+Basically, in the previous template we added the option `safe` to the `field.help_text`: `<span class="p">{</span><span class="err">{</span> <span class="w"></span> <span class="err">field.help_text|safe</span> <span class="w"></span> <span class="p">}</span><span class="err">}</span>`.
+
+Save the **form.html** file, and check the sign up page again:
+
+![Sign up](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/signup-5.png)
+
+Now let’s implement the business logic in the **signup** view:
+
+**accounts/views.py**
+
+<figure class="highlight">
+
+    from django.contrib.auth import login as auth_login
+    from django.contrib.auth.forms import UserCreationForm
+    from django.shortcuts import render, redirect
+
+    def signup(request):
+        if request.method == 'POST':
+            form = UserCreationForm(request.POST)
+            if form.is_valid():
+                user = form.save()
+                auth_login(request, user)
+                return redirect('home')
+        else:
+            form = UserCreationForm()
+        return render(request, 'signup.html', {'form': form})
+
+</figure>
+
+A basic form processing with a small detail: the **login** function (renamed to **auth_login** to avoid clashing with the built-in login view).
 
 <div class="info">
-  <p>
-    <strong><i class="fa fa-info-circle"></i> Note:</strong>
-    I renamed the <code>login</code> function to <code>auth_login</code>, but later I realized that Django 1.11
-    has a class-based view for the login view, <code>LoginView</code>, so there was no risk of clashing the names.
-  </p>
-  <p>
-    On the older versions there was a <code>auth.login</code> and <code>auth.view.login</code>, which used to
-    cause some confusion, because one was the function that logs the user in, and the other was the view.
-  </p>
-  <p>
-    Long story short: you can import it just as <code>login</code> if you want, it will not cause any problem.
-  </p>
+
+**Note:** I renamed the `login` function to `auth_login`, but later I realized that Django 1.11 has a class-based view for the login view, `LoginView`, so there was no risk of clashing the names.
+
+On the older versions there was a `auth.login` and `auth.view.login`, which used to cause some confusion, because one was the function that logs the user in, and the other was the view.
+
+Long story short: you can import it just as `login` if you want, it will not cause any problem.
+
 </div>
 
-<p>If the form is valid, a <strong>User</strong> instance is created with the <code class="highlighter-rouge">user = form.save()</code>. The created user is then passed
-as an argument to the <strong>auth_login</strong> function, manually authenticating the user. After that, the view redirects the
-user to the homepage, keeping the flow of the application.</p>
-
-<p>Let’s try it. First, submit some invalid data. Either an empty form, non-matching fields, or an existing username:</p>
-
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/signup-6.png" alt="Sign up" /></p>
-
-<p>Now fill the form and submit it, check if the user is created and redirected to the homepage:</p>
-
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/signup-7.png" alt="Sign up" /></p>
-
-<h5 id="referencing-the-authenticated-user-in-the-template">Referencing the Authenticated User in the Template</h5>
-
-<p>How can we know if it worked? Well, we can edit the <strong>base.html</strong> template to add the name of the user on the top bar:</p>
-
-<p><strong>templates/base.html</strong></p>
-
-<figure class="highlight"><pre><code class="language-django" data-lang="django"><span class="cp">{%</span> <span class="k">block</span> <span class="nv">body</span> <span class="cp">%}</span>
-  <span class="nt">&lt;nav</span> <span class="na">class=</span><span class="s">"navbar navbar-expand-sm navbar-dark bg-dark"</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
-      <span class="nt">&lt;a</span> <span class="na">class=</span><span class="s">"navbar-brand"</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="nv">url</span> <span class="s1">'home'</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span>Django Boards<span class="nt">&lt;/a&gt;</span>
-      <span class="nt">&lt;button</span> <span class="na">class=</span><span class="s">"navbar-toggler"</span> <span class="na">type=</span><span class="s">"button"</span> <span class="na">data-toggle=</span><span class="s">"collapse"</span> <span class="na">data-target=</span><span class="s">"#mainMenu"</span> <span class="na">aria-controls=</span><span class="s">"mainMenu"</span> <span class="na">aria-expanded=</span><span class="s">"false"</span> <span class="na">aria-label=</span><span class="s">"Toggle navigation"</span><span class="nt">&gt;</span>
-        <span class="nt">&lt;span</span> <span class="na">class=</span><span class="s">"navbar-toggler-icon"</span><span class="nt">&gt;&lt;/span&gt;</span>
-      <span class="nt">&lt;/button&gt;</span>
-      <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"collapse navbar-collapse"</span> <span class="na">id=</span><span class="s">"mainMenu"</span><span class="nt">&gt;</span>
-        <span class="nt">&lt;ul</span> <span class="na">class=</span><span class="s">"navbar-nav ml-auto"</span><span class="nt">&gt;</span>
-          <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">"nav-item"</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;a</span> <span class="na">class=</span><span class="s">"nav-link"</span> <span class="na">href=</span><span class="s">"#"</span><span class="nt">&gt;</span><span class="cp">{{</span> <span class="nv">user.username</span> <span class="cp">}}</span><span class="nt">&lt;/a&gt;</span>
-          <span class="nt">&lt;/li&gt;</span>
-        <span class="nt">&lt;/ul&gt;</span>
-      <span class="nt">&lt;/div&gt;</span>
-    <span class="nt">&lt;/div&gt;</span>
-  <span class="nt">&lt;/nav&gt;</span>
-
-  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;ol</span> <span class="na">class=</span><span class="s">"breadcrumb my-4"</span><span class="nt">&gt;</span>
-      <span class="cp">{%</span> <span class="k">block</span> <span class="nv">breadcrumb</span> <span class="cp">%}</span>
-      <span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
-    <span class="nt">&lt;/ol&gt;</span>
-    <span class="cp">{%</span> <span class="k">block</span> <span class="nv">content</span> <span class="cp">%}</span>
-    <span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
-  <span class="nt">&lt;/div&gt;</span>
-<span class="cp">{%</span> <span class="k">endblock</span> <span class="nv">body</span> <span class="cp">%}</span></code></pre></figure>
-
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/signup-8.png" alt="Sign up" /></p>
-
-<h5 id="testing-the-sign-up-view">Testing the Sign Up View</h5>
-
-<p>Let’s now improve our test cases:</p>
-
-<p><strong>accounts/tests.py</strong></p>
-
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">django.contrib.auth.forms</span> <span class="kn">import</span> <span class="n">UserCreationForm</span>
-<span class="kn">from</span> <span class="nn">django.core.urlresolvers</span> <span class="kn">import</span> <span class="n">reverse</span>
-<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">resolve</span>
-<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span>
-<span class="kn">from</span> <span class="nn">.views</span> <span class="kn">import</span> <span class="n">signup</span>
-
-<span class="k">class</span> <span class="nc">SignUpTests</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s">'signup'</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">url</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">test_signup_status_code</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEquals</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">test_signup_url_resolves_signup_view</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">view</span> <span class="o">=</span> <span class="n">resolve</span><span class="p">(</span><span class="s">'/signup/'</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEquals</span><span class="p">(</span><span class="n">view</span><span class="o">.</span><span class="n">func</span><span class="p">,</span> <span class="n">signup</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">test_csrf</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertContains</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">,</span> <span class="s">'csrfmiddlewaretoken'</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">test_contains_form</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">form</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'form'</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsInstance</span><span class="p">(</span><span class="n">form</span><span class="p">,</span> <span class="n">UserCreationForm</span><span class="p">)</span></code></pre></figure>
-
-<p>We changed a little bit the <strong>SignUpTests</strong> class. Defined a <strong>setUp</strong> method, moved the response object to there. Then
-now we are also testing if there are a form and the CSRF token in the response.</p>
-
-<p>Now we are going to test a successful sign up. This time, let’s create a new class to organize better the tests:</p>
-
-<p><strong>accounts/tests.py</strong></p>
+If the form is valid, a **User** instance is created with the `user = form.save()`. The created user is then passed as an argument to the **auth_login** function, manually authenticating the user. After that, the view redirects the user to the homepage, keeping the flow of the application.
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span>
-<span class="kn">from</span> <span class="nn">django.contrib.auth.forms</span> <span class="kn">import</span> <span class="n">UserCreationForm</span>
-<span class="kn">from</span> <span class="nn">django.core.urlresolvers</span> <span class="kn">import</span> <span class="n">reverse</span>
-<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">resolve</span>
-<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span>
-<span class="kn">from</span> <span class="nn">.views</span> <span class="kn">import</span> <span class="n">signup</span>
+Let’s try it. First, submit some invalid data. Either an empty form, non-matching fields, or an existing username:
 
-<span class="k">class</span> <span class="nc">SignUpTests</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
-    <span class="c"># code suppressed...</span>
-
-<span class="k">class</span> <span class="nc">SuccessfulSignUpTests</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s">'signup'</span><span class="p">)</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s">'username'</span><span class="p">:</span> <span class="s">'john'</span><span class="p">,</span>
-            <span class="s">'password1'</span><span class="p">:</span> <span class="s">'abcdef123456'</span><span class="p">,</span>
-            <span class="s">'password2'</span><span class="p">:</span> <span class="s">'abcdef123456'</span>
-        <span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">home_url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s">'home'</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">test_redirection</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s">'''
-        A valid form submission should redirect the user to the home page
-        '''</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertRedirects</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">home_url</span><span class="p">)</span>
+![Sign up](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/signup-6.png)
 
-    <span class="k">def</span> <span class="nf">test_user_creation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">exists</span><span class="p">())</span>
+Now fill the form and submit it, check if the user is created and redirected to the homepage:
 
-    <span class="k">def</span> <span class="nf">test_user_authentication</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s">'''
-        Create a new request to an arbitrary page.
-        The resulting response should now have a `user` to its context,
-        after a successful sign up.
-        '''</span>
-        <span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">home_url</span><span class="p">)</span>
-        <span class="n">user</span> <span class="o">=</span> <span class="n">response</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'user'</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">user</span><span class="o">.</span><span class="n">is_authenticated</span><span class="p">)</span></code></pre></figure>
-
-<p>Run the tests.</p>
-
-<p>Using a similar strategy, now let’s create a new class for sign up tests when the data is invalid:</p>
-
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span>
-<span class="kn">from</span> <span class="nn">django.contrib.auth.forms</span> <span class="kn">import</span> <span class="n">UserCreationForm</span>
-<span class="kn">from</span> <span class="nn">django.core.urlresolvers</span> <span class="kn">import</span> <span class="n">reverse</span>
-<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">resolve</span>
-<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span>
-<span class="kn">from</span> <span class="nn">.views</span> <span class="kn">import</span> <span class="n">signup</span>
+![Sign up](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/signup-7.png)
 
-<span class="k">class</span> <span class="nc">SignUpTests</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
-    <span class="c"># code suppressed...</span>
+##### Referencing the Authenticated User in the Template
 
-<span class="k">class</span> <span class="nc">SuccessfulSignUpTests</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
-    <span class="c"># code suppressed...</span>
+How can we know if it worked? Well, we can edit the **base.html** template to add the name of the user on the top bar:
 
-<span class="k">class</span> <span class="nc">InvalidSignUpTests</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s">'signup'</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="p">{})</span>  <span class="c"># submit an empty dictionary</span>
+**templates/base.html**
 
-    <span class="k">def</span> <span class="nf">test_signup_status_code</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s">'''
-        An invalid form submission should return to the same page
-        '''</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertEquals</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">status_code</span><span class="p">,</span> <span class="mi">200</span><span class="p">)</span>
+<figure class="highlight">
 
-    <span class="k">def</span> <span class="nf">test_form_errors</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">form</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'form'</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertTrue</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">errors</span><span class="p">)</span>
+    {% block body %}
+      <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+        <div class="container">
+          <a class="navbar-brand" href="{% url 'home' %}">Django Boards</a>
+          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#mainMenu" aria-controls="mainMenu" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+          <div class="collapse navbar-collapse" id="mainMenu">
+            <ul class="navbar-nav ml-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="#">{{ user.username }}</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
 
-    <span class="k">def</span> <span class="nf">test_dont_create_user</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertFalse</span><span class="p">(</span><span class="n">User</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">exists</span><span class="p">())</span></code></pre></figure>
+      <div class="container">
+        <ol class="breadcrumb my-4">
+          {% block breadcrumb %}
+          {% endblock %}
+        </ol>
+        {% block content %}
+        {% endblock %}
+      </div>
+    {% endblock body %}
 
-<h5 id="adding-the-email-field-to-the-form">Adding the Email Field to the Form</h5>
+</figure>
 
-<p>Everything is working, but… The <strong>email address</strong> field is missing. Well, the <strong>UserCreationForm</strong> does not provide
-an <strong>email</strong> field. But we can extend it.</p>
+![Sign up](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/signup-8.png)
 
-<p>Create a file named <strong>forms.py</strong> inside the <strong>accounts</strong> folder:</p>
+##### Testing the Sign Up View
 
-<p><strong>accounts/forms.py</strong></p>
+Let’s now improve our test cases:
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">django</span> <span class="kn">import</span> <span class="n">forms</span>
-<span class="kn">from</span> <span class="nn">django.contrib.auth.forms</span> <span class="kn">import</span> <span class="n">UserCreationForm</span>
-<span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span>
+**accounts/tests.py**
 
-<span class="k">class</span> <span class="nc">SignUpForm</span><span class="p">(</span><span class="n">UserCreationForm</span><span class="p">):</span>
-    <span class="n">email</span> <span class="o">=</span> <span class="n">forms</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">254</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">widget</span><span class="o">=</span><span class="n">forms</span><span class="o">.</span><span class="n">EmailInput</span><span class="p">())</span>
-    <span class="k">class</span> <span class="nc">Meta</span><span class="p">:</span>
-        <span class="n">model</span> <span class="o">=</span> <span class="n">User</span>
-        <span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="s">'username'</span><span class="p">,</span> <span class="s">'email'</span><span class="p">,</span> <span class="s">'password1'</span><span class="p">,</span> <span class="s">'password2'</span><span class="p">)</span></code></pre></figure>
+<figure class="highlight">
 
-<p>Now, instead of using the <strong>UserCreationForm</strong> in our <strong>views.py</strong>, let’s import the new form, <strong>SignUpForm</strong>, and use
-it instead:</p>
-
-<p><strong>accounts/views.py</strong></p>
-
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">django.contrib.auth</span> <span class="kn">import</span> <span class="n">login</span> <span class="k">as</span> <span class="n">auth_login</span>
-<span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">render</span><span class="p">,</span> <span class="n">redirect</span>
-
-<span class="kn">from</span> <span class="nn">.forms</span> <span class="kn">import</span> <span class="n">SignUpForm</span>
-
-<span class="k">def</span> <span class="nf">signup</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
-    <span class="k">if</span> <span class="n">request</span><span class="o">.</span><span class="n">method</span> <span class="o">==</span> <span class="s">'POST'</span><span class="p">:</span>
-        <span class="n">form</span> <span class="o">=</span> <span class="n">SignUpForm</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="p">)</span>
-        <span class="k">if</span> <span class="n">form</span><span class="o">.</span><span class="n">is_valid</span><span class="p">():</span>
-            <span class="n">user</span> <span class="o">=</span> <span class="n">form</span><span class="o">.</span><span class="n">save</span><span class="p">()</span>
-            <span class="n">auth_login</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">user</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">redirect</span><span class="p">(</span><span class="s">'home'</span><span class="p">)</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">form</span> <span class="o">=</span> <span class="n">SignUpForm</span><span class="p">()</span>
-    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s">'signup.html'</span><span class="p">,</span> <span class="p">{</span><span class="s">'form'</span><span class="p">:</span> <span class="n">form</span><span class="p">})</span></code></pre></figure>
-
-<p>Just with this small change, everything is already working:</p>
-
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/signup-9.png" alt="Sign up" /></p>
-
-<p>Remember to change the test case to use the <strong>SignUpForm</strong> instead of <strong>UserCreationForm</strong>:</p>
-
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">.forms</span> <span class="kn">import</span> <span class="n">SignUpForm</span>
-
-<span class="k">class</span> <span class="nc">SignUpTests</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
-    <span class="c"># ...</span>
+    from django.contrib.auth.forms import UserCreationForm
+    from django.core.urlresolvers import reverse
+    from django.urls import resolve
+    from django.test import TestCase
+    from .views import signup
 
-    <span class="k">def</span> <span class="nf">test_contains_form</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">form</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="o">.</span><span class="n">context</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'form'</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertIsInstance</span><span class="p">(</span><span class="n">form</span><span class="p">,</span> <span class="n">SignUpForm</span><span class="p">)</span>
+    class SignUpTests(TestCase):
+        def setUp(self):
+            url = reverse('signup')
+            self.response = self.client.get(url)
 
-<span class="k">class</span> <span class="nc">SuccessfulSignUpTests</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">setUp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s">'signup'</span><span class="p">)</span>
-        <span class="n">data</span> <span class="o">=</span> <span class="p">{</span>
-            <span class="s">'username'</span><span class="p">:</span> <span class="s">'john'</span><span class="p">,</span>
-            <span class="s">'email'</span><span class="p">:</span> <span class="s">'john@doe.com'</span><span class="p">,</span>
-            <span class="s">'password1'</span><span class="p">:</span> <span class="s">'abcdef123456'</span><span class="p">,</span>
-            <span class="s">'password2'</span><span class="p">:</span> <span class="s">'abcdef123456'</span>
-        <span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">response</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">client</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">home_url</span> <span class="o">=</span> <span class="n">reverse</span><span class="p">(</span><span class="s">'home'</span><span class="p">)</span>
+        def test_signup_status_code(self):
+            self.assertEquals(self.response.status_code, 200)
 
-    <span class="c"># ...</span></code></pre></figure>
+        def test_signup_url_resolves_signup_view(self):
+            view = resolve('/signup/')
+            self.assertEquals(view.func, signup)
 
-<p>The previous test case would still pass because since <strong>SignUpForm</strong> extends the <strong>UserCreationForm</strong>, <em>it is</em> an
-instance of <strong>UserCreationForm</strong>.</p>
+        def test_csrf(self):
+            self.assertContains(self.response, 'csrfmiddlewaretoken')
 
-<p>Now let’s think about what happened for a moment. We added a new form field:</p>
+        def test_contains_form(self):
+            form = self.response.context.get('form')
+            self.assertIsInstance(form, UserCreationForm)
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">fields</span> <span class="o">=</span> <span class="p">(</span><span class="s">'username'</span><span class="p">,</span> <span class="s">'email'</span><span class="p">,</span> <span class="s">'password1'</span><span class="p">,</span> <span class="s">'password2'</span><span class="p">)</span></code></pre></figure>
+</figure>
 
-<p>And it automatically reflected in the HTML template. It’s good, right? Well, depends. What if in the future, a new
-developer wanted to re-use the <strong>SignUpForm</strong> for something else, and add some extra fields to it. Then those new
-fields would also show up in the <strong>signup.html</strong>, which may not be the desired behavior. This change could pass
-unnoticed, and we don’t want any surprises.</p>
+We changed a little bit the **SignUpTests** class. Defined a **setUp** method, moved the response object to there. Then now we are also testing if there are a form and the CSRF token in the response.
 
-<p>So let’s create a new test, that verifies the HTML inputs in the template:</p>
+Now we are going to test a successful sign up. This time, let’s create a new class to organize better the tests:
 
-<p><strong>accounts/tests.py</strong></p>
+**accounts/tests.py**
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">SignUpTests</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
-    <span class="c"># ...</span>
+<figure class="highlight">
 
-    <span class="k">def</span> <span class="nf">test_form_inputs</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="s">'''
-        The view must contain five inputs: csrf, username, email,
-        password1, password2
-        '''</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertContains</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">,</span> <span class="s">'&lt;input'</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertContains</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">,</span> <span class="s">'type="text"'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertContains</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">,</span> <span class="s">'type="email"'</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertContains</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">response</span><span class="p">,</span> <span class="s">'type="password"'</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span></code></pre></figure>
-
-<h5 id="improving-the-tests-layout">Improving the Tests Layout</h5>
-
-<p>Alright, so we are testing the inputs and everything, but we still have to test the form itself. Instead of just keep
-adding tests to the <strong>accounts/tests.py</strong> file, let’s improve the project design a little bit.</p>
-
-<p>Create a new folder named <strong>tests</strong> within the <strong>accounts</strong> folder. Then, inside the <strong>tests</strong> folder, create an empty
-file named <strong>__init__.py</strong>.</p>
-
-<p>Now, move the <strong>tests.py</strong> file to inside the <strong>tests</strong> folder, and rename it to <strong>test_view_signup.py</strong>.</p>
-
-<p>The final result should be the following:</p>
-
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash">myproject/
- |-- myproject/
- |    |-- accounts/
- |    |    |-- migrations/
- |    |    |-- tests/
- |    |    |    |-- __init__.py
- |    |    |    +-- test_view_signup.py
- |    |    |-- __init__.py
- |    |    |-- admin.py
- |    |    |-- apps.py
- |    |    |-- models.py
- |    |    +-- views.py
- |    |-- boards/
- |    |-- myproject/
- |    |-- static/
- |    |-- templates/
- |    |-- db.sqlite3
- |    +-- manage.py
- +-- venv/</code></pre></figure>
+    from django.contrib.auth.models import User
+    from django.contrib.auth.forms import UserCreationForm
+    from django.core.urlresolvers import reverse
+    from django.urls import resolve
+    from django.test import TestCase
+    from .views import signup
 
-<p>Note that since we are using relative import within the context of the apps, we need to fix the imports in the new
-<strong>test_view_signup.py</strong>:</p>
+    class SignUpTests(TestCase):
+        # code suppressed...
 
-<p><strong>accounts/tests/test_view_signup.py</strong></p>
+    class SuccessfulSignUpTests(TestCase):
+        def setUp(self):
+            url = reverse('signup')
+            data = {
+                'username': 'john',
+                'password1': 'abcdef123456',
+                'password2': 'abcdef123456'
+            }
+            self.response = self.client.post(url, data)
+            self.home_url = reverse('home')
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">django.contrib.auth.models</span> <span class="kn">import</span> <span class="n">User</span>
-<span class="kn">from</span> <span class="nn">django.core.urlresolvers</span> <span class="kn">import</span> <span class="n">reverse</span>
-<span class="kn">from</span> <span class="nn">django.urls</span> <span class="kn">import</span> <span class="n">resolve</span>
-<span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span>
-
-<span class="kn">from</span> <span class="nn">..views</span> <span class="kn">import</span> <span class="n">signup</span>
-<span class="kn">from</span> <span class="nn">..forms</span> <span class="kn">import</span> <span class="n">SignUpForm</span></code></pre></figure>
-
-<p>We are using relative imports inside the app modules so we can have the freedom to rename the Django app later on,
-without having to fix all the absolute imports.</p>
-
-<p>Now let’s create a new test file, to test the <strong>SignUpForm</strong>. Add a new test file named <strong>test_form_signup.py</strong>:</p>
-
-<p><strong>accounts/tests/test_form_signup.py</strong></p>
-
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">django.test</span> <span class="kn">import</span> <span class="n">TestCase</span>
-<span class="kn">from</span> <span class="nn">..forms</span> <span class="kn">import</span> <span class="n">SignUpForm</span>
-
-<span class="k">class</span> <span class="nc">SignUpFormTest</span><span class="p">(</span><span class="n">TestCase</span><span class="p">):</span>
-    <span class="k">def</span> <span class="nf">test_form_has_fields</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">form</span> <span class="o">=</span> <span class="n">SignUpForm</span><span class="p">()</span>
-        <span class="n">expected</span> <span class="o">=</span> <span class="p">[</span><span class="s">'username'</span><span class="p">,</span> <span class="s">'email'</span><span class="p">,</span> <span class="s">'password1'</span><span class="p">,</span> <span class="s">'password2'</span><span class="p">,]</span>
-        <span class="n">actual</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">form</span><span class="o">.</span><span class="n">fields</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">assertSequenceEqual</span><span class="p">(</span><span class="n">expected</span><span class="p">,</span> <span class="n">actual</span><span class="p">)</span></code></pre></figure>
-
-<p>It looks very strict, right? For example, if in the future we have to change the <strong>SignUpForm</strong>, to include the user’s
-first and last name, we will probably end up having to fix a few test cases, even if we didn’t break anything.</p>
-
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/Pixton_Comic_Test_Alerts.png" alt="Test Case Alert" /></p>
-
-<p>Those alerts are useful because they help to bring awareness, especially for newcomers touching the code for the first
-time. It helps them code with confidence.</p>
-
-<h5 id="improving-the-sign-up-template">Improving the Sign Up Template</h5>
-
-<p>Let’s work a little bit on it. Here we can use Bootstrap 4 cards components to make it look good.</p>
-
-<p>Go to <a href="https://www.toptal.com/designers/subtlepatterns/" target="_blank">https://www.toptal.com/designers/subtlepatterns/</a>
-and find a nice background pattern to use as a background of the accounts pages. Download it, create a new folder
-named <strong>img</strong> inside the <strong>static</strong> folder, and place the image there.</p>
-
-<p>Then after that, create a new CSS file named <strong>accounts.css</strong> in the <strong>static/css</strong>. The result should be the
-following:</p>
-
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash">myproject/
- |-- myproject/
- |    |-- accounts/
- |    |-- boards/
- |    |-- myproject/
- |    |-- static/
- |    |    |-- css/
- |    |    |    |-- accounts.css  &lt;-- here
- |    |    |    |-- app.css
- |    |    |    +-- bootstrap.min.css
- |    |    +-- img/
- |    |    |    +-- shattered.png  &lt;-- here <span class="o">(</span>the name may be different, depending on the patter you downloaded<span class="o">)</span>
- |    |-- templates/
- |    |-- db.sqlite3
- |    +-- manage.py
- +-- venv/</code></pre></figure>
-
-<p>Now edit the <strong>accounts.css</strong> file:</p>
-
-<p><strong>static/css/accounts.css</strong></p>
-
-<figure class="highlight"><pre><code class="language-css" data-lang="css"><span class="nt">body</span> <span class="p">{</span>
-  <span class="nl">background-image</span><span class="p">:</span> <span class="sx">url(../img/shattered.png)</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="nc">.logo</span> <span class="p">{</span>
-  <span class="nl">font-family</span><span class="p">:</span> <span class="s2">'Peralta'</span><span class="p">,</span> <span class="nb">cursive</span><span class="p">;</span>
-<span class="p">}</span>
-
-<span class="nc">.logo</span> <span class="nt">a</span> <span class="p">{</span>
-  <span class="nl">color</span><span class="p">:</span> <span class="n">rgba</span><span class="p">(</span><span class="m">0</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="m">0</span><span class="p">,</span><span class="m">.9</span><span class="p">);</span>
-<span class="p">}</span>
-
-<span class="nc">.logo</span> <span class="nt">a</span><span class="nd">:hover</span><span class="o">,</span>
-<span class="nc">.logo</span> <span class="nt">a</span><span class="nd">:active</span> <span class="p">{</span>
-  <span class="nl">text-decoration</span><span class="p">:</span> <span class="nb">none</span><span class="p">;</span>
-<span class="p">}</span></code></pre></figure>
-
-<p>In the <strong>signup.html</strong> template, we can change it to make use of the new CSS and also take the Bootstrap 4 card
-components into use:</p>
-
-<p><strong>templates/signup.html</strong></p>
-
-<figure class="highlight"><pre><code class="language-django" data-lang="django"><span class="cp">{%</span> <span class="k">extends</span> <span class="s1">'base.html'</span> <span class="cp">%}</span>
-
-<span class="cp">{%</span> <span class="nv">load</span> <span class="nv">static</span> <span class="cp">%}</span>
-
-<span class="cp">{%</span> <span class="k">block</span> <span class="nv">stylesheet</span> <span class="cp">%}</span>
-  <span class="nt">&lt;link</span> <span class="na">rel=</span><span class="s">"stylesheet"</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="nv">static</span> <span class="s1">'css/accounts.css'</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span>
-<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
-
-<span class="cp">{%</span> <span class="k">block</span> <span class="nv">body</span> <span class="cp">%}</span>
-  <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"container"</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;h1</span> <span class="na">class=</span><span class="s">"text-center logo my-4"</span><span class="nt">&gt;</span>
-      <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="nv">url</span> <span class="s1">'home'</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span>Django Boards<span class="nt">&lt;/a&gt;</span>
-    <span class="nt">&lt;/h1&gt;</span>
-    <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"row justify-content-center"</span><span class="nt">&gt;</span>
-      <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"col-lg-8 col-md-10 col-sm-12"</span><span class="nt">&gt;</span>
-        <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"card"</span><span class="nt">&gt;</span>
-          <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"card-body"</span><span class="nt">&gt;</span>
-            <span class="nt">&lt;h3</span> <span class="na">class=</span><span class="s">"card-title"</span><span class="nt">&gt;</span>Sign up<span class="nt">&lt;/h3&gt;</span>
-            <span class="nt">&lt;form</span> <span class="na">method=</span><span class="s">"post"</span> <span class="na">novalidate</span><span class="nt">&gt;</span>
-              <span class="cp">{%</span> <span class="nv">csrf_token</span> <span class="cp">%}</span>
-              <span class="cp">{%</span> <span class="k">include</span> <span class="s1">'includes/form.html'</span> <span class="cp">%}</span>
-              <span class="nt">&lt;button</span> <span class="na">type=</span><span class="s">"submit"</span> <span class="na">class=</span><span class="s">"btn btn-primary btn-block"</span><span class="nt">&gt;</span>Create an account<span class="nt">&lt;/button&gt;</span>
-            <span class="nt">&lt;/form&gt;</span>
-          <span class="nt">&lt;/div&gt;</span>
-          <span class="nt">&lt;div</span> <span class="na">class=</span><span class="s">"card-footer text-muted text-center"</span><span class="nt">&gt;</span>
-            Already have an account? <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"#"</span><span class="nt">&gt;</span>Log in<span class="nt">&lt;/a&gt;</span>
-          <span class="nt">&lt;/div&gt;</span>
-        <span class="nt">&lt;/div&gt;</span>
-      <span class="nt">&lt;/div&gt;</span>
-    <span class="nt">&lt;/div&gt;</span>
-  <span class="nt">&lt;/div&gt;</span>
-<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span></code></pre></figure>
-
-<p>With that, this should be our sign up page right now:</p>
-
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/signup-10.jpg" alt="Sign up" /></p>
-
-<hr />
+        def test_redirection(self):
+            '''
+            A valid form submission should redirect the user to the home page
+            '''
+            self.assertRedirects(self.response, self.home_url)
+
+        def test_user_creation(self):
+            self.assertTrue(User.objects.exists())
+
+        def test_user_authentication(self):
+            '''
+            Create a new request to an arbitrary page.
+            The resulting response should now have a `user` to its context,
+            after a successful sign up.
+            '''
+            response = self.client.get(self.home_url)
+            user = response.context.get('user')
+            self.assertTrue(user.is_authenticated)
+
+</figure>
+
+Run the tests.
+
+Using a similar strategy, now let’s create a new class for sign up tests when the data is invalid:
+
+<figure class="highlight">
+
+    from django.contrib.auth.models import User
+    from django.contrib.auth.forms import UserCreationForm
+    from django.core.urlresolvers import reverse
+    from django.urls import resolve
+    from django.test import TestCase
+    from .views import signup
+
+    class SignUpTests(TestCase):
+        # code suppressed...
+
+    class SuccessfulSignUpTests(TestCase):
+        # code suppressed...
+
+    class InvalidSignUpTests(TestCase):
+        def setUp(self):
+            url = reverse('signup')
+            self.response = self.client.post(url, {})  # submit an empty dictionary
+
+        def test_signup_status_code(self):
+            '''
+            An invalid form submission should return to the same page
+            '''
+            self.assertEquals(self.response.status_code, 200)
+
+        def test_form_errors(self):
+            form = self.response.context.get('form')
+            self.assertTrue(form.errors)
+
+        def test_dont_create_user(self):
+            self.assertFalse(User.objects.exists())
+
+</figure>
+
+##### Adding the Email Field to the Form
+
+Everything is working, but… The **email address** field is missing. Well, the **UserCreationForm** does not provide an **email** field. But we can extend it.
+
+Create a file named **forms.py** inside the **accounts** folder:
+
+**accounts/forms.py**
+
+<figure class="highlight">
+
+    from django import forms
+    from django.contrib.auth.forms import UserCreationForm
+    from django.contrib.auth.models import User
+
+    class SignUpForm(UserCreationForm):
+        email = forms.CharField(max_length=254, required=True, widget=forms.EmailInput())
+        class Meta:
+            model = User
+            fields = ('username', 'email', 'password1', 'password2')
+
+</figure>
+
+Now, instead of using the **UserCreationForm** in our **views.py**, let’s import the new form, **SignUpForm**, and use it instead:
+
+**accounts/views.py**
+
+<figure class="highlight">
+
+    from django.contrib.auth import login as auth_login
+    from django.shortcuts import render, redirect
+
+    from .forms import SignUpForm
+
+    def signup(request):
+        if request.method == 'POST':
+            form = SignUpForm(request.POST)
+            if form.is_valid():
+                user = form.save()
+                auth_login(request, user)
+                return redirect('home')
+        else:
+            form = SignUpForm()
+        return render(request, 'signup.html', {'form': form})
+
+</figure>
+
+Just with this small change, everything is already working:
+
+![Sign up](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/signup-9.png)
+
+Remember to change the test case to use the **SignUpForm** instead of **UserCreationForm**:
+
+<figure class="highlight">
+
+    from .forms import SignUpForm
+
+    class SignUpTests(TestCase):
+        # ...
+
+        def test_contains_form(self):
+            form = self.response.context.get('form')
+            self.assertIsInstance(form, SignUpForm)
+
+    class SuccessfulSignUpTests(TestCase):
+        def setUp(self):
+            url = reverse('signup')
+            data = {
+                'username': 'john',
+                'email': 'john@doe.com',
+                'password1': 'abcdef123456',
+                'password2': 'abcdef123456'
+            }
+            self.response = self.client.post(url, data)
+            self.home_url = reverse('home')
+
+        # ...
+
+</figure>
+
+The previous test case would still pass because since **SignUpForm** extends the **UserCreationForm**, _it is_ an instance of **UserCreationForm**.
+
+Now let’s think about what happened for a moment. We added a new form field:
+
+<figure class="highlight">
+
+    fields = ('username', 'email', 'password1', 'password2')
+
+</figure>
+
+And it automatically reflected in the HTML template. It’s good, right? Well, depends. What if in the future, a new developer wanted to re-use the **SignUpForm** for something else, and add some extra fields to it. Then those new fields would also show up in the **signup.html**, which may not be the desired behavior. This change could pass unnoticed, and we don’t want any surprises.
+
+So let’s create a new test, that verifies the HTML inputs in the template:
+
+**accounts/tests.py**
+
+<figure class="highlight">
+
+    class SignUpTests(TestCase):
+        # ...
+
+        def test_form_inputs(self):
+            '''
+            The view must contain five inputs: csrf, username, email,
+            password1, password2
+            '''
+            self.assertContains(self.response, '<input', 5)
+            self.assertContains(self.response, 'type="text"', 1)
+            self.assertContains(self.response, 'type="email"', 1)
+            self.assertContains(self.response, 'type="password"', 2)
+
+</figure>
+
+##### Improving the Tests Layout
+
+Alright, so we are testing the inputs and everything, but we still have to test the form itself. Instead of just keep adding tests to the **accounts/tests.py** file, let’s improve the project design a little bit.
+
+Create a new folder named **tests** within the **accounts** folder. Then, inside the **tests** folder, create an empty file named **__init__.py**.
+
+Now, move the **tests.py** file to inside the **tests** folder, and rename it to **test_view_signup.py**.
+
+The final result should be the following:
+
+<figure class="highlight">
+
+    myproject/
+     |-- myproject/
+     |    |-- accounts/
+     |    |    |-- migrations/
+     |    |    |-- tests/
+     |    |    |    |-- __init__.py
+     |    |    |    +-- test_view_signup.py
+     |    |    |-- __init__.py
+     |    |    |-- admin.py
+     |    |    |-- apps.py
+     |    |    |-- models.py
+     |    |    +-- views.py
+     |    |-- boards/
+     |    |-- myproject/
+     |    |-- static/
+     |    |-- templates/
+     |    |-- db.sqlite3
+     |    +-- manage.py
+     +-- venv/
+
+</figure>
+
+Note that since we are using relative import within the context of the apps, we need to fix the imports in the new **test_view_signup.py**:
+
+**accounts/tests/test_view_signup.py**
+
+<figure class="highlight">
+
+    from django.contrib.auth.models import User
+    from django.core.urlresolvers import reverse
+    from django.urls import resolve
+    from django.test import TestCase
+
+    from ..views import signup
+    from ..forms import SignUpForm
+
+</figure>
+
+We are using relative imports inside the app modules so we can have the freedom to rename the Django app later on, without having to fix all the absolute imports.
+
+Now let’s create a new test file, to test the **SignUpForm**. Add a new test file named **test_form_signup.py**:
+
+**accounts/tests/test_form_signup.py**
+
+<figure class="highlight">
+
+    from django.test import TestCase
+    from ..forms import SignUpForm
+
+    class SignUpFormTest(TestCase):
+        def test_form_has_fields(self):
+            form = SignUpForm()
+            expected = ['username', 'email', 'password1', 'password2',]
+            actual = list(form.fields)
+            self.assertSequenceEqual(expected, actual)
+
+</figure>
+
+It looks very strict, right? For example, if in the future we have to change the **SignUpForm**, to include the user’s first and last name, we will probably end up having to fix a few test cases, even if we didn’t break anything.
+
+![Test Case Alert](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/Pixton_Comic_Test_Alerts.png)
+
+Those alerts are useful because they help to bring awareness, especially for newcomers touching the code for the first time. It helps them code with confidence.
+
+##### Improving the Sign Up Template
+
+Let’s work a little bit on it. Here we can use Bootstrap 4 cards components to make it look good.
+
+Go to [https://www.toptal.com/designers/subtlepatterns/](https://www.toptal.com/designers/subtlepatterns/) and find a nice background pattern to use as a background of the accounts pages. Download it, create a new folder named **img** inside the **static** folder, and place the image there.
+
+Then after that, create a new CSS file named **accounts.css** in the **static/css**. The result should be the following:
+
+<figure class="highlight">
+
+    myproject/
+     |-- myproject/
+     |    |-- accounts/
+     |    |-- boards/
+     |    |-- myproject/
+     |    |-- static/
+     |    |    |-- css/
+     |    |    |    |-- accounts.css  <-- here
+     |    |    |    |-- app.css
+     |    |    |    +-- bootstrap.min.css
+     |    |    +-- img/
+     |    |    |    +-- shattered.png  <-- here (the name may be different, depending on the patter you downloaded)
+     |    |-- templates/
+     |    |-- db.sqlite3
+     |    +-- manage.py
+     +-- venv/
+
+</figure>
+
+Now edit the **accounts.css** file:
+
+**static/css/accounts.css**
+
+<figure class="highlight">
+
+    body {
+      background-image: url(../img/shattered.png);
+    }
+
+    .logo {
+      font-family: 'Peralta', cursive;
+    }
+
+    .logo a {
+      color: rgba(0,0,0,.9);
+    }
+
+    .logo a:hover,
+    .logo a:active {
+      text-decoration: none;
+    }
+
+</figure>
+
+In the **signup.html** template, we can change it to make use of the new CSS and also take the Bootstrap 4 card components into use:
+
+**templates/signup.html**
+
+<figure class="highlight">
+
+    {% extends 'base.html' %}
+
+    {% load static %}
+
+    {% block stylesheet %}
+      <link rel="stylesheet" href="{% static 'css/accounts.css' %}">
+    {% endblock %}
+
+    {% block body %}
+      <div class="container">
+        <h1 class="text-center logo my-4">
+          <a href="{% url 'home' %}">Django Boards</a>
+        </h1>
+        <div class="row justify-content-center">
+          <div class="col-lg-8 col-md-10 col-sm-12">
+            <div class="card">
+              <div class="card-body">
+                <h3 class="card-title">Sign up</h3>
+                <form method="post" novalidate>
+                  {% csrf_token %}
+                  {% include 'includes/form.html' %}
+                  <button type="submit" class="btn btn-primary btn-block">Create an account</button>
+                </form>
+              </div>
+              <div class="card-footer text-muted text-center">
+                Already have an account? <a href="#">Log in</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endblock %}
+
+</figure>
+
+With that, this should be our sign up page right now:
+
+![Sign up](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/signup-10.jpg)
+
+* * *

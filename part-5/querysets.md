@@ -1,321 +1,380 @@
-<h4 id="querysets">QuerySets</h4>
+#### QuerySets
 
-<p>Let’s take the time now to explore some of the models’ API functionalities a little bit. First, let’s improve the
-home view:</p>
+Let’s take the time now to explore some of the models’ API functionalities a little bit. First, let’s improve the home view:
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-5/boards-1.png" alt="Boards" /></p>
+![Boards](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-5/boards-1.png)
 
-<p>We have three tasks here:</p>
+We have three tasks here:
 
-<ul>
-  <li>Display the posts count of the board;</li>
-  <li>Display the topics count of the board;</li>
-  <li>Display the last user who posted something and the date and time.</li>
-</ul>
+*   Display the posts count of the board;
+*   Display the topics count of the board;
+*   Display the last user who posted something and the date and time.
 
-<p>Let’s play with the Python terminal first, before we jump into the implementation.</p>
+Let’s play with the Python terminal first, before we jump into the implementation.
 
-<p>Since we are going to try things out in the Python terminal, it’s a good idea to define a <code class="highlighter-rouge">__str__</code> method for all
-our models.</p>
+Since we are going to try things out in the Python terminal, it’s a good idea to define a `__str__` method for all our models.
 
-<p><strong>boards/models.py</strong>
-<small><a href="https://gist.github.com/vitorfs/9524eb42005697fbb79836285b50b1f4" target="_blank" rel="noopener nofollow">(view complete file contents)</a></small></p>
+**boards/models.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/9524eb42005697fbb79836285b50b1f4)</small>
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
-<span class="kn">from</span> <span class="nn">django.utils.text</span> <span class="kn">import</span> <span class="n">Truncator</span>
+<figure class="highlight">
 
-<span class="k">class</span> <span class="nc">Board</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-    <span class="c"># ...</span>
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
+    from django.db import models
+    from django.utils.text import Truncator
 
-<span class="k">class</span> <span class="nc">Topic</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-    <span class="c"># ...</span>
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">subject</span>
+    class Board(models.Model):
+        # ...
+        def __str__(self):
+            return self.name
 
-<span class="k">class</span> <span class="nc">Post</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-    <span class="c"># ...</span>
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">truncated_message</span> <span class="o">=</span> <span class="n">Truncator</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">message</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">truncated_message</span><span class="o">.</span><span class="n">chars</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span></code></pre></figure>
+    class Topic(models.Model):
+        # ...
+        def __str__(self):
+            return self.subject
 
-<p>In the Post model we are using the <strong>Truncator</strong> utility class. It’s a convenient way to truncate long strings into
-an arbitrary string size (here we are using 30).</p>
+    class Post(models.Model):
+        # ...
+        def __str__(self):
+            truncated_message = Truncator(self.message)
+            return truncated_message.chars(30)
 
-<p>Now let’s open the Python shell terminal:</p>
+</figure>
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">python</span> <span class="n">manage</span><span class="o">.</span><span class="n">py</span> <span class="n">shell</span>
+In the Post model we are using the **Truncator** utility class. It’s a convenient way to truncate long strings into an arbitrary string size (here we are using 30).
 
-<span class="c"># First get a board instance from the database</span>
-<span class="n">board</span> <span class="o">=</span> <span class="n">Board</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">'Django'</span><span class="p">)</span></code></pre></figure>
+Now let’s open the Python shell terminal:
 
-<p>The easiest of the three tasks is to get the current topics count, because the Topic and Board are directly related:</p>
+<figure class="highlight">
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">board</span><span class="o">.</span><span class="n">topics</span><span class="o">.</span><span class="nb">all</span><span class="p">()</span>
-<span class="o">&lt;</span><span class="n">QuerySet</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">Topic</span><span class="p">:</span> <span class="n">Hello</span> <span class="n">everyone</span><span class="err">!</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Topic</span><span class="p">:</span> <span class="n">Test</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Topic</span><span class="p">:</span> <span class="n">Testing</span> <span class="n">a</span> <span class="n">new</span> <span class="n">post</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Topic</span><span class="p">:</span> <span class="n">Hi</span><span class="o">&gt;</span><span class="p">]</span><span class="o">&gt;</span>
+    python manage.py shell
 
-<span class="n">board</span><span class="o">.</span><span class="n">topics</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
-<span class="mi">4</span></code></pre></figure>
+    # First get a board instance from the database
+    board = Board.objects.get(name='Django')
 
-<p>That’s about it.</p>
+</figure>
 
-<p>Now the number of <em>posts</em> within a <em>board</em> is a little bit trickier because Post is not directly related to Board.</p>
+The easiest of the three tasks is to get the current topics count, because the Topic and Board are directly related:
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">boards.models</span> <span class="kn">import</span> <span class="n">Post</span>
+<figure class="highlight">
 
-<span class="n">Post</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="nb">all</span><span class="p">()</span>
-<span class="o">&lt;</span><span class="n">QuerySet</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">Post</span><span class="p">:</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">my</span> <span class="n">first</span> <span class="n">topic</span><span class="o">..</span> <span class="p">:</span><span class="o">-</span><span class="p">)</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Post</span><span class="p">:</span> <span class="n">test</span><span class="o">.&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Post</span><span class="p">:</span> <span class="n">Hi</span> <span class="n">everyone</span><span class="err">!</span><span class="o">&gt;</span><span class="p">,</span>
-  <span class="o">&lt;</span><span class="n">Post</span><span class="p">:</span> <span class="n">New</span> <span class="n">test</span> <span class="n">here</span><span class="err">!</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Post</span><span class="p">:</span> <span class="n">Testing</span> <span class="n">the</span> <span class="n">new</span> <span class="n">reply</span> <span class="n">feature</span><span class="err">!</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Post</span><span class="p">:</span> <span class="n">Lorem</span> <span class="n">ipsum</span> <span class="n">dolor</span> <span class="n">sit</span> <span class="n">amet</span><span class="p">,</span><span class="o">...&gt;</span><span class="p">,</span>
-  <span class="o">&lt;</span><span class="n">Post</span><span class="p">:</span> <span class="n">hi</span> <span class="n">there</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Post</span><span class="p">:</span> <span class="n">test</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Post</span><span class="p">:</span> <span class="n">Testing</span><span class="o">..&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Post</span><span class="p">:</span> <span class="n">some</span> <span class="n">reply</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Post</span><span class="p">:</span> <span class="n">Random</span> <span class="n">random</span><span class="o">.&gt;</span>
-<span class="p">]</span><span class="o">&gt;</span>
+    board.topics.all()
+    <QuerySet [<Topic: Hello everyone!>, <Topic: Test>, <Topic: Testing a new post>, <Topic: Hi>]>
 
-<span class="n">Post</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
-<span class="mi">11</span></code></pre></figure>
+    board.topics.count()
+    4
 
-<p>Here we have 11 posts. But not all of them belongs to the “Django” board.</p>
+</figure>
 
-<p>Here is how we can filter it:</p>
+That’s about it.
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">boards.models</span> <span class="kn">import</span> <span class="n">Board</span><span class="p">,</span> <span class="n">Post</span>
+Now the number of _posts_ within a _board_ is a little bit trickier because Post is not directly related to Board.
 
-<span class="n">board</span> <span class="o">=</span> <span class="n">Board</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">'Django'</span><span class="p">)</span>
+<figure class="highlight">
 
-<span class="n">Post</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="nb">filter</span><span class="p">(</span><span class="n">topic__board</span><span class="o">=</span><span class="n">board</span><span class="p">)</span>
-<span class="o">&lt;</span><span class="n">QuerySet</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">Post</span><span class="p">:</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">my</span> <span class="n">first</span> <span class="n">topic</span><span class="o">..</span> <span class="p">:</span><span class="o">-</span><span class="p">)</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Post</span><span class="p">:</span> <span class="n">test</span><span class="o">.&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Post</span><span class="p">:</span> <span class="n">hi</span> <span class="n">there</span><span class="o">&gt;</span><span class="p">,</span>
-  <span class="o">&lt;</span><span class="n">Post</span><span class="p">:</span> <span class="n">Hi</span> <span class="n">everyone</span><span class="err">!</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Post</span><span class="p">:</span> <span class="n">Lorem</span> <span class="n">ipsum</span> <span class="n">dolor</span> <span class="n">sit</span> <span class="n">amet</span><span class="p">,</span><span class="o">...&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Post</span><span class="p">:</span> <span class="n">New</span> <span class="n">test</span> <span class="n">here</span><span class="err">!</span><span class="o">&gt;</span><span class="p">,</span>
-  <span class="o">&lt;</span><span class="n">Post</span><span class="p">:</span> <span class="n">Testing</span> <span class="n">the</span> <span class="n">new</span> <span class="n">reply</span> <span class="n">feature</span><span class="err">!</span><span class="o">&gt;</span>
-<span class="p">]</span><span class="o">&gt;</span>
+    from boards.models import Post
 
-<span class="n">Post</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="nb">filter</span><span class="p">(</span><span class="n">topic__board</span><span class="o">=</span><span class="n">board</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
-<span class="mi">7</span></code></pre></figure>
+    Post.objects.all()
+    <QuerySet [<Post: This is my first topic.. :-)>, <Post: test.>, <Post: Hi everyone!>,
+      <Post: New test here!>, <Post: Testing the new reply feature!>, <Post: Lorem ipsum dolor sit amet,...>,
+      <Post: hi there>, <Post: test>, <Post: Testing..>, <Post: some reply>, <Post: Random random.>
+    ]>
 
-<p>The double underscores <code class="highlighter-rouge">topic__board</code> is used to navigate through the models’ relationships. Under the hoods, Django
-builds the bridge between the Board - Topic - Post, and build a SQL query to retrieve just the posts that belong to
-a specific board.</p>
+    Post.objects.count()
+    11
 
-<p>Now our last mission is to identify the last post.</p>
+</figure>
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="c"># order by the `created_at` field, getting the most recent first</span>
-<span class="n">Post</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="nb">filter</span><span class="p">(</span><span class="n">topic__board</span><span class="o">=</span><span class="n">board</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s">'-created_at'</span><span class="p">)</span>
-<span class="o">&lt;</span><span class="n">QuerySet</span> <span class="p">[</span><span class="o">&lt;</span><span class="n">Post</span><span class="p">:</span> <span class="n">testing</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Post</span><span class="p">:</span> <span class="n">new</span> <span class="n">post</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Post</span><span class="p">:</span> <span class="n">hi</span> <span class="n">there</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Post</span><span class="p">:</span> <span class="n">Lorem</span> <span class="n">ipsum</span> <span class="n">dolor</span> <span class="n">sit</span> <span class="n">amet</span><span class="p">,</span><span class="o">...&gt;</span><span class="p">,</span>
-  <span class="o">&lt;</span><span class="n">Post</span><span class="p">:</span> <span class="n">Testing</span> <span class="n">the</span> <span class="n">new</span> <span class="n">reply</span> <span class="n">feature</span><span class="err">!</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Post</span><span class="p">:</span> <span class="n">New</span> <span class="n">test</span> <span class="n">here</span><span class="err">!</span><span class="o">&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Post</span><span class="p">:</span> <span class="n">Hi</span> <span class="n">everyone</span><span class="err">!</span><span class="o">&gt;</span><span class="p">,</span>
-  <span class="o">&lt;</span><span class="n">Post</span><span class="p">:</span> <span class="n">test</span><span class="o">.&gt;</span><span class="p">,</span> <span class="o">&lt;</span><span class="n">Post</span><span class="p">:</span> <span class="n">This</span> <span class="ow">is</span> <span class="n">my</span> <span class="n">first</span> <span class="n">topic</span><span class="o">..</span> <span class="p">:</span><span class="o">-</span><span class="p">)</span><span class="o">&gt;</span>
-<span class="p">]</span><span class="o">&gt;</span>
-
-<span class="c"># we can use the `first()` method to just grab the result that interest us</span>
-<span class="n">Post</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="nb">filter</span><span class="p">(</span><span class="n">topic__board</span><span class="o">=</span><span class="n">board</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s">'-created_at'</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span>
-<span class="o">&lt;</span><span class="n">Post</span><span class="p">:</span> <span class="n">testing</span><span class="o">&gt;</span></code></pre></figure>
-
-<p>Sweet. Now we can implement it.</p>
-
-<p><strong>boards/models.py</strong>
-<small><a href="https://gist.github.com/vitorfs/74077336decd75292082752eb8405ad3" target="_blank" rel="noopener nofollow">(view complete file contents)</a></small></p>
-
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">django.db</span> <span class="kn">import</span> <span class="n">models</span>
-
-<span class="k">class</span> <span class="nc">Board</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-    <span class="n">name</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">unique</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
-    <span class="n">description</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">CharField</span><span class="p">(</span><span class="n">max_length</span><span class="o">=</span><span class="mi">100</span><span class="p">)</span>
-
-    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span>
-
-    <span class="k">def</span> <span class="nf">get_posts_count</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">Post</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="nb">filter</span><span class="p">(</span><span class="n">topic__board</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">count</span><span class="p">()</span>
-
-    <span class="k">def</span> <span class="nf">get_last_post</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">return</span> <span class="n">Post</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="nb">filter</span><span class="p">(</span><span class="n">topic__board</span><span class="o">=</span><span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s">'-created_at'</span><span class="p">)</span><span class="o">.</span><span class="n">first</span><span class="p">()</span></code></pre></figure>
-
-<p>Observe that we are using <code class="highlighter-rouge">self</code>, because this method will be used by a Board instance. So that means we are using
-this instance to filter the QuerySet.</p>
-
-<p>Now we can improve the home HTML template to display this brand new information:</p>
-
-<p><strong>templates/home.html</strong></p>
-
-<figure class="highlight"><pre><code class="language-django" data-lang="django"><span class="cp">{%</span> <span class="k">extends</span> <span class="s1">'base.html'</span> <span class="cp">%}</span>
-
-<span class="cp">{%</span> <span class="k">block</span> <span class="nv">breadcrumb</span> <span class="cp">%}</span>
-  <span class="nt">&lt;li</span> <span class="na">class=</span><span class="s">"breadcrumb-item active"</span><span class="nt">&gt;</span>Boards<span class="nt">&lt;/li&gt;</span>
-<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span>
-
-<span class="cp">{%</span> <span class="k">block</span> <span class="nv">content</span> <span class="cp">%}</span>
-  <span class="nt">&lt;table</span> <span class="na">class=</span><span class="s">"table"</span><span class="nt">&gt;</span>
-    <span class="nt">&lt;thead</span> <span class="na">class=</span><span class="s">"thead-inverse"</span><span class="nt">&gt;</span>
-      <span class="nt">&lt;tr&gt;</span>
-        <span class="nt">&lt;th&gt;</span>Board<span class="nt">&lt;/th&gt;</span>
-        <span class="nt">&lt;th&gt;</span>Posts<span class="nt">&lt;/th&gt;</span>
-        <span class="nt">&lt;th&gt;</span>Topics<span class="nt">&lt;/th&gt;</span>
-        <span class="nt">&lt;th&gt;</span>Last Post<span class="nt">&lt;/th&gt;</span>
-      <span class="nt">&lt;/tr&gt;</span>
-    <span class="nt">&lt;/thead&gt;</span>
-    <span class="nt">&lt;tbody&gt;</span>
-      <span class="cp">{%</span> <span class="k">for</span> <span class="nv">board</span> <span class="ow">in</span> <span class="nv">boards</span> <span class="cp">%}</span>
-        <span class="nt">&lt;tr&gt;</span>
-          <span class="nt">&lt;td&gt;</span>
-            <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="nv">url</span> <span class="s1">'board_topics'</span> <span class="nv">board.pk</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span><span class="cp">{{</span> <span class="nv">board.name</span> <span class="cp">}}</span><span class="nt">&lt;/a&gt;</span>
-            <span class="nt">&lt;small</span> <span class="na">class=</span><span class="s">"text-muted d-block"</span><span class="nt">&gt;</span><span class="cp">{{</span> <span class="nv">board.description</span> <span class="cp">}}</span><span class="nt">&lt;/small&gt;</span>
-          <span class="nt">&lt;/td&gt;</span>
-          <span class="nt">&lt;td</span> <span class="na">class=</span><span class="s">"align-middle"</span><span class="nt">&gt;</span>
-            <span class="cp">{{</span> <span class="nv">board.get_posts_count</span> <span class="cp">}}</span>
-          <span class="nt">&lt;/td&gt;</span>
-          <span class="nt">&lt;td</span> <span class="na">class=</span><span class="s">"align-middle"</span><span class="nt">&gt;</span>
-            <span class="cp">{{</span> <span class="nv">board.topics.count</span> <span class="cp">}}</span>
-          <span class="nt">&lt;/td&gt;</span>
-          <span class="nt">&lt;td</span> <span class="na">class=</span><span class="s">"align-middle"</span><span class="nt">&gt;</span>
-            <span class="cp">{%</span> <span class="k">with</span> <span class="nv">post</span><span class="err">=</span><span class="nv">board.get_last_post</span> <span class="cp">%}</span>
-              <span class="nt">&lt;small&gt;</span>
-                <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="nv">url</span> <span class="s1">'topic_posts'</span> <span class="nv">board.pk</span> <span class="nv">post.topic.pk</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span>
-                  By <span class="cp">{{</span> <span class="nv">post.created_by.username</span> <span class="cp">}}</span> at <span class="cp">{{</span> <span class="nv">post.created_at</span> <span class="cp">}}</span>
-                <span class="nt">&lt;/a&gt;</span>
-              <span class="nt">&lt;/small&gt;</span>
-            <span class="cp">{%</span> <span class="k">endwith</span> <span class="cp">%}</span>
-          <span class="nt">&lt;/td&gt;</span>
-        <span class="nt">&lt;/tr&gt;</span>
-      <span class="cp">{%</span> <span class="k">endfor</span> <span class="cp">%}</span>
-    <span class="nt">&lt;/tbody&gt;</span>
-  <span class="nt">&lt;/table&gt;</span>
-<span class="cp">{%</span> <span class="k">endblock</span> <span class="cp">%}</span></code></pre></figure>
+Here we have 11 posts. But not all of them belongs to the “Django” board.
 
-<p>And that’s the result for now:</p>
+Here is how we can filter it:
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-5/boards-2.png" alt="Boards" /></p>
+<figure class="highlight">
 
-<p>Run the tests:</p>
+    from boards.models import Board, Post
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">python manage.py test</code></pre></figure>
+    board = Board.objects.get(name='Django')
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Creating test database for alias 'default'...
-System check identified no issues (0 silenced).
-.......................................................EEE......................
-======================================================================
-ERROR: test_home_url_resolves_home_view (boards.tests.test_view_home.HomeTests)
-----------------------------------------------------------------------
-django.urls.exceptions.NoReverseMatch: Reverse for 'topic_posts' with arguments '(1, '')' not found. 1 pattern(s) tried: ['boards/(?P&lt;pk&gt;\\d+)/topics/(?P&lt;topic_pk&gt;\\d+)/$']
+    Post.objects.filter(topic__board=board)
+    <QuerySet [<Post: This is my first topic.. :-)>, <Post: test.>, <Post: hi there>,
+      <Post: Hi everyone!>, <Post: Lorem ipsum dolor sit amet,...>, <Post: New test here!>,
+      <Post: Testing the new reply feature!>
+    ]>
 
-======================================================================
-ERROR: test_home_view_contains_link_to_topics_page (boards.tests.test_view_home.HomeTests)
-----------------------------------------------------------------------
-django.urls.exceptions.NoReverseMatch: Reverse for 'topic_posts' with arguments '(1, '')' not found. 1 pattern(s) tried: ['boards/(?P&lt;pk&gt;\\d+)/topics/(?P&lt;topic_pk&gt;\\d+)/$']
+    Post.objects.filter(topic__board=board).count()
+    7
 
-======================================================================
-ERROR: test_home_view_status_code (boards.tests.test_view_home.HomeTests)
-----------------------------------------------------------------------
-django.urls.exceptions.NoReverseMatch: Reverse for 'topic_posts' with arguments '(1, '')' not found. 1 pattern(s) tried: ['boards/(?P&lt;pk&gt;\\d+)/topics/(?P&lt;topic_pk&gt;\\d+)/$']
+</figure>
 
-----------------------------------------------------------------------
-Ran 80 tests in 5.663s
+The double underscores `topic__board` is used to navigate through the models’ relationships. Under the hoods, Django builds the bridge between the Board - Topic - Post, and build a SQL query to retrieve just the posts that belong to a specific board.
 
-FAILED (errors=3)
-Destroying test database for alias 'default'...</code></pre></figure>
+Now our last mission is to identify the last post.
 
-<p>It seems like we have a problem with our implementation here. The application is crashing if there are no posts.</p>
+<figure class="highlight">
 
-<p><strong>templates/home.html</strong></p>
+    # order by the `created_at` field, getting the most recent first
+    Post.objects.filter(topic__board=board).order_by('-created_at')
+    <QuerySet [<Post: testing>, <Post: new post>, <Post: hi there>, <Post: Lorem ipsum dolor sit amet,...>,
+      <Post: Testing the new reply feature!>, <Post: New test here!>, <Post: Hi everyone!>,
+      <Post: test.>, <Post: This is my first topic.. :-)>
+    ]>
 
-<figure class="highlight"><pre><code class="language-django" data-lang="django"><span class="cp">{%</span> <span class="k">with</span> <span class="nv">post</span><span class="err">=</span><span class="nv">board.get_last_post</span> <span class="cp">%}</span>
-  <span class="cp">{%</span> <span class="k">if</span> <span class="nv">post</span> <span class="cp">%}</span>
-    <span class="nt">&lt;small&gt;</span>
-      <span class="nt">&lt;a</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="nv">url</span> <span class="s1">'topic_posts'</span> <span class="nv">board.pk</span> <span class="nv">post.topic.pk</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span>
-        By <span class="cp">{{</span> <span class="nv">post.created_by.username</span> <span class="cp">}}</span> at <span class="cp">{{</span> <span class="nv">post.created_at</span> <span class="cp">}}</span>
-      <span class="nt">&lt;/a&gt;</span>
-    <span class="nt">&lt;/small&gt;</span>
-  <span class="cp">{%</span> <span class="k">else</span> <span class="cp">%}</span>
-    <span class="nt">&lt;small</span> <span class="na">class=</span><span class="s">"text-muted"</span><span class="nt">&gt;</span>
-      <span class="nt">&lt;em&gt;</span>No posts yet.<span class="nt">&lt;/em&gt;</span>
-    <span class="nt">&lt;/small&gt;</span>
-  <span class="cp">{%</span> <span class="k">endif</span> <span class="cp">%}</span>
-<span class="cp">{%</span> <span class="k">endwith</span> <span class="cp">%}</span></code></pre></figure>
+    # we can use the `first()` method to just grab the result that interest us
+    Post.objects.filter(topic__board=board).order_by('-created_at').first()
+    <Post: testing>
 
-<p>Run the tests again:</p>
+</figure>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">python manage.py test</code></pre></figure>
+Sweet. Now we can implement it.
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Creating test database for alias 'default'...
-System check identified no issues (0 silenced).
-................................................................................
-----------------------------------------------------------------------
-Ran 80 tests in 5.630s
+**boards/models.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/74077336decd75292082752eb8405ad3)</small>
 
-OK
-Destroying test database for alias 'default'...</code></pre></figure>
+<figure class="highlight">
 
-<p>I added a new board with no messages just to check the “empty message”:</p>
+    from django.db import models
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-5/boards-3.png" alt="Boards" /></p>
+    class Board(models.Model):
+        name = models.CharField(max_length=30, unique=True)
+        description = models.CharField(max_length=100)
 
-<p>Now it’s time to improve the topics listing view.</p>
+        def __str__(self):
+            return self.name
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-5/topics-3.png" alt="Topics" /></p>
+        def get_posts_count(self):
+            return Post.objects.filter(topic__board=self).count()
 
-<p>I will show you another way to include the count, this time to the number of replies, in a more effective way.</p>
+        def get_last_post(self):
+            return Post.objects.filter(topic__board=self).order_by('-created_at').first()
 
-<p>As usual, let’s try first with the Python shell:</p>
+</figure>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">python manage.py shell</code></pre></figure>
+Observe that we are using `self`, because this method will be used by a Board instance. So that means we are using this instance to filter the QuerySet.
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Count</span>
-<span class="kn">from</span> <span class="nn">boards.models</span> <span class="kn">import</span> <span class="n">Board</span>
+Now we can improve the home HTML template to display this brand new information:
 
-<span class="n">board</span> <span class="o">=</span> <span class="n">Board</span><span class="o">.</span><span class="n">objects</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="s">'Django'</span><span class="p">)</span>
+**templates/home.html**
 
-<span class="n">topics</span> <span class="o">=</span> <span class="n">board</span><span class="o">.</span><span class="n">topics</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s">'-last_updated'</span><span class="p">)</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">replies</span><span class="o">=</span><span class="n">Count</span><span class="p">(</span><span class="s">'posts'</span><span class="p">))</span>
+<figure class="highlight">
 
-<span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="n">topics</span><span class="p">:</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">topic</span><span class="o">.</span><span class="n">replies</span><span class="p">)</span>
+    {% extends 'base.html' %}
 
-<span class="mi">2</span>
-<span class="mi">4</span>
-<span class="mi">2</span>
-<span class="mi">1</span></code></pre></figure>
+    {% block breadcrumb %}
+      <li class="breadcrumb-item active">Boards</li>
+    {% endblock %}
 
-<p>Here we are using the <code class="highlighter-rouge">annotate</code> QuerySet method to generate a new “column” on the fly. This new column, which will
-be translated into a property, accessible via <code class="highlighter-rouge">topic.replies</code> contain the count of posts a given topic has.</p>
+    {% block content %}
+      <table class="table">
+        <thead class="thead-inverse">
+          <tr>
+            <th>Board</th>
+            <th>Posts</th>
+            <th>Topics</th>
+            <th>Last Post</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for board in boards %}
+            <tr>
+              <td>
+                <a href="{% url 'board_topics' board.pk %}">{{ board.name }}</a>
+                <small class="text-muted d-block">{{ board.description }}</small>
+              </td>
+              <td class="align-middle">
+                {{ board.get_posts_count }}
+              </td>
+              <td class="align-middle">
+                {{ board.topics.count }}
+              </td>
+              <td class="align-middle">
+                {% with post=board.get_last_post %}
+                  <small>
+                    <a href="{% url 'topic_posts' board.pk post.topic.pk %}">
+                      By {{ post.created_by.username }} at {{ post.created_at }}
+                    </a>
+                  </small>
+                {% endwith %}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    {% endblock %}
 
-<p>We can do just a minor fix because the replies should not consider the starter topic (which is also a Post instance).</p>
+</figure>
 
-<p>So here is how we do it:</p>
+And that’s the result for now:
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="n">topics</span> <span class="o">=</span> <span class="n">board</span><span class="o">.</span><span class="n">topics</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s">'-last_updated'</span><span class="p">)</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">replies</span><span class="o">=</span><span class="n">Count</span><span class="p">(</span><span class="s">'posts'</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+![Boards](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-5/boards-2.png)
 
-<span class="k">for</span> <span class="n">topic</span> <span class="ow">in</span> <span class="n">topics</span><span class="p">:</span>
-    <span class="k">print</span><span class="p">(</span><span class="n">topic</span><span class="o">.</span><span class="n">replies</span><span class="p">)</span>
+Run the tests:
 
-<span class="mi">1</span>
-<span class="mi">3</span>
-<span class="mi">1</span>
-<span class="mi">0</span></code></pre></figure>
+<figure class="highlight">
 
-<p>Cool, right?</p>
+    python manage.py test
 
-<p><strong>boards/views.py</strong>
-<small><a href="https://gist.github.com/vitorfs/f22b493b3e076aba9351c9d98f547f5e#file-views-py-L14" target="_blank" rel="noopener nofollow">(view complete file contents)</a></small></p>
+</figure>
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="kn">from</span> <span class="nn">django.db.models</span> <span class="kn">import</span> <span class="n">Count</span>
-<span class="kn">from</span> <span class="nn">django.shortcuts</span> <span class="kn">import</span> <span class="n">get_object_or_404</span><span class="p">,</span> <span class="n">render</span>
-<span class="kn">from</span> <span class="nn">.models</span> <span class="kn">import</span> <span class="n">Board</span>
+<figure class="highlight">
 
-<span class="k">def</span> <span class="nf">board_topics</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">pk</span><span class="p">):</span>
-    <span class="n">board</span> <span class="o">=</span> <span class="n">get_object_or_404</span><span class="p">(</span><span class="n">Board</span><span class="p">,</span> <span class="n">pk</span><span class="o">=</span><span class="n">pk</span><span class="p">)</span>
-    <span class="n">topics</span> <span class="o">=</span> <span class="n">board</span><span class="o">.</span><span class="n">topics</span><span class="o">.</span><span class="n">order_by</span><span class="p">(</span><span class="s">'-last_updated'</span><span class="p">)</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">replies</span><span class="o">=</span><span class="n">Count</span><span class="p">(</span><span class="s">'posts'</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">render</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="s">'topics.html'</span><span class="p">,</span> <span class="p">{</span><span class="s">'board'</span><span class="p">:</span> <span class="n">board</span><span class="p">,</span> <span class="s">'topics'</span><span class="p">:</span> <span class="n">topics</span><span class="p">})</span></code></pre></figure>
+    Creating test database for alias 'default'...
+    System check identified no issues (0 silenced).
+    .......................................................EEE......................
+    ======================================================================
+    ERROR: test_home_url_resolves_home_view (boards.tests.test_view_home.HomeTests)
+    ----------------------------------------------------------------------
+    django.urls.exceptions.NoReverseMatch: Reverse for 'topic_posts' with arguments '(1, '')' not found. 1 pattern(s) tried: ['boards/(?P<pk>\\d+)/topics/(?P<topic_pk>\\d+)//figure>]
 
-<p><strong>templates/topics.html</strong>
-<small><a href="https://gist.github.com/vitorfs/1a2235f05f436c92025dc86028c22fc4#file-topics-html-L28" target="_blank" rel="noopener nofollow">(view complete file contents)</a></small></p>
+    ======================================================================
+    ERROR: test_home_view_contains_link_to_topics_page (boards.tests.test_view_home.HomeTests)
+    ----------------------------------------------------------------------
+    django.urls.exceptions.NoReverseMatch: Reverse for 'topic_posts' with arguments '(1, '')' not found. 1 pattern(s) tried: ['boards/(?P<pk>\\d+)/topics/(?P<topic_pk>\\d+)//figure>]
 
-<figure class="highlight"><pre><code class="language-django" data-lang="django"><span class="cp">{%</span> <span class="k">for</span> <span class="nv">topic</span> <span class="ow">in</span> <span class="nv">topics</span> <span class="cp">%}</span>
-  <span class="nt">&lt;tr&gt;</span>
-    <span class="nt">&lt;td&gt;&lt;a</span> <span class="na">href=</span><span class="s">"</span><span class="cp">{%</span> <span class="nv">url</span> <span class="s1">'topic_posts'</span> <span class="nv">board.pk</span> <span class="nv">topic.pk</span> <span class="cp">%}</span><span class="s">"</span><span class="nt">&gt;</span><span class="cp">{{</span> <span class="nv">topic.subject</span> <span class="cp">}}</span><span class="nt">&lt;/a&gt;&lt;/td&gt;</span>
-    <span class="nt">&lt;td&gt;</span><span class="cp">{{</span> <span class="nv">topic.starter.username</span> <span class="cp">}}</span><span class="nt">&lt;/td&gt;</span>
-    <span class="nt">&lt;td&gt;</span><span class="cp">{{</span> <span class="nv">topic.replies</span> <span class="cp">}}</span><span class="nt">&lt;/td&gt;</span>
-    <span class="nt">&lt;td&gt;</span>0<span class="nt">&lt;/td&gt;</span>
-    <span class="nt">&lt;td&gt;</span><span class="cp">{{</span> <span class="nv">topic.last_updated</span> <span class="cp">}}</span><span class="nt">&lt;/td&gt;</span>
-  <span class="nt">&lt;/tr&gt;</span>
-<span class="cp">{%</span> <span class="k">endfor</span> <span class="cp">%}</span></code></pre></figure>
+    ======================================================================
+    ERROR: test_home_view_status_code (boards.tests.test_view_home.HomeTests)
+    ----------------------------------------------------------------------
+    django.urls.exceptions.NoReverseMatch: Reverse for 'topic_posts' with arguments '(1, '')' not found. 1 pattern(s) tried: ['boards/(?P<pk>\\d+)/topics/(?P<topic_pk>\\d+)//figure>]
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-5/topics-4.png" alt="Topics" /></p>
+    ----------------------------------------------------------------------
+    Ran 80 tests in 5.663s
 
-<p>Next step now is to fix the <em>views</em> count. But for that, we will need to create a new field.</p>
+    FAILED (errors=3)
+    Destroying test database for alias 'default'...
 
-<hr />
+</figure>
+
+It seems like we have a problem with our implementation here. The application is crashing if there are no posts.
+
+**templates/home.html**
+
+<figure class="highlight">
+
+    {% with post=board.get_last_post %}
+      {% if post %}
+        <small>
+          <a href="{% url 'topic_posts' board.pk post.topic.pk %}">
+            By {{ post.created_by.username }} at {{ post.created_at }}
+          </a>
+        </small>
+      {% else %}
+        <small class="text-muted">
+          <em>No posts yet.</em>
+        </small>
+      {% endif %}
+    {% endwith %}
+
+</figure>
+
+Run the tests again:
+
+<figure class="highlight">
+
+    python manage.py test
+
+</figure>
+
+<figure class="highlight">
+
+    Creating test database for alias 'default'...
+    System check identified no issues (0 silenced).
+    ................................................................................
+    ----------------------------------------------------------------------
+    Ran 80 tests in 5.630s
+
+    OK
+    Destroying test database for alias 'default'...
+
+</figure>
+
+I added a new board with no messages just to check the “empty message”:
+
+![Boards](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-5/boards-3.png)
+
+Now it’s time to improve the topics listing view.
+
+![Topics](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-5/topics-3.png)
+
+I will show you another way to include the count, this time to the number of replies, in a more effective way.
+
+As usual, let’s try first with the Python shell:
+
+<figure class="highlight">
+
+    python manage.py shell
+
+</figure>
+
+<figure class="highlight">
+
+    from django.db.models import Count
+    from boards.models import Board
+
+    board = Board.objects.get(name='Django')
+
+    topics = board.topics.order_by('-last_updated').annotate(replies=Count('posts'))
+
+    for topic in topics:
+        print(topic.replies)
+
+    2
+    4
+    2
+    1
+
+</figure>
+
+Here we are using the `annotate` QuerySet method to generate a new “column” on the fly. This new column, which will be translated into a property, accessible via `topic.replies` contain the count of posts a given topic has.
+
+We can do just a minor fix because the replies should not consider the starter topic (which is also a Post instance).
+
+So here is how we do it:
+
+<figure class="highlight">
+
+    topics = board.topics.order_by('-last_updated').annotate(replies=Count('posts') - 1)
+
+    for topic in topics:
+        print(topic.replies)
+
+    1
+    3
+    1
+    0
+
+</figure>
+
+Cool, right?
+
+**boards/views.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/f22b493b3e076aba9351c9d98f547f5e#file-views-py-L14)</small>
+
+<figure class="highlight">
+
+    from django.db.models import Count
+    from django.shortcuts import get_object_or_404, render
+    from .models import Board
+
+    def board_topics(request, pk):
+        board = get_object_or_404(Board, pk=pk)
+        topics = board.topics.order_by('-last_updated').annotate(replies=Count('posts') - 1)
+        return render(request, 'topics.html', {'board': board, 'topics': topics})
+
+</figure>
+
+**templates/topics.html** <small>[(view complete file contents)](https://gist.github.com/vitorfs/1a2235f05f436c92025dc86028c22fc4#file-topics-html-L28)</small>
+
+<figure class="highlight">
+
+    {% for topic in topics %}
+      <tr>
+        <td><a href="{% url 'topic_posts' board.pk topic.pk %}">{{ topic.subject }}</a></td>
+        <td>{{ topic.starter.username }}</td>
+        <td>{{ topic.replies }}</td>
+        <td>0</td>
+        <td>{{ topic.last_updated }}</td>
+      </tr>
+    {% endfor %}
+
+</figure>
+
+![Topics](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-5/topics-4.png)
+
+Next step now is to fix the _views_ count. But for that, we will need to create a new field.
+
+* * *

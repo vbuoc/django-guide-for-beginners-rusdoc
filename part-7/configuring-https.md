@@ -1,38 +1,67 @@
-<h4 id="configuring-https-certificate">Configuring HTTPS Certificate</h4>
+#### Configuring HTTPS Certificate
 
-<p>Now let’s protect our application with a nice HTTPS certificate provided by <a href="https://letsencrypt.org/" target="_blank" rel="noopener">Let’s Encrypt</a>.</p>
+Now let’s protect our application with a nice HTTPS certificate provided by [Let’s Encrypt](https://letsencrypt.org/).
 
-<p>Setting up HTTPS has never been this easy. And better, we can get it for free nowadays. They provide a solution called
-<strong>certbot</strong> which takes care of installing and renewing the certificates for us. It’s very straightforward:</p>
+Setting up HTTPS has never been this easy. And better, we can get it for free nowadays. They provide a solution called **certbot** which takes care of installing and renewing the certificates for us. It’s very straightforward:
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">sudo apt-get update
+<figure class="highlight">
+
+```
+sudo apt-get update
 sudo apt-get install software-properties-common
 sudo add-apt-repository ppa:certbot/certbot
 sudo apt-get update
-sudo apt-get install python-certbot-nginx</code></pre></figure>
+sudo apt-get install python-certbot-nginx
+```
 
-<p>Now install the certs:</p>
+</figure>
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">sudo certbot --nginx</code></pre></figure>
+Now install the certs:
 
-<p>Just follow the prompts. When asked about:</p>
+<figure class="highlight">
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">Please choose whether or not to redirect HTTP traffic to HTTPS, removing HTTP access.</code></pre></figure>
+```
+sudo certbot --nginx
+```
 
-<p>Choose <code class="highlighter-rouge">2</code> to redirect all HTTP traffic to HTTPS.</p>
+</figure>
 
-<p>With that the site is already being served over HTTPS:</p>
+Just follow the prompts. When asked about:
 
-<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-7/https.png" alt="HTTPS" /></p>
+<figure class="highlight">
 
-<p>Setup the auto renew of the certs. Run the command below to edit the crontab file:</p>
+```
+Please choose whether or not to redirect HTTP traffic to HTTPS, removing HTTP access.
+```
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">sudo crontab -e</code></pre></figure>
+</figure>
 
-<p>Add the following line to the end of the file:</p>
+Choose `2` to redirect all HTTP traffic to HTTPS.
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">0 4 * * * /usr/bin/certbot renew --quiet</code></pre></figure>
+With that the site is already being served over HTTPS:
 
-<p>This command will run every day at 4 am. All certificates expiring within 30 days will automatically be renewed.</p>
+![HTTPS](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-7/https.png)
 
-<hr />
+Setup the auto renew of the certs. Run the command below to edit the crontab file:
+
+<figure class="highlight">
+
+```
+sudo crontab -e
+```
+
+</figure>
+
+Add the following line to the end of the file:
+
+<figure class="highlight">
+
+```
+0 4 * * * /usr/bin/certbot renew --quiet
+```
+
+</figure>
+
+This command will run every day at 4 am. All certificates expiring within 30 days will automatically be renewed.
+
+* * *

@@ -1,34 +1,52 @@
-<h4 id="tracking-requirements">Tracking Requirements</h4>
+#### Tracking Requirements
 
-<p>It’s a good practice to keep track of the project’s dependencies, so to be easier to install it on another machine.</p>
+It’s a good practice to keep track of the project’s dependencies, so to be easier to install it on another machine.
 
-<p>We can check the currently installed Python libraries by running the command:</p>
+We can check the currently installed Python libraries by running the command:
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">pip freeze
+<figure class="highlight">
+
+```
+pip freeze
 
 dj-database-url==0.4.2
 Django==1.11.6
 django-widget-tweaks==1.4.1
 Markdown==2.6.9
 python-decouple==3.1
-pytz==2017.2</code></pre></figure>
+pytz==2017.2
+```
 
-<p>Create a file named <strong>requirements.txt</strong> in the project root, and add the dependencies there:</p>
+</figure>
 
-<p><strong>requirements.txt</strong></p>
+Create a file named **requirements.txt** in the project root, and add the dependencies there:
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">dj-database-url==0.4.2
+**requirements.txt**
+
+<figure class="highlight">
+
+```
+dj-database-url==0.4.2
 Django==1.11.6
 django-widget-tweaks==1.4.1
 Markdown==2.6.9
-python-decouple==3.1</code></pre></figure>
+python-decouple==3.1
+```
 
-<p>I kept the <strong>pytz==2017.2</strong> out, because it is automatically installed by Django.</p>
+</figure>
 
-<p>You can update your source code repository:</p>
+I kept the **pytz==2017.2** out, because it is automatically installed by Django.
 
-<figure class="highlight"><pre><code class="language-text" data-lang="text">git add .
+You can update your source code repository:
+
+<figure class="highlight">
+
+```
+git add .
 git commit -m "Add requirements.txt file"
-git push origin master</code></pre></figure>
+git push origin master
+```
 
-<hr />
+</figure>
+
+* * *

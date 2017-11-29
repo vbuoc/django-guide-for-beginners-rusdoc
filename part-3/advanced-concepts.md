@@ -1,64 +1,58 @@
-# Продвинутые концепции
+# Продвинутые концепции > Оригинал: https://simpleisbetterthancomplex.com/series/2017/09/18/a-complete-beginners-guide-to-django-part-3.html
 
-> Оригинал: https://simpleisbetterthancomplex.com/series/2017/09/18/a-complete-beginners-guide-to-django-part-3.html
+#### Introduction
 
-<h4 id="introduction">Introduction</h4>
+In this tutorial, we are going to dive deep into two fundamental concepts: URLs and Forms. In the process, we are going to explore many other concepts like creating reusable templates and installing third-party libraries. We are also going to write plenty of unit tests.
 
-<p>In this tutorial, we are going to dive deep into two fundamental concepts: URLs and Forms. In the process, we are going
-to explore many other concepts like creating reusable templates and installing third-party libraries. We are also
-going to write plenty of unit tests.</p>
+If you are following this tutorial series since the first part, coding your project and following the tutorial step by step, you may need to update your **models.py** before starting:
 
-<p>If you are following this tutorial series since the first part, coding your project and following the tutorial step by
-step, you may need to update your <strong>models.py</strong> before starting:</p>
+**boards/models.py**
 
-<p><strong>boards/models.py</strong></p>
+<figure class="highlight">
 
-<figure class="highlight"><pre><code class="language-python" data-lang="python"><span class="k">class</span> <span class="nc">Topic</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-    <span class="c"># other fields...</span>
-    <span class="c"># Add `auto_now_add=True` to the `last_updated` field</span>
-    <span class="n">last_updated</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">DateTimeField</span><span class="p">(</span><span class="n">auto_now_add</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    class Topic(models.Model):
+        # other fields...
+        # Add `auto_now_add=True` to the `last_updated` field
+        last_updated = models.DateTimeField(auto_now_add=True)
 
-<span class="k">class</span> <span class="nc">Post</span><span class="p">(</span><span class="n">models</span><span class="o">.</span><span class="n">Model</span><span class="p">):</span>
-    <span class="c"># other fields...</span>
-    <span class="c"># Add `null=True` to the `updated_by` field</span>
-    <span class="n">updated_by</span> <span class="o">=</span> <span class="n">models</span><span class="o">.</span><span class="n">ForeignKey</span><span class="p">(</span><span class="n">User</span><span class="p">,</span> <span class="n">null</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">related_name</span><span class="o">=</span><span class="s">'+'</span><span class="p">)</span></code></pre></figure>
+    class Post(models.Model):
+        # other fields...
+        # Add `null=True` to the `updated_by` field
+        updated_by = models.ForeignKey(User, null=True, related_name='+')
 
-<p>Now run the commands with the virtualenv activated:</p>
+</figure>
 
-<figure class="highlight"><pre><code class="language-bash" data-lang="bash">python manage.py makemigrations
-python manage.py migrate</code></pre></figure>
+Now run the commands with the virtualenv activated:
 
-<p>If you already have <code class="highlighter-rouge">null=True</code> in the <code class="highlighter-rouge">updated_by</code> field and the <code class="highlighter-rouge">auto_now_add=True</code> in the <code class="highlighter-rouge">last_updated</code> field,
-you can safely ignore the instructions above.</p>
+<figure class="highlight">
 
-<p>If you prefer to use my source code as a starting point, you can grab it on GitHub.</p>
+    python manage.py makemigrations
+    python manage.py migrate
 
-<p>The current state of the project can be found under the release tag <strong>v0.2-lw</strong>. The link below will take you to the
-right place:</p>
+</figure>
 
-<p><a href="https://github.com/sibtc/django-beginners-guide/tree/v0.2-lw" target="_blank">https://github.com/sibtc/django-beginners-guide/tree/v0.2-lw</a></p>
+If you already have `null=True` in the `updated_by` field and the `auto_now_add=True` in the `last_updated` field, you can safely ignore the instructions above.
 
-<p>The development will follow from here.</p>
+If you prefer to use my source code as a starting point, you can grab it on GitHub.
 
-<hr />
+The current state of the project can be found under the release tag **v0.2-lw**. The link below will take you to the right place:
 
+[https://github.com/sibtc/django-beginners-guide/tree/v0.2-lw](https://github.com/sibtc/django-beginners-guide/tree/v0.2-lw)
 
+The development will follow from here.
 
-h4 id="conclusions">Conclusions</h4>
+* * *
 
-<p>In this tutorial, we focused on URLs, Reusable Templates, and Forms. As usual, we also implement several test cases.
-That’s how we develop with confidence.</p>
+h4 id="conclusions">Conclusions
 
-<p>Our tests file is starting to get big, so in the next tutorial, we are going to refactor it to improve the
-maintainability so to sustain the growth of our code base.</p>
+In this tutorial, we focused on URLs, Reusable Templates, and Forms. As usual, we also implement several test cases. That’s how we develop with confidence.
 
-<p>We are also reaching a point where we need to interact with the logged in user. In the next tutorial, we are going to
-learn everything about authentication and how to protect our views and resources.</p>
+Our tests file is starting to get big, so in the next tutorial, we are going to refactor it to improve the maintainability so to sustain the growth of our code base.
 
-<p>I hope you enjoyed the third part of this tutorial series! The fourth part is coming out next week, on Sep 25, 2017.
-If you would like to get notified when the fourth part is out, you can <a href="http://eepurl.com/b0gR51" target="_blank">subscribe to our mailing list</a>.</p>
+We are also reaching a point where we need to interact with the logged in user. In the next tutorial, we are going to learn everything about authentication and how to protect our views and resources.
 
-<p>The source code of the project is available on GitHub. The current state of the project can be found under the release
-tag <strong>v0.3-lw</strong>. The link below will take you to the right place:</p>
+I hope you enjoyed the third part of this tutorial series! The fourth part is coming out next week, on Sep 25, 2017. If you would like to get notified when the fourth part is out, you can [subscribe to our mailing list](http://eepurl.com/b0gR51).
 
-<p><a href="https://github.com/sibtc/django-beginners-guide/tree/v0.3-lw" target="_blank">https://github.com/sibtc/django-beginners-guide/tree/v0.3-lw</a></p>
+The source code of the project is available on GitHub. The current state of the project can be found under the release tag **v0.3-lw**. The link below will take you to the right place:
+
+[https://github.com/sibtc/django-beginners-guide/tree/v0.3-lw](https://github.com/sibtc/django-beginners-guide/tree/v0.3-lw)
