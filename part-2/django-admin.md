@@ -1,70 +1,68 @@
-
 Introduction to Django Admin
 
-When we start a new project, Django already comes configured with the Django Admin listed in the INSTALLED_APPS.
+> Оригинал: https://simpleisbetterthancomplex.com/series/2017/09/11/a-complete-beginners-guide-to-django-part-2.html
 
-Django Admin Comic
 
-A good use case of the Django Admin is for example in a blog; it can be used by the authors to write and publish articles. Another example is an e-commerce website, where the staff members can create, edit, delete products.
+<p>When we start a new project, Django already comes configured with the <strong>Django Admin</strong> listed in the <code class="highlighter-rouge">INSTALLED_APPS</code>.</p>
 
-For now, we are going to configure the Django Admin to maintain our application’s boards.
+<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/Pixton_Comic_Django_Admin.png" alt="Django Admin Comic" /></p>
 
-Let’s start by creating an administrator account:
+<p>A good use case of the Django Admin is for example in a blog; it can be used by the authors to write and publish
+articles. Another example is an e-commerce website, where the staff members can create, edit, delete products.</p>
 
-python manage.py createsuperuser
-Follow the instructions:
+<p>For now, we are going to configure the Django Admin to maintain our application’s boards.</p>
 
-Username (leave blank to use 'vitorfs'): admin
+<p>Let’s start by creating an administrator account:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">python manage.py createsuperuser</code></pre></figure>
+
+<p>Follow the instructions:</p>
+
+<figure class="highlight"><pre><code class="language-text" data-lang="text">Username (leave blank to use 'vitorfs'): admin
 Email address: admin@example.com
 Password:
 Password (again):
-Superuser created successfully.
-Now open the URL in a web browser: http://127.0.0.1:8000/admin/
+Superuser created successfully.</code></pre></figure>
 
-Django Admin Login
+<p>Now open the URL in a web browser: <strong>http://127.0.0.1:8000/admin/</strong></p>
 
-Enter the username and password to log into the administration interface:
+<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/django-admin-login.png" alt="Django Admin Login" /></p>
 
-Django Admin
+<p>Enter the <strong>username</strong> and <strong>password</strong> to log into the administration interface:</p>
 
-It already comes with some features configured. Here we can add Users and Groups to manage permissions. We will explore more of those concepts later on.
+<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/django-admin.png" alt="Django Admin" /></p>
 
-To add the Board model is very straightforward. Open the admin.py file in the boards directory, and add the following code:
+<p>It already comes with some features configured. Here we can add <strong>Users</strong> and <strong>Groups</strong> to manage permissions. We will
+explore more of those concepts later on.</p>
 
-boards/admin.py
+<p>To add the <strong>Board</strong> model is very straightforward. Open the <strong>admin.py</strong> file in the <strong>boards</strong> directory, and add
+the following code:</p>
 
-from django.contrib import admin
+<p><strong>boards/admin.py</strong></p>
+
+<figure class="highlight"><pre><code class="language-django" data-lang="django">from django.contrib import admin
 from .models import Board
 
-admin.site.register(Board)
-Save the admin.py file, and refresh the page on your web browser:
+admin.site.register(Board)</code></pre></figure>
 
-Django Admin Boards
+<p>Save the <strong>admin.py</strong> file, and refresh the page on your web browser:</p>
 
-And that’s it! It’s ready to be used. Click on the Boards link to see the list of existing boards:
+<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/django-admin-boards.png" alt="Django Admin Boards" /></p>
 
-Django Admin Boards List
+<p>And that’s it! It’s ready to be used. Click on the <strong>Boards</strong> link to see the list of existing boards:</p>
 
-We can add a new board by clicking on the Add Board button:
+<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/django-admin-boards-list.png" alt="Django Admin Boards List" /></p>
 
-Django Admin Boards Add
+<p>We can add a new board by clicking on the <strong>Add Board</strong> button:</p>
 
-Click on the save button:
+<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/django-admin-boards-add.png" alt="Django Admin Boards Add" /></p>
 
-Django Admin Boards List
+<p>Click on the <strong>save</strong> button:</p>
 
-We can check if everything is working be opening the http://127.0.0.1:8000 URL:
+<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/django-admin-boards-list-2.png" alt="Django Admin Boards List" /></p>
 
-Boards Homepage
+<p>We can check if everything is working be opening the <strong>http://127.0.0.1:8000</strong> URL:</p>
 
-Conclusions
+<p><img src="https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/boards-homepage-bootstrap-3.png" alt="Boards Homepage" /></p>
 
-In this tutorial, we explored many new concepts. We defined some requirements for our project, created the first models, migrated the database, started playing with the Models API. We created our very first view and wrote some unit tests. We also configured the Django Template Engine, Static Files, and added the Bootstrap 4 library to the project. Finally, we had a very brief introduction the Django Admin interface.
-
-I hope you enjoyed the second part of this tutorial series! The third part is coming out next week, on Sep 18, 2017. In the next part, we are going to explore Django’s URL routing, the forms API, reusable templates, and more testing. If you would like to get notified when the third part is out, you can subscribe to our mailing list.
-
-The source code of the project is available on GitHub. The current state of the project can be found under the release tag v0.2-lw. The link below will take you to the right place:
-
-https://github.com/sibtc/django-beginners-guide/tree/v0.2-lw
-
-> Оригинал: https://simpleisbetterthancomplex.com/series/2017/09/04/a-complete-beginners-guide-to-django-part-1.html
+<hr />
