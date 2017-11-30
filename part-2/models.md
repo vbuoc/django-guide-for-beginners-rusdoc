@@ -1,54 +1,147 @@
-Models > Оригинал: https://simpleisbetterthancomplex.com/series/2017/09/11/a-complete-beginners-guide-to-django-part-2.html The models are basically a representation of your application’s database layout. What we are going to do in this section is create the Django representation of the classes we modeled in the previous section: **Board**, **Topic**, and **Post**. The **User** model is already defined inside a built-in app named **auth**, which is listed in our `INSTALLED_APPS` configuration under the namespace **django.contrib.auth**. We will do all the work inside the **boards/models.py** file. Here is how we represent our class diagram (see [Figure 4](#figure-4)). in a Django application:
+# Модели 
 
-```from django.db import models from django.contrib.auth.models import User class Board(models.Model): name = models.CharField(max_length=30, unique=True) description = models.CharField(max_length=100) class Topic(models.Model): subject = models.CharField(max_length=255) last_updated = models.DateTimeField(auto_now_add=True) board = models.ForeignKey(Board, related_name='topics') starter = models.ForeignKey(User, related_name='topics') class Post(models.Model): message = models.TextField(max_length=4000) topic = models.ForeignKey(Topic, related_name='posts') created_at = models.DateTimeField(auto_now_add=True) updated_at = models.DateTimeField(null=True) created_by = models.ForeignKey(User, related_name='posts') updated_by = models.ForeignKey(User, null=True, related_name='+')```
+> Оригинал: https://simpleisbetterthancomplex.com/series/2017/09/11/a-complete-beginners-guide-to-django-part-2.html 
 
-All models are subclass of the **django.db.models.Model** class. Each class will be transformed into _database tables_. Each field is represented by instances of **django.db.models.Field** subclasses (built-in Django core) and will be translated into _database columns_. The fields `CharField`, `DateTimeField`, etc., are all subclasses of **django.db.models.Field** and they come included in the Django core – ready to be used. Here we are only using `CharField`, `TextField`, `DateTimeField`, and `ForeignKey` fields to define our models. But Django offers a wide range of options to represent different types of data, such as `IntegerField`, `BooleanField`, `DecimalField`, and many others. We will refer to them as we need. Some fields have required arguments, such as the `CharField`. We should always set a `max_length`. This information will be used to create the database column. Django needs to know how big the database column needs to be. The `max_length` parameter will also be used by the Django Forms API, to validate user input. More on that later. In the `Board` model definition, more specifically in the `name` field, we are also setting the parameter `unique=True`, as the name suggests, it will enforce the uniqueness of the field at the database level. In the `Post` model, the `created_at` field has an optional parameter, the `auto_now_add` set to `True`. This will instruct Django to set the current date and time when a `Post` object is created. One way to create a relationship between the models is by using the `ForeignKey` field. It will create a link between the models and create a proper relationship at the database level. The `ForeignKey` field expects a positional parameter with the reference to the model it will relate to. For example, in the `Topic` model, the `board` field is a `ForeignKey` to the `Board` model. It is telling Django that a `Topic` instance relates to only one `Board` instance. The `related_name` parameter will be used to create a _reverse relationship_ where the `Board` instances will have access a list of `Topic` instances that belong to it. Django automatically creates this reverse relationship – the `related_name` is optional. But if we don’t set a name for it, Django will generate it with the name: `(class_name)_set`. For example, in the `Board` model, the `Topic` instances would be available under the `topic_set` property. Instead, we simply renamed it to `topics`, to make it feel more natural. In the `Post` model, the `updated_by` field sets the `related_name='+'`. This instructs Django that we don’t need this reverse relationship, so it will ignore it. Below you can see the comparison between the class diagram and the source code to generate the models with Django. The green lines represent how we are handling the reverse relationships. ![Class Diagram Models Definition](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/class-diagram-django-models.png) At this point, you may be asking yourself: “what about primary keys/IDs”? If we don’t specify a primary key for a model, Django will automatically generate it for us. So we are good for now. In the next section, you will see better how it works. ##### Migrating the Models The next step is to tell Django to create the database so we can start using it. Open the <span class="platform-mac platform-linux">Terminal</span> <span class="platform-windows">Command Line Tools</span>, activate the virtual environment, go to the folder where the **manage.py** file is, and run the commands below:
+Модели, по сути, являются представлением базы данных вашего приложения. В этом разделе мы опишем классы, придуманные в предыдущей части: **Board**, **Topic** и **Post**. Модель **User** уже описана внитри встроенного приложения с именем `auth`, которое можно найти в `INSTALLED_APPS` под названием **django.contrib.auth**. Сейчас мы все сделаем в `boards/models.py`:
 
-```python manage.py makemigrations```
+**models.py**
+```python
+from django.db import models
+from django.contrib.auth.models import User 
+
+class Board(models.Model): 
+    name = models.CharField(max_length=30, unique=True) 
+    description = models.CharField(max_length=100) 
+    
+class Topic(models.Model): 
+    subject = models.CharField(max_length=255) 
+    last_updated = models.DateTimeField(auto_now_add=True) 
+    board = models.ForeignKey(Board, related_name='topics') 
+    starter = models.ForeignKey(User, related_name='topics') 
+
+class Post(models.Model): 
+    message = models.TextField(max_length=4000) 
+    topic = models.ForeignKey(Topic, related_name='posts') 
+    created_at = models.DateTimeField(auto_now_add=True) 
+    updated_at = models.DateTimeField(null=True) 
+    created_by = models.ForeignKey(User, related_name='posts') 
+    updated_by = models.ForeignKey(User, null=True, related_name='+')
+```
+
+All models are subclass of the **django.db.models.Model** class. Each class will be transformed into _database tables_. Each field is represented by instances of **django.db.models.Field** subclasses (built-in Django core) and will be translated into _database columns_.
+
+The fields `CharField`, `DateTimeField`, etc., are all subclasses of **django.db.models.Field** and they come included in the Django core – ready to be used.
+
+Here we are only using `CharField`, `TextField`, `DateTimeField`, and `ForeignKey` fields to define our models. But Django offers a wide range of options to represent different types of data, such as `IntegerField`, `BooleanField`, `DecimalField`, and many others. We will refer to them as we need.
+
+Some fields have required arguments, such as the `CharField`. We should always set a `max_length`. This information will be used to create the database column. Django needs to know how big the database column needs to be. The `max_length` parameter will also be used by the Django Forms API, to validate user input. More on that later.
+
+In the `Board` model definition, more specifically in the `name` field, we are also setting the parameter `unique=True`, as the name suggests, it will enforce the uniqueness of the field at the database level.
+
+In the `Post` model, the `created_at` field has an optional parameter, the `auto_now_add` set to `True`. This will instruct Django to set the current date and time when a `Post` object is created.
+
+One way to create a relationship between the models is by using the `ForeignKey` field. It will create a link between the models and create a proper relationship at the database level. The `ForeignKey` field expects a positional parameter with the reference to the model it will relate to.
+
+For example, in the `Topic` model, the `board` field is a `ForeignKey` to the `Board` model. It is telling Django that a `Topic` instance relates to only one `Board` instance. The `related_name` parameter will be used to create a _reverse relationship_ where the `Board` instances will have access a list of `Topic` instances that belong to it.
+
+Django automatically creates this reverse relationship – the `related_name` is optional. But if we don’t set a name for it, Django will generate it with the name: `(class_name)_set`. For example, in the `Board` model, the `Topic` instances would be available under the `topic_set` property. Instead, we simply renamed it to `topics`, to make it feel more natural.
+
+In the `Post` model, the `updated_by` field sets the `related_name='+'`. This instructs Django that we don’t need this reverse relationship, so it will ignore it.
+
+Below you can see the comparison between the class diagram and the source code to generate the models with Django. The green lines represent how we are handling the reverse relationships. 
+
+![Class Diagram Models Definition](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/class-diagram-django-models.png)
+
+At this point, you may be asking yourself: “what about primary keys/IDs”? If we don’t specify a primary key for a model, Django will automatically generate it for us. So we are good for now. In the next section, you will see better how it works. 
+
+## Migrating the Models
+
+The next step is to tell Django to create the database so we can start using it. Open the Terminal, activate the virtual environment, go to the folder where the **manage.py** file is, and run the commands below:
+
+```bash
+python manage.py makemigrations
+```
 
 As an output you will get something like this:
 
-```Migrations for 'boards': boards/migrations/0001_initial.py - Create model Board - Create model Post - Create model Topic - Add field topic to post - Add field updated_by to post```
+```
+Migrations for 'boards':
+    boards/migrations/0001_initial.py 
+        - Create model Board 
+        - Create model Post 
+        - Create model Topic 
+        - Add field topic to post 
+        - Add field updated_by to post
+```
 
 At this point, Django created a file named **0001_initial.py** inside the **boards/migrations** directory. It represents the current state of our application’s models. In the next step, Django will use this file to create the tables and columns. The migration files are translated into SQL statements. If you are familiar with SQL, you can run the following command to inspect the SQL instructions that will be executed in the database:
 
-```python manage.py sqlmigrate boards 0001```
+```bash
+python manage.py sqlmigrate boards 0001
+```
 
 If you’re not familiar with SQL, don’t worry. We won’t be working directly with SQL in this tutorial series. All the work will be done using just the Django ORM, which is an abstraction layer that communicates with the database. The next step now is to _apply_ the migration we generated to the database:
 
-```python manage.py migrate```
+```bash
+python manage.py migrate
+```
 
 The output should be something like this:
 
-```Operations to perform: Apply all migrations: admin, auth, boards, contenttypes, sessions Running migrations: Applying contenttypes.0001_initial... OK Applying auth.0001_initial... OK Applying admin.0001_initial... OK Applying admin.0002_logentry_remove_auto_add... OK Applying contenttypes.0002_remove_content_type_name... OK Applying auth.0002_alter_permission_name_max_length... OK Applying auth.0003_alter_user_email_max_length... OK Applying auth.0004_alter_user_username_opts... OK Applying auth.0005_alter_user_last_login_null... OK Applying auth.0006_require_contenttypes_0002... OK Applying auth.0007_alter_validators_add_error_messages... OK Applying auth.0008_alter_user_username_max_length... OK Applying boards.0001_initial... OK Applying sessions.0001_initial... OK```
+```bash
+Operations to perform: 
+    Apply all migrations: admin, auth, boards, contenttypes, sessions 
+Running migrations: 
+    Applying contenttypes.0001_initial... OK
+    Applying auth.0001_initial... OK
+    Applying admin.0001_initial... OK
+    Applying admin.0002_logentry_remove_auto_add... OK
+    Applying contenttypes.0002_remove_content_type_name... OK
+    Applying auth.0002_alter_permission_name_max_length... OK
+    Applying auth.0003_alter_user_email_max_length... OK
+    Applying auth.0004_alter_user_username_opts... OK
+    Applying auth.0005_alter_user_last_login_null... OK
+    Applying auth.0006_require_contenttypes_0002... OK
+    Applying auth.0007_alter_validators_add_error_messages... OK
+    Applying auth.0008_alter_user_username_max_length... OK
+    Applying boards.0001_initial... OK
+    Applying sessions.0001_initial... OK
+```
 
-Because this is the first time we are migrating the database, the `migrate` command also applied the existing migration files from the Django contrib apps, listed in the `INSTALLED_APPS`. This is expected. The line `Applying boards.0001_initial... OK` is the migration we generated in the previous step. That’s it! Our database is ready to be used. ![SQLite](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/Pixton_Comic_SQLite.png)
+Because this is the first time we are migrating the database, the `migrate` command also applied the existing migration files from the Django contrib apps, listed in the `INSTALLED_APPS`. This is expected. 
 
-<div class="info">**Note:** It's important to note that **SQLite** is a production-quality database. SQLite is used by many companies across thousands of products, like all Android and iOS devices, all major Web browsers, Windows 10, macOS, etc. It's just not suitable for all cases. SQLite doesn't compare with databases like MySQL, PostgreSQL or Oracle. High-volume websites, write-intensive applications, very large datasets, high concurrency, are some situations that will eventually result in a problem by using SQLite. We are going to use SQLite during the development of our project because it's convenient and we won't need to install anything else. When we deploy our project to production, we will switch to PostgreSQL. For simple websites this work fine. But for complex websites, it's advisable to use the same database for development and production.</div>
+The line `Applying boards.0001_initial... OK` is the migration we generated in the previous step. 
 
-##### Experimenting with the Models API One of the great advantages of developing with Python is the interactive shell. I use it all the time. It’s a quick way to try things out and experiment libraries and APIs. You can start a Python shell with our project loaded using the **manage.py** utility:
+That’s it! Our database is ready to be used. 
+![SQLite](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/Pixton_Comic_SQLite.png)
 
-```python manage.py shell```
+> **Note:** It's important to note that **SQLite** is a production-quality database. SQLite is used by many companies across thousands of products, like all Android and iOS devices, all major Web browsers, Windows 10, macOS, etc. 
+> 
+> It's just not suitable for all cases. SQLite doesn't compare with databases like MySQL, PostgreSQL or Oracle. High-volume websites, write-intensive applications, very large datasets, high concurrency, are some situations that will eventually result in a problem by using SQLite. 
+> 
+> We are going to use SQLite during the development of our project because it's convenient and we won't need to install anything else. When we deploy our project to production, we will switch to PostgreSQL. For simple websites this work fine. But for complex websites, it's advisable to use the same database for development and production.
 
-<div class="platform-mac">
+## Experimenting with the Models API 
 
-```Python 3.6.2 (default, Jul 17 2017, 16:44:45) [GCC 4.2.1 Compatible Apple LLVM 8.1.0 (clang-802.0.42)] on darwin Type "help", "copyright", "credits" or "license" for more information. (InteractiveConsole) >>>```
+One of the great advantages of developing with Python is the interactive shell. I use it all the time. It’s a quick way to try things out and experiment libraries and APIs. 
 
-</div>
+You can start a Python shell with our project loaded using the **manage.py** utility:
 
-<div class="platform-windows">
+```
+python manage.py shell
+```
 
-```Python 3.6.2 (v3.6.2:5fd33b5, Jul 8 2017, 04:57:36) [MSC v.1900 64 bit (AMD64)] on win32 Type "help", "copyright", "credits" or "license" for more information. (InteractiveConsole) >>>```
+```
+Python 3.6.2 (default, Jul 17 2017, 23:14:31)
+[GCC 5.4.0 20160609] on linux
+Type "help", "copyright", "credits" or "license" for more information.
+(InteractiveConsole)
+>>>
+```
 
-</div>
+This is very similar to calling the interactive console just by typing `python`, except when we use `python manage.py shell`, we are adding our project to the `sys.path` and loading Django. That means we can import our models and any other resource within the project and play with it. 
 
-<div class="platform-linux">
-
-```Python 3.6.2 (default, Jul 17 2017, 23:14:31) [GCC 5.4.0 20160609] on linux Type "help", "copyright", "credits" or "license" for more information. (InteractiveConsole) >>>```
-
-</div>
-
-This is very similar to calling the interactive console just by typing `python`, except when we use `python manage.py shell`, we are adding our project to the `sys.path` and loading Django. That means we can import our models and any other resource within the project and play with it. Let’s start by importing the **Board** class:
+Let’s start by importing the **Board** class:
 
 ```from boards.models import Board```
 

@@ -1,6 +1,8 @@
-Web Board Project > Оригинал: https://simpleisbetterthancomplex.com/series/2017/09/11/a-complete-beginners-guide-to-django-part-2.html
+# Проект Web Board 
 
-I don’t know about you, but personally, I learn much more by seeing practical examples and code snippets. For me, it’s difficult to process a concept where in the examples you read `Class A` and `Class B`, or when I see the classical `foo(bar)` examples. I don’t want to do that with you.
+> Оригинал: https://simpleisbetterthancomplex.com/series/2017/09/11/a-complete-beginners-guide-to-django-part-2.html
+
+Не знаю, как вы, но я узнаю намного больше через практические примеры и сниппеты кода. Мне сложно понять принцип, когда в примерах написано `Class A`, `Class B` или классическое `foo(bar)`. И я бы не хотел делать это в этом руководстве.
 
 So, before we get into the fun part, playing with models, views, and everything. Let’s just take a moment and discuss very briefly about this project we are going to develop.
 
