@@ -2,6 +2,7 @@
 
 ## Содержание
 
+* [О книге](README.md)
 * [Начало работы](/part-1/getting-started.md)
     * [Почему Django](/part-1/why-django.md)
     * [Установка](/part-1/installation.md)
