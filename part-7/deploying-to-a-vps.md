@@ -28,18 +28,12 @@ So here we added two A records, one pointing to the naked domain “djangoboards
 
 Now let’s log in to the server using your terminal:
 
-<figure class="highlight">
-
 ```
 ssh root@45.55.144.54
 root@45.55.144.54's password:
 ```
 
-</figure>
-
 Then you should see the following message:
-
-<figure class="highlight">
 
 ```
 You are required to change your password immediately (root enforced)
@@ -60,24 +54,16 @@ Changing password for root.
 (current) UNIX password:
 ```
 
-</figure>
-
 Set the new password, and let’s start to configure the server.
-
-<figure class="highlight">
 
 ```
 sudo apt-get update
 sudo apt-get -y upgrade
 ```
 
-</figure>
-
 If you get any prompt during the upgrade, select the option “keep the local version currently installed”.
 
 **Python 3.6**
-
-<figure class="highlight">
 
 ```
 sudo add-apt-repository ppa:deadsnakes/ppa
@@ -85,31 +71,19 @@ sudo apt-get update
 sudo apt-get install python3.6
 ```
 
-</figure>
-
 **PostgreSQL**
-
-<figure class="highlight">
 
 ```
 sudo apt-get -y install postgresql postgresql-contrib
 ```
 
-</figure>
-
 **NGINX**
-
-<figure class="highlight">
 
 ```
 sudo apt-get -y install nginx
 ```
 
-</figure>
-
 **Supervisor**
-
-<figure class="highlight">
 
 ```
 sudo apt-get -y install supervisor
@@ -118,11 +92,7 @@ sudo systemctl enable supervisor
 sudo systemctl start supervisor
 ```
 
-</figure>
-
 **Virtualenv**
-
-<figure class="highlight">
 
 ```
 wget https://bootstrap.pypa.io/get-pip.py
@@ -130,163 +100,103 @@ sudo python3.6 get-pip.py
 sudo pip3.6 install virtualenv
 ```
 
-</figure>
-
 ##### Application User
 
 Create a new user with the command below:
-
-<figure class="highlight">
 
 ```
 adduser boards
 ```
 
-</figure>
-
 Usually, I just pick the name of the application. Enter a password and optionally add some extra info to the prompt.
 
 Now add the user to the sudoers list:
-
-<figure class="highlight">
 
 ```
 gpasswd -a boards sudo
 ```
 
-</figure>
-
 ##### PostgreSQL Database Setup
 
 First switch to the postgres user:
-
-<figure class="highlight">
 
 ```
 sudo su - postgres
 ```
 
-</figure>
-
 Create a database user:
-
-<figure class="highlight">
 
 ```
 createuser u_boards
 ```
 
-</figure>
-
 Create a new database and set the user as the owner:
-
-<figure class="highlight">
 
 ```
 createdb django_boards --owner u_boards
 ```
 
-</figure>
-
 Define a strong password for the user:
-
-<figure class="highlight">
 
 ```
 psql -c "ALTER USER u_boards WITH PASSWORD 'BcAZoYWsJbvE7RMgBPzxOCexPRVAq'"
 ```
 
-</figure>
-
 We can now exit the postgres user:
-
-<figure class="highlight">
 
 ```
 exit
 ```
 
-</figure>
-
 ##### Django Project Setup
 
 Switch to the application user:
-
-<figure class="highlight">
 
 ```
 sudo su - boards
 ```
 
-</figure>
-
 First, we can check where we are:
-
-<figure class="highlight">
 
 ```
 pwd
 /home/boards
 ```
 
-</figure>
-
 First, let’s clone the repository with our code:
-
-<figure class="highlight">
 
 ```
 git clone https://github.com/sibtc/django-beginners-guide.git
 ```
 
-</figure>
-
 Start a virtual environment:
-
-<figure class="highlight">
 
 ```
 virtualenv venv -p python3.6
 ```
 
-</figure>
-
 Initialize the virtualenv:
-
-<figure class="highlight">
 
 ```
 source venv/bin/activate
 ```
 
-</figure>
-
 Install the requirements:
-
-<figure class="highlight">
 
 ```
 pip install -r django-beginners-guide/requirements.txt
 ```
 
-</figure>
-
 We will have to add two extra libraries here, the Gunicorn and the PostgreSQL driver:
-
-<figure class="highlight">
 
 ```
 pip install gunicorn
 pip install psycopg2
 ```
 
-</figure>
-
 Now inside the **/home/boards/django-beginners-guide** folder, let’s create a **.env** file to store the database credentials, the secret key and everything else:
 
 **/home/boards/django-beginners-guide/.env**
-
-<figure class="highlight">
 
 ```
 SECRET_KEY=rqr_cjv4igscyu8&&(0ce(=sy=f2)p=f_wn&@0xsp7m$@!kp=d
@@ -294,21 +204,13 @@ ALLOWED_HOSTS=.djangoboards.com
 DATABASE_URL=postgres://u_boards:BcAZoYWsJbvE7RMgBPzxOCexPRVAq@localhost:5432/django_boards
 ```
 
-</figure>
-
 Here is the syntax of the database URL: postgres://`db_user`:`db_password`@`db_host`:`db_port`/`db_name`.
 
 Now let’s migrate the database, collect the static files and create a super user:
 
-<figure class="highlight">
-
 ```
 cd django-beginners-guide
 ```
-
-</figure>
-
-<figure class="highlight">
 
 ```
 python manage.py migrate
@@ -334,11 +236,7 @@ Running migrations:
   Applying sessions.0001_initial... OK
 ```
 
-</figure>
-
 Now the static files:
-
-<figure class="highlight">
 
 ```
 python manage.py collectstatic
@@ -356,27 +254,19 @@ Copying '/home/boards/django-beginners-guide/static/img/shattered.png'
 ...
 ```
 
-</figure>
-
 This command copy all the static assets to an external directory where NGINX can serve the files for us. More on that later.
 
 Now create a super user for the application:
 
-<figure class="highlight">
-
 ```
 python manage.py createsuperuser
 ```
-
-</figure>
 
 ##### Configuring Gunicorn
 
 So, Gunicorn is the one responsible for executing the Django code behind a proxy server.
 
 Create a new file named **gunicorn_start** inside **/home/boards**:
-
-<figure class="highlight">
 
 ```
 #!/bin/bash
@@ -407,33 +297,21 @@ exec ../venv/bin/gunicorn ${DJANGO_WSGI_MODULE}:application \
   --log-file=-
 ```
 
-</figure>
-
 This script will start the application server. We are providing some information such as where the Django project is, which application user to be used to run the server, and so on.
 
 Now make this file executable:
-
-<figure class="highlight">
 
 ```
 chmod u+x gunicorn_start
 ```
 
-</figure>
-
 Create two empty folders, one for the socket file and one to store the logs:
-
-<figure class="highlight">
 
 ```
 mkdir run logs
 ```
 
-</figure>
-
 Right now the directory structure inside **/home/boards** should look like this:
-
-<figure class="highlight">
 
 ```
 django-beginners-guide/
@@ -444,33 +322,21 @@ staticfiles/
 venv/
 ```
 
-</figure>
-
 The **staticfiles** folder was created by the **collectstatic** command.
 
 ##### Configuring Supervisor
 
 First, create an empty log file inside the **/home/boards/logs/** folder:
 
-<figure class="highlight">
-
 ```
 touch logs/gunicorn.log
 ```
 
-</figure>
-
 Now create a new supervisor file:
-
-<figure class="highlight">
 
 ```
 sudo vim /etc/supervisor/conf.d/boards.conf
 ```
-
-</figure>
-
-<figure class="highlight">
 
 ```
 [program:boards]
@@ -482,44 +348,28 @@ redirect_stderr=true
 stdout_logfile=/home/boards/logs/gunicorn.log
 ```
 
-</figure>
-
 Save the file and run the commands below:
-
-<figure class="highlight">
 
 ```
 sudo supervisorctl reread
 sudo supervisorctl update
 ```
 
-</figure>
-
 Now check the status:
-
-<figure class="highlight">
 
 ```
 sudo supervisorctl status boards
 ```
 
-</figure>
-
-<figure class="highlight">
-
 ```
 boards                           RUNNING   pid 308, uptime 0:00:07
 ```
-
-</figure>
 
 ##### Configuring NGINX
 
 Next step is to set up the NGINX server to serve the static files and to pass the requests to Gunicorn:
 
 Add a new configuration file named **boards** inside **/etc/nginx/sites-available/**:
-
-<figure class="highlight">
 
 ```
 upstream app_server {
@@ -554,37 +404,23 @@ server {
 }
 ```
 
-</figure>
-
 Create a symbolic link to the **sites-enabled** folder:
-
-<figure class="highlight">
 
 ```
 sudo ln -s /etc/nginx/sites-available/boards /etc/nginx/sites-enabled/boards
 ```
 
-</figure>
-
 Remove the default NGINX website:
-
-<figure class="highlight">
 
 ```
 sudo rm /etc/nginx/sites-enabled/default
 ```
 
-</figure>
-
 Restart the NGINX service:
-
-<figure class="highlight">
 
 ```
 sudo service nginx restart
 ```
-
-</figure>
 
 At this point, if the DNS have already propagated, the website should be available on the URL www.djangoboards.com.
 

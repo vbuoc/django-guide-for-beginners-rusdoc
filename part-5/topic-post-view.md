@@ -8,11 +8,11 @@ First, we need a route:
 
 **myproject/urls.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/aede6d3b7dc3494cf0df48f796075403#file-urls-py-L38)</small>
 
-<figure class="highlight">
+```
 
     url(r'^boards/(?P<pk>\d+)/topics/(?P<topic_pk>\d+)//figure>, views.topic_posts, name='topic_posts'),
 
-</figure>
+```
 
 Observe that now we are dealing with two keyword arguments: `pk` which is used to identify the Board, and now we have the `topic_pk` which is used to identify which topic to retrieve from the database.
 
@@ -20,7 +20,7 @@ The matching view would be like this:
 
 **boards/views.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/3d73ef25a01eceea07ef3ad8538437cf#file-views-py-L39)</small>
 
-<figure class="highlight">
+```
 
     from django.shortcuts import get_object_or_404, render
     from .models import Topic
@@ -29,13 +29,13 @@ The matching view would be like this:
         topic = get_object_or_404(Topic, board__pk=pk, pk=topic_pk)
         return render(request, 'topic_posts.html', {'topic': topic})
 
-</figure>
+```
 
 Note that we are indirectly retrieving the current board. Remember that the topic model is related to the board model, so we can access the current board. You will see in the next snippet:
 
 **templates/topic_posts.html** <small>[(view complete file contents)](https://gist.github.com/vitorfs/17e583f4f0068850c5929bd307dd436a)</small>
 
-<figure class="highlight">
+```
 
     {% extends 'base.html' %}
 
@@ -51,7 +51,7 @@ Note that we are indirectly retrieving the current board. Remember that the topi
 
     {% endblock %}
 
-</figure>
+```
 
 Observe that now instead of using `board.name` in the template, we are navigating through the topic properties, using `topic.board.name`.
 
@@ -61,7 +61,7 @@ Now let’s create a new test file for the **topic_posts** view:
 
 **boards/tests/test_view_topic_posts.py**
 
-<figure class="highlight">
+```
 
     from django.contrib.auth.models import User
     from django.test import TestCase
@@ -86,19 +86,19 @@ Now let’s create a new test file for the **topic_posts** view:
             view = resolve('/boards/1/topics/1/')
             self.assertEquals(view.func, topic_posts)
 
-</figure>
+```
 
 Note that the test setup is starting to get more complex. We can create mixins or an abstract class to reuse the code as needed. We can also use a third party library to setup some test data, to reduce the boilerplate code.
 
 Also, by now we already have a significant amount of tests, and it’s gradually starting to run slower. We can instruct the test suite just to run tests from a given app:
 
-<figure class="highlight">
+```
 
     python manage.py test boards
 
-</figure>
+```
 
-<figure class="highlight">
+```
 
     Creating test database for alias 'default'...
     System check identified no issues (0 silenced).
@@ -109,17 +109,17 @@ Also, by now we already have a significant amount of tests, and it’s gradually
     OK
     Destroying test database for alias 'default'...
 
-</figure>
+```
 
 We could also run only a specific test file:
 
-<figure class="highlight">
+```
 
     python manage.py test boards.tests.test_view_topic_posts
 
-</figure>
+```
 
-<figure class="highlight">
+```
 
     Creating test database for alias 'default'...
     System check identified no issues (0 silenced).
@@ -130,17 +130,17 @@ We could also run only a specific test file:
     OK
     Destroying test database for alias 'default'...
 
-</figure>
+```
 
 Or just a specific test case:
 
-<figure class="highlight">
+```
 
     python manage.py test boards.tests.test_view_topic_posts.TopicPostsTests.test_status_code
 
-</figure>
+```
 
-<figure class="highlight">
+```
 
     Creating test database for alias 'default'...
     System check identified no issues (0 silenced).
@@ -151,7 +151,7 @@ Or just a specific test case:
     OK
     Destroying test database for alias 'default'...
 
-</figure>
+```
 
 Cool, right?
 
@@ -161,7 +161,7 @@ Inside the **topic_posts.html**, we can create a for loop iterating over the top
 
 **templates/topic_posts.html**
 
-<figure class="highlight">
+```
 
     {% extends 'base.html' %}
 
@@ -212,7 +212,7 @@ Inside the **topic_posts.html**, we can create a for loop iterating over the top
 
     {% endblock %}
 
-</figure>
+```
 
 ![Posts](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-5/posts-2.png)
 
@@ -228,7 +228,7 @@ Since we now have the URL route to the topic posts listing, update the **topics.
 
 **templates/topics.html** <small>[(view complete file contents)](https://gist.github.com/vitorfs/cb4b7c9ff382ddeafb4114d0c84b3869)</small>
 
-<figure class="highlight">
+```
 
     {% for topic in board.topics.all %}
       <tr>
@@ -240,6 +240,6 @@ Since we now have the URL route to the topic posts listing, update the **topics.
       </tr>
     {% endfor %}
 
-</figure>
+```
 
 * * *

@@ -4,17 +4,17 @@ Let’s improve the user experience by adding Markdown to our text areas. You wi
 
 First, let’s install a library called **Python-Markdown**:
 
-<figure class="highlight">
+```
 
     pip install markdown
 
-</figure>
+```
 
 We can add a new method to the **Post** model:
 
 **boards/models.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/caa24fcf2b66903617ebbb41337d3d3d#file-models-py-L46)</small>
 
-<figure class="highlight">
+```
 
     from django.db import models
     from django.utils.html import mark_safe
@@ -26,25 +26,25 @@ We can add a new method to the **Post** model:
         def get_message_as_markdown(self):
             return mark_safe(markdown(self.message, safe_mode='escape'))
 
-</figure>
+```
 
 Here we are dealing with user input, so we must take care. When using the `markdown` function, we are instructing it to escape the special characters first and then parse the markdown tags. After that, we mark the output string as safe to be used in the template.
 
 Now in the templates **topic_posts.html** and **reply_topic.html** just change from:
 
-<figure class="highlight">
+```
 
     {{ post.message }}
 
-</figure>
+```
 
 To:
 
-<figure class="highlight">
+```
 
     {{ post.get_message_as_markdown }}
 
-</figure>
+```
 
 From now on the users can already use markdown in the posts:
 
@@ -58,31 +58,31 @@ We can also add a very cool Markdown editor called [SimpleMD](https://simplemde.
 
 Either download the JavaScript library or use their CDN:
 
-<figure class="highlight">
+```
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.css">
     <script src="https://cdn.jsdelivr.net/simplemde/latest/simplemde.min.js"></script>
 
-</figure>
+```
 
 Now edit the **base.html** to make space for extra JavaScripts:
 
 **templates/base.html** <small>[(view complete file contents)](https://gist.github.com/vitorfs/5a7ad8e7eae88d64f62fec82d037b168#file-base-html-L57)</small>
 
-<figure class="highlight">
+```
 
         <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
         <script src="{% static 'js/popper.min.js' %}"></script>
         <script src="{% static 'js/bootstrap.min.js' %}"></script>
         {% block javascript %}{% endblock %}  <!-- Add this empty block here! -->
 
-</figure>
+```
 
 First edit the **reply_topic.html** template:
 
 **templates/reply_topic.html** <small>[(view complete file contents)](https://gist.github.com/vitorfs/fb63bb7530690d62787c3ed8b7e15241)</small>
 
-<figure class="highlight">
+```
 
     {% extends 'base.html' %}
 
@@ -101,7 +101,7 @@ First edit the **reply_topic.html** template:
       </script>
     {% endblock %}
 
-</figure>
+```
 
 By default, this plugin will transform the first text area it finds into a markdown editor. So just that code should be enough:
 
@@ -111,7 +111,7 @@ Now do the same thing with the **edit_post.html** template:
 
 **templates/edit_post.html** <small>[(view complete file contents)](https://gist.github.com/vitorfs/ee9d8c91888b0bc60013b8f037bae7bb)</small>
 
-<figure class="highlight">
+```
 
     {% extends 'base.html' %}
 
@@ -130,7 +130,7 @@ Now do the same thing with the **edit_post.html** template:
       </script>
     {% endblock %}
 
-</figure>
+```
 
 ![Editor](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-6/editor-2.png)
 

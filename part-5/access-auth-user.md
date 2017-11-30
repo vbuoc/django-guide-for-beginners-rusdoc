@@ -4,7 +4,7 @@ Now we can improve the **new_topic** view and this time set the proper user, ins
 
 **boards/views.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/483936caca4618dc275545ad2dfbef24#file-views-py-L19)</small>
 
-<figure class="highlight">
+```
 
     from django.contrib.auth.decorators import login_required
     from django.shortcuts import get_object_or_404, redirect, render
@@ -32,7 +32,7 @@ Now we can improve the **new_topic** view and this time set the proper user, ins
             form = NewTopicForm()
         return render(request, 'new_topic.html', {'board': board, 'form': form})
 
-</figure>
+```
 
 We can do a quick test here by adding a new topic:
 

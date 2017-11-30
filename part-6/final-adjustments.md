@@ -6,7 +6,7 @@ Let’s fix it:
 
 **boards/views.py**
 
-<figure class="highlight">
+```
 
     @login_required
     def reply_topic(request, pk, topic_pk):
@@ -27,13 +27,13 @@ Let’s fix it:
             form = PostForm()
         return render(request, 'reply_topic.html', {'topic': topic, 'form': form})
 
-</figure>
+```
 
 Next thing we want to do is try to control the view counting system a little bit more. We don’t want to the same user refreshing the page counting as multiple views. For this we can use sessions:
 
 **boards/views.py**
 
-<figure class="highlight">
+```
 
     class PostListView(ListView):
         model = Post
@@ -57,13 +57,13 @@ Next thing we want to do is try to control the view counting system a little bit
             queryset = self.topic.posts.order_by('created_at')
             return queryset
 
-</figure>
+```
 
 Now we could provide a better navigation in the topics listing. Currently the only option is for the user to click in the topic title and go to the first page. We could workout something like this:
 
 **boards/models.py**
 
-<figure class="highlight">
+```
 
     import math
     from django.db import models
@@ -90,13 +90,13 @@ Now we could provide a better navigation in the topics listing. Currently the on
                 return range(1, 5)
             return range(1, count + 1)
 
-</figure>
+```
 
 Then in the **topics.html** template we could implement something like this:
 
 **templates/topics.html**
 
-<figure class="highlight">
+```
 
       <table class="table table-striped mb-4">
         <thead class="thead-inverse">
@@ -135,7 +135,7 @@ Then in the **topics.html** template we could implement something like this:
         </tbody>
       </table>
 
-</figure>
+```
 
 Like a tiny pagination for each topic. Note that I also took the time to add the `table-striped` class for a better styling of the table.
 
@@ -145,7 +145,7 @@ In the reply page, we are currently listing all topic replies. We could limit it
 
 **boards/models.py**
 
-<figure class="highlight">
+```
 
     class Topic(models.Model):
         # ...
@@ -153,11 +153,11 @@ In the reply page, we are currently listing all topic replies. We could limit it
         def get_last_ten_posts(self):
             return self.posts.order_by('-created_at')[:10]
 
-</figure>
+```
 
 **templates/reply_topic.html**
 
-<figure class="highlight">
+```
 
     {% block content %}
 
@@ -175,7 +175,7 @@ In the reply page, we are currently listing all topic replies. We could limit it
 
     {% endblock %}
 
-</figure>
+```
 
 ![Replies](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-6/replies.png)
 
@@ -185,7 +185,7 @@ We can add an id to the post card:
 
 **templates/topic_posts.html**
 
-<figure class="highlight">
+```
 
     {% block content %}
 
@@ -203,7 +203,7 @@ We can add an id to the post card:
 
     {% endblock %}
 
-</figure>
+```
 
 The important bit here is the `<div id="{{ post.pk }}" ...>`.
 
@@ -211,7 +211,7 @@ Then we can play with it like this in the views:
 
 **boards/views.py**
 
-<figure class="highlight">
+```
 
     @login_required
     def reply_topic(request, pk, topic_pk):
@@ -239,7 +239,7 @@ Then we can play with it like this in the views:
             form = PostForm()
         return render(request, 'reply_topic.html', {'topic': topic, 'form': form})
 
-</figure>
+```
 
 In the **topic_post_url** we are building a URL with the last page and adding an anchor to the element with id equals to the post ID.
 
@@ -247,7 +247,7 @@ With this, it will required us to update the following test case:
 
 **boards/tests/test_view_reply_topic.py**
 
-<figure class="highlight">
+```
 
     class SuccessfulReplyTopicTests(ReplyTopicTestCase):
         # ...
@@ -260,7 +260,7 @@ With this, it will required us to update the following test case:
             topic_posts_url = '{url}?page=1#2'.format(url=url)
             self.assertRedirects(self.response, topic_posts_url)
 
-</figure>
+```
 
 ![Replies](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-6/reply-last-page.png)
 
@@ -270,7 +270,7 @@ The easiest way is to tweak the **pagination.html** template:
 
 **templates/includes/pagination.html**
 
-<figure class="highlight">
+```
 
     {% if is_paginated %}
       <nav aria-label="Topics pagination" class="mb-4">
@@ -333,7 +333,7 @@ The easiest way is to tweak the **pagination.html** template:
       </nav>
     {% endif %}
 
-</figure>
+```
 
 ![Long pages](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-6/long-pages.png)
 

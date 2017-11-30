@@ -4,7 +4,7 @@ To keep a natural flow in the implementation, let’s add the log out view. Firs
 
 **myproject/urls.py**
 
-<figure class="highlight">
+```
 
     from django.conf.urls import url
     from django.contrib import admin
@@ -22,7 +22,7 @@ To keep a natural flow in the implementation, let’s add the log out view. Firs
         url(r'^admin/', admin.site.urls),
     ]
 
-</figure>
+```
 
 We imported the **views** from the Django’s contrib module. We renamed it to **auth_views** to avoid clashing with the **boards.views**. Notice that this view is a little bit different: `LogoutView.as_view()`. It’s a Django’s class-based view. So far we have only implemented classes as Python functions. The class-based views provide a more flexible way to extend and reuse views. We will discuss more that subject later on.
 
@@ -30,11 +30,11 @@ Open the **settings.py** file and add the `LOGOUT_REDIRECT_URL` variable to the 
 
 **myproject/settings.py**
 
-<figure class="highlight">
+```
 
     LOGOUT_REDIRECT_URL = 'home'
 
-</figure>
+```
 
 Here we are passing the name of the URL pattern we want to redirect the user after the log out.
 

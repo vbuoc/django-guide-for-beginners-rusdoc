@@ -14,11 +14,11 @@ Edit the **settings.py** module and add the `EMAIL_BACKEND` variable to the end 
 
 **myproject/settings.py**
 
-<figure class="highlight">
+```
 
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-</figure>
+```
 
 ##### Configuring the Routes
 
@@ -33,7 +33,7 @@ The views are built-in, we don’t need to implement anything. All we need to do
 
 **myproject/urls.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/117e300e00d5685f7186e09260f82736#file-urls-py-L14)</small>
 
-<figure class="highlight">
+```
 
     url(r'^reset//figure>,
         auth_views.PasswordResetView.as_view(
@@ -53,7 +53,7 @@ The views are built-in, we don’t need to implement anything. All we need to do
         name='password_reset_complete'),
     ]
 
-</figure>
+```
 
 The `template_name` parameter in the password reset views are optional. But I thought it would be a good idea to re-define it, so the link between the view and the template be more obvious than just using the defaults.
 
@@ -76,7 +76,7 @@ Create a new test file named **test_view_password_reset.py** inside the **accoun
 
 **templates/password_reset.html**
 
-<figure class="highlight">
+```
 
     {% extends 'base_accounts.html' %}
 
@@ -100,13 +100,13 @@ Create a new test file named **test_view_password_reset.py** inside the **accoun
       </div>
     {% endblock %}
 
-</figure>
+```
 
 ![Password Reset](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/password_reset.jpg)
 
 **accounts/tests/test_view_password_reset.py**
 
-<figure class="highlight">
+```
 
     from django.contrib.auth import views as auth_views
     from django.contrib.auth.forms import PasswordResetForm
@@ -175,19 +175,19 @@ Create a new test file named **test_view_password_reset.py** inside the **accoun
         def test_no_reset_email_sent(self):
             self.assertEqual(0, len(mail.outbox))
 
-</figure>
+```
 
 **templates/password_reset_subject.txt**
 
-<figure class="highlight">
+```
 
     [Django Boards] Please reset your password
 
-</figure>
+```
 
 **templates/password_reset_email.html**
 
-<figure class="highlight">
+```
 
     Hi there,
 
@@ -209,7 +209,7 @@ Create a new test file named **test_view_password_reset.py** inside the **accoun
 
     The Django Boards Team
 
-</figure>
+```
 
 ![Password Reset Email](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/password_reset_email.png)
 
@@ -217,7 +217,7 @@ We can create a specific file to test the email message. Create a new file named
 
 **accounts/tests/test_mail_password_reset.py**
 
-<figure class="highlight">
+```
 
     from django.core import mail
     from django.contrib.auth.models import User
@@ -248,7 +248,7 @@ We can create a specific file to test the email message. Create a new file named
         def test_email_to(self):
             self.assertEqual(['john@doe.com',], self.email.to)
 
-</figure>
+```
 
 This test case grabs the email sent by the application, and examine the subject line, the body contents, and to who was the email sent to.
 
@@ -256,7 +256,7 @@ This test case grabs the email sent by the application, and examine the subject 
 
 **templates/password_reset_done.html**
 
-<figure class="highlight">
+```
 
     {% extends 'base_accounts.html' %}
 
@@ -276,13 +276,13 @@ This test case grabs the email sent by the application, and examine the subject 
       </div>
     {% endblock %}
 
-</figure>
+```
 
 ![Password Reset Done](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/password_reset_done.jpg)
 
 **accounts/tests/test_view_password_reset.py**
 
-<figure class="highlight">
+```
 
     from django.contrib.auth import views as auth_views
     from django.core.urlresolvers import reverse
@@ -301,13 +301,13 @@ This test case grabs the email sent by the application, and examine the subject 
             view = resolve('/reset/done/')
             self.assertEquals(view.func.view_class, auth_views.PasswordResetDoneView)
 
-</figure>
+```
 
 ##### Password Reset Confirm View
 
 **templates/password_reset_confirm.html**
 
-<figure class="highlight">
+```
 
     {% extends 'base_accounts.html' %}
 
@@ -344,7 +344,7 @@ This test case grabs the email sent by the application, and examine the subject 
       </div>
     {% endblock %}
 
-</figure>
+```
 
 This page can only be accessed with the link sent in the email. It looks like this: **http://127.0.0.1:8000/reset/Mw/4po-2b5f2d47c19966e294a1/**
 
@@ -360,7 +360,7 @@ Or if the link has already been used:
 
 **accounts/tests/test_view_password_reset.py**
 
-<figure class="highlight">
+```
 
     from django.contrib.auth.tokens import default_token_generator
     from django.utils.encoding import force_bytes
@@ -431,13 +431,13 @@ Or if the link has already been used:
             self.assertContains(self.response, 'invalid password reset link')
             self.assertContains(self.response, 'href="{0}"'.format(password_reset_url))
 
-</figure>
+```
 
 ##### Password Reset Complete View
 
 **templates/password_reset_complete.html**
 
-<figure class="highlight">
+```
 
     {% extends 'base_accounts.html' %}
 
@@ -459,13 +459,13 @@ Or if the link has already been used:
       </div>
     {% endblock %}
 
-</figure>
+```
 
 ![Password Reset Complete](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/password_reset_complete.jpg)
 
 **accounts/tests/test_view_password_reset.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/c9657d39d28c2a0cfb0933e715bfc9cf#file-test_view_password_reset-py-L149)</small>
 
-<figure class="highlight">
+```
 
     from django.contrib.auth import views as auth_views
     from django.core.urlresolvers import reverse
@@ -484,6 +484,6 @@ Or if the link has already been used:
             view = resolve('/reset/complete/')
             self.assertEquals(view.func.view_class, auth_views.PasswordResetCompleteView)
 
-</figure>
+```
 
 * * *

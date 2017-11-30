@@ -8,7 +8,7 @@ If you are following this tutorial series since the first part, coding your proj
 
 **boards/models.py**
 
-<figure class="highlight">
+```
 
     class Topic(models.Model):
         # other fields...
@@ -20,16 +20,16 @@ If you are following this tutorial series since the first part, coding your proj
         # Add `null=True` to the `updated_by` field
         updated_by = models.ForeignKey(User, null=True, related_name='+')
 
-</figure>
+```
 
 Now run the commands with the virtualenv activated:
 
-<figure class="highlight">
+```
 
     python manage.py makemigrations
     python manage.py migrate
 
-</figure>
+```
 
 If you already have `null=True` in the `updated_by` field and the `auto_now_add=True` in the `last_updated` field, you can safely ignore the instructions above.
 

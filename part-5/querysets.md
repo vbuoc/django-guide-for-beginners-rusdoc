@@ -16,7 +16,7 @@ Since we are going to try things out in the Python terminal, it’s a good idea 
 
 **boards/models.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/9524eb42005697fbb79836285b50b1f4)</small>
 
-<figure class="highlight">
+```
 
     from django.db import models
     from django.utils.text import Truncator
@@ -37,24 +37,24 @@ Since we are going to try things out in the Python terminal, it’s a good idea 
             truncated_message = Truncator(self.message)
             return truncated_message.chars(30)
 
-</figure>
+```
 
 In the Post model we are using the **Truncator** utility class. It’s a convenient way to truncate long strings into an arbitrary string size (here we are using 30).
 
 Now let’s open the Python shell terminal:
 
-<figure class="highlight">
+```
 
     python manage.py shell
 
     # First get a board instance from the database
     board = Board.objects.get(name='Django')
 
-</figure>
+```
 
 The easiest of the three tasks is to get the current topics count, because the Topic and Board are directly related:
 
-<figure class="highlight">
+```
 
     board.topics.all()
     <QuerySet [<Topic: Hello everyone!>, <Topic: Test>, <Topic: Testing a new post>, <Topic: Hi>]>
@@ -62,13 +62,13 @@ The easiest of the three tasks is to get the current topics count, because the T
     board.topics.count()
     4
 
-</figure>
+```
 
 That’s about it.
 
 Now the number of _posts_ within a _board_ is a little bit trickier because Post is not directly related to Board.
 
-<figure class="highlight">
+```
 
     from boards.models import Post
 
@@ -81,13 +81,13 @@ Now the number of _posts_ within a _board_ is a little bit trickier because Post
     Post.objects.count()
     11
 
-</figure>
+```
 
 Here we have 11 posts. But not all of them belongs to the “Django” board.
 
 Here is how we can filter it:
 
-<figure class="highlight">
+```
 
     from boards.models import Board, Post
 
@@ -102,13 +102,13 @@ Here is how we can filter it:
     Post.objects.filter(topic__board=board).count()
     7
 
-</figure>
+```
 
 The double underscores `topic__board` is used to navigate through the models’ relationships. Under the hoods, Django builds the bridge between the Board - Topic - Post, and build a SQL query to retrieve just the posts that belong to a specific board.
 
 Now our last mission is to identify the last post.
 
-<figure class="highlight">
+```
 
     # order by the `created_at` field, getting the most recent first
     Post.objects.filter(topic__board=board).order_by('-created_at')
@@ -121,13 +121,13 @@ Now our last mission is to identify the last post.
     Post.objects.filter(topic__board=board).order_by('-created_at').first()
     <Post: testing>
 
-</figure>
+```
 
 Sweet. Now we can implement it.
 
 **boards/models.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/74077336decd75292082752eb8405ad3)</small>
 
-<figure class="highlight">
+```
 
     from django.db import models
 
@@ -144,7 +144,7 @@ Sweet. Now we can implement it.
         def get_last_post(self):
             return Post.objects.filter(topic__board=self).order_by('-created_at').first()
 
-</figure>
+```
 
 Observe that we are using `self`, because this method will be used by a Board instance. So that means we are using this instance to filter the QuerySet.
 
@@ -152,7 +152,7 @@ Now we can improve the home HTML template to display this brand new information:
 
 **templates/home.html**
 
-<figure class="highlight">
+```
 
     {% extends 'base.html' %}
 
@@ -198,7 +198,7 @@ Now we can improve the home HTML template to display this brand new information:
       </table>
     {% endblock %}
 
-</figure>
+```
 
 And that’s the result for now:
 
@@ -206,13 +206,13 @@ And that’s the result for now:
 
 Run the tests:
 
-<figure class="highlight">
+```
 
     python manage.py test
 
-</figure>
+```
 
-<figure class="highlight">
+```
 
     Creating test database for alias 'default'...
     System check identified no issues (0 silenced).
@@ -238,13 +238,13 @@ Run the tests:
     FAILED (errors=3)
     Destroying test database for alias 'default'...
 
-</figure>
+```
 
 It seems like we have a problem with our implementation here. The application is crashing if there are no posts.
 
 **templates/home.html**
 
-<figure class="highlight">
+```
 
     {% with post=board.get_last_post %}
       {% if post %}
@@ -260,17 +260,17 @@ It seems like we have a problem with our implementation here. The application is
       {% endif %}
     {% endwith %}
 
-</figure>
+```
 
 Run the tests again:
 
-<figure class="highlight">
+```
 
     python manage.py test
 
-</figure>
+```
 
-<figure class="highlight">
+```
 
     Creating test database for alias 'default'...
     System check identified no issues (0 silenced).
@@ -281,7 +281,7 @@ Run the tests again:
     OK
     Destroying test database for alias 'default'...
 
-</figure>
+```
 
 I added a new board with no messages just to check the “empty message”:
 
@@ -295,13 +295,13 @@ I will show you another way to include the count, this time to the number of rep
 
 As usual, let’s try first with the Python shell:
 
-<figure class="highlight">
+```
 
     python manage.py shell
 
-</figure>
+```
 
-<figure class="highlight">
+```
 
     from django.db.models import Count
     from boards.models import Board
@@ -318,7 +318,7 @@ As usual, let’s try first with the Python shell:
     2
     1
 
-</figure>
+```
 
 Here we are using the `annotate` QuerySet method to generate a new “column” on the fly. This new column, which will be translated into a property, accessible via `topic.replies` contain the count of posts a given topic has.
 
@@ -326,7 +326,7 @@ We can do just a minor fix because the replies should not consider the starter t
 
 So here is how we do it:
 
-<figure class="highlight">
+```
 
     topics = board.topics.order_by('-last_updated').annotate(replies=Count('posts') - 1)
 
@@ -338,13 +338,13 @@ So here is how we do it:
     1
     0
 
-</figure>
+```
 
 Cool, right?
 
 **boards/views.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/f22b493b3e076aba9351c9d98f547f5e#file-views-py-L14)</small>
 
-<figure class="highlight">
+```
 
     from django.db.models import Count
     from django.shortcuts import get_object_or_404, render
@@ -355,11 +355,11 @@ Cool, right?
         topics = board.topics.order_by('-last_updated').annotate(replies=Count('posts') - 1)
         return render(request, 'topics.html', {'board': board, 'topics': topics})
 
-</figure>
+```
 
 **templates/topics.html** <small>[(view complete file contents)](https://gist.github.com/vitorfs/1a2235f05f436c92025dc86028c22fc4#file-topics-html-L28)</small>
 
-<figure class="highlight">
+```
 
     {% for topic in topics %}
       <tr>
@@ -371,7 +371,7 @@ Cool, right?
       </tr>
     {% endfor %}
 
-</figure>
+```
 
 ![Topics](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-5/topics-4.png)
 

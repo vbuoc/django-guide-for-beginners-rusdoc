@@ -10,7 +10,7 @@ Django has a built-in _view decorator_ to avoid that issue:
 
 **boards/views.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/4d3334a0daa9e7a872653a22ff39320a#file-models-py-L19)</small>
 
-<figure class="highlight">
+```
 
     from django.contrib.auth.decorators import login_required
 
@@ -18,7 +18,7 @@ Django has a built-in _view decorator_ to avoid that issue:
     def new_topic(request, pk):
         # ...
 
-</figure>
+```
 
 From now on, if the user is not authenticated they will be redirected to the login page:
 
@@ -30,7 +30,7 @@ Notice the query string **?next=/boards/1/new/**. We can improve the log in temp
 
 **templates/login.html** <small>[(view complete file contents)](https://gist.github.com/vitorfs/1ab597fe18e2dc56028f7aa8c3b588b3#file-login-html-L13)</small>
 
-<figure class="highlight">
+```
 
     <form method="post" novalidate>
       {% csrf_token %}
@@ -39,7 +39,7 @@ Notice the query string **?next=/boards/1/new/**. We can improve the log in temp
       <button type="submit" class="btn btn-primary btn-block">Log in</button>
     </form>
 
-</figure>
+```
 
 Then if we try to log in now, the application will direct us back to where we were.
 
@@ -57,7 +57,7 @@ Let’s split the **test_views.py** into three files:
 *   **test_view_board_topics.py** will include the **BoardTopicsTests** class <small>[(view complete file contents)](https://gist.github.com/vitorfs/6ac3aad244c856d418f18890efcb4a7e#file-test_view_board_topics-py)</small>
 *   **test_view_new_topic.py** will include the **NewTopicTests** class <small>[(view complete file contents)](https://gist.github.com/vitorfs/6ac3aad244c856d418f18890efcb4a7e#file-test_view_new_topic-py)</small>
 
-<figure class="highlight">
+```
 
     myproject/
      |-- myproject/
@@ -83,7 +83,7 @@ Let’s split the **test_views.py** into three files:
      |    +-- manage.py
      +-- venv/
 
-</figure>
+```
 
 Run the tests to make sure everything is working.
 
@@ -91,7 +91,7 @@ New let’s add a new test case in the **test_view_new_topic.py** to check if th
 
 **boards/tests/test_view_new_topic.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/13e75451396d76354b476edaefadbdab#file-test_view_new_topic-py-L84)</small>
 
-<figure class="highlight">
+```
 
     from django.test import TestCase
     from django.urls import reverse
@@ -107,7 +107,7 @@ New let’s add a new test case in the **test_view_new_topic.py** to check if th
             login_url = reverse('login')
             self.assertRedirects(self.response, '{login_url}?next={url}'.format(login_url=login_url, url=self.url))
 
-</figure>
+```
 
 In the test case above we are trying to make a request to the **new topic** view without being authenticated. The expected result is for the request be redirected to the login view.
 

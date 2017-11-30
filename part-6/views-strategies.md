@@ -22,8 +22,6 @@ Below we are going to explore some examples of the different implementation stra
 
 **views.py**
 
-<figure class="highlight">
-
 ```
 def new_post(request):
     if request.method == 'POST':
@@ -36,19 +34,13 @@ def new_post(request):
     return render(request, 'new_post.html', {'form': form})
 ```
 
-</figure>
-
 **urls.py**
-
-<figure class="highlight">
 
 ```
 urlpatterns = [
     url(r'^new_post//figure>, views.new_post, name='new_post'),
 ]
 ```
-
-</figure>
 
 ##### Class-Based View
 
@@ -57,8 +49,6 @@ A CBV is a view that extends the **View** class. The main difference here is tha
 So, here we don’t need to do a conditional to check if the request is a **POST** or if it’s a **GET**. The code goes straight to the right method. This logic is handled internally in the **View** class.
 
 **views.py**
-
-<figure class="highlight">
 
 ```
 from django.views.generic import View
@@ -76,13 +66,9 @@ class NewPostView(View):
         return render(request, 'new_post.html', {'form': form})
 ```
 
-</figure>
-
 The way we refer to the CBVs in the **urls.py** module is a little bit different:
 
 **urls.py**
-
-<figure class="highlight">
 
 ```
 urlpatterns = [
@@ -90,13 +76,9 @@ urlpatterns = [
 ]
 ```
 
-</figure>
-
 Here we need to use the `as_view()` class method, which returns a view function to the url patterns. In some cases, we can also feed the `as_view()` with some keyword arguments, so to customize the behavior of the CBV, just like we did with some of the authentication views to customize the templates.
 
 Anyway, the good thing about CBV is that we can add more methods, and perhaps do something like this:
-
-<figure class="highlight">
 
 ```
 from django.views.generic import View
@@ -117,8 +99,6 @@ class NewPostView(View):
         return self.render(request)
 ```
 
-</figure>
-
 It’s also possible to create some generic views that accomplish some tasks so that we can reuse it across the project.
 
 But that’s pretty much all you need to know about CBVs. Simple as that.
@@ -135,8 +115,6 @@ Now let’s see a GCBV example.
 
 **views.py**
 
-<figure class="highlight">
-
 ```
 from django.views.generic import CreateView
 
@@ -147,23 +125,17 @@ class NewPostView(CreateView):
     template_name = 'new_post.html'
 ```
 
-</figure>
-
 Here we are using a generic view used to create model objects. It does all the form processing and save the object if the form is valid.
 
 Since it’s a CBV, we refer to it in the **urls.py** the same way as any other CBV:
 
 **urls.py**
 
-<figure class="highlight">
-
 ```
 urlpatterns = [
     url(r'^new_post//figure>, views.NewPostView.as_view(), name='new_post'),
 ]
 ```
-
-</figure>
 
 Other examples of GCBVs are **DetailView**, **DeleteView**, **FormView**, **UpdateView**, **ListView**.
 

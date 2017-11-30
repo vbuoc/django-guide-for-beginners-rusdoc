@@ -40,7 +40,7 @@ Meanwhile, we can configure the application to receive the connection parameters
 
 **myproject/settings.py**
 
-<figure class="highlight">
+```
 
 ```
 EMAIL_BACKEND = config('EMAIL_BACKEND', default='django.core.mail.backends.smtp.EmailBackend')
@@ -54,11 +54,11 @@ DEFAULT_FROM_EMAIL = 'Django Boards <noreply@djangoboards.com>'
 EMAIL_SUBJECT_PREFIX = '[Django Boards] '
 ```
 
-</figure>
+```
 
 Then, my local machine **.env** file would look like this:
 
-<figure class="highlight">
+```
 
 ```
 SECRET_KEY=rqr_cjv4igscyu8&&(0ce(=sy=f2)p=f_wn&@0xsp7m$@!kp=d
@@ -68,11 +68,11 @@ DATABASE_URL=sqlite:///db.sqlite3
 EMAIL_BACKEND=django.core.mail.backends.console.EmailBackend
 ```
 
-</figure>
+```
 
 And my production **.env** file would look like this:
 
-<figure class="highlight">
+```
 
 ```
 SECRET_KEY=rqr_cjv4igscyu8&&(0ce(=sy=f2)p=f_wn&@0xsp7m$@!kp=d
@@ -83,7 +83,7 @@ EMAIL_HOST_USER=postmaster@mg.djangoboards.com
 EMAIL_HOST_PASSWORD=ED2vmrnGTM1Rdwlhazyhxxcd0F
 ```
 
-</figure>
+```
 
 You can find your credentials in the **Domain Information** section on Mailgun.
 
@@ -93,25 +93,25 @@ You can find your credentials in the **Domain Information** section on Mailgun.
 
 We can test the new settings in the production server. Make the changes in the **settings.py** file on your local machine, commit the changes to the remote repository. Then, in the server pull the new code and restart the Gunicorn process:
 
-<figure class="highlight">
+```
 
 ```
 git pull
 ```
 
-</figure>
+```
 
 Edit the **.env** file with the email credentials.
 
 Then restart the Gunicorn process:
 
-<figure class="highlight">
+```
 
 ```
 sudo supervisorctl restart boards
 ```
 
-</figure>
+```
 
 Now we can try to start the password reset process:
 

@@ -4,7 +4,7 @@ First thing, add a new URL route:
 
 **myproject/urls.py**
 
-<figure class="highlight">
+```
 
     from django.conf.urls import url
     from django.contrib import admin
@@ -23,7 +23,7 @@ First thing, add a new URL route:
         url(r'^admin/', admin.site.urls),
     ]
 
-</figure>
+```
 
 Inside the `as_view()` we can pass some extra parameters, so to override the defaults. In this case, we are instructing the **LoginView** to look for a template at **login.html**.
 
@@ -31,11 +31,11 @@ Edit the **settings.py** and add the following configuration:
 
 **myproject/settings.py**
 
-<figure class="highlight">
+```
 
     LOGIN_REDIRECT_URL = 'home'
 
-</figure>
+```
 
 This configuration is telling Django where to redirect the user after a successful login.
 
@@ -43,17 +43,17 @@ Finally, add the login URL to the **base.html** template:
 
 **templates/base.html**
 
-<figure class="highlight">
+```
 
     <a href="{% url 'login' %}" class="btn btn-outline-secondary">Log in</a>
 
-</figure>
+```
 
 We can create a template similar to the sign up page. Create a new file named **login.html**:
 
 **templates/login.html**
 
-<figure class="highlight">
+```
 
     {% extends 'base.html' %}
 
@@ -93,7 +93,7 @@ We can create a template similar to the sign up page. Create a new file named **
       </div>
     {% endblock %}
 
-</figure>
+```
 
 ![Login](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/login.jpg)
 
@@ -103,7 +103,7 @@ Create a new template named **base_accounts.html**:
 
 **templates/base_accounts.html**
 
-<figure class="highlight">
+```
 
     {% extends 'base.html' %}
 
@@ -123,13 +123,13 @@ Create a new template named **base_accounts.html**:
       </div>
     {% endblock %}
 
-</figure>
+```
 
 Now use it on both **signup.html** and **login.html**:
 
 **templates/login.html**
 
-<figure class="highlight">
+```
 
     {% extends 'base_accounts.html' %}
 
@@ -160,13 +160,13 @@ Now use it on both **signup.html** and **login.html**:
       </div>
     {% endblock %}
 
-</figure>
+```
 
 We still don’t have the password reset URL, so let’s leave it as `#` for now.
 
 **templates/signup.html**
 
-<figure class="highlight">
+```
 
     {% extends 'base_accounts.html' %}
 
@@ -192,7 +192,7 @@ We still don’t have the password reset URL, so let’s leave it as `#` for now
       </div>
     {% endblock %}
 
-</figure>
+```
 
 Notice that we added the log in URL: `<a href="{% url 'login' %}">Log in</a>`.
 
@@ -212,7 +212,7 @@ That’s because forms have a special type of error, which is called **non-field
 
 **templates/includes/form.html**
 
-<figure class="highlight">
+```
 
     {% load widget_tweaks %}
 
@@ -228,7 +228,7 @@ That’s because forms have a special type of error, which is called **non-field
       <!-- code suppressed -->
     {% endfor %}
 
-</figure>
+```
 
 The `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">if</span> <span class="w"></span> <span class="err">forloop.last</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>` is just a minor thing. Because the `p` tag has a `margin-bottom`. And a form may have several non-field errors. For each non-field error, we render a `p` tag with the error. Then I’m checking if it’s the last error to render. If so, we add a Bootstrap 4 CSS class `mb-0` which stands for “margin bottom = 0”. Then the alert doesn’t look weird, with some extra space. Again, just a very minor detail. I did that just to keep the consistency of the spacing.
 
@@ -242,7 +242,7 @@ Inside the **boards** app, create a new folder named **templatetags**. Then insi
 
 The structure should be the following:
 
-<figure class="highlight">
+```
 
     myproject/
      |-- myproject/
@@ -265,13 +265,13 @@ The structure should be the following:
      |    +-- manage.py
      +-- venv/
 
-</figure>
+```
 
 In the **form_tags.py** file, let’s create two template tags:
 
 **boards/templatetags/form_tags.py**
 
-<figure class="highlight">
+```
 
     from django import template
 
@@ -291,37 +291,37 @@ In the **form_tags.py** file, let’s create two template tags:
                 css_class = 'is-valid'
         return 'form-control {}'.format(css_class)
 
-</figure>
+```
 
 Those are _template filters_. They work like this:
 
 First, we load it in a template as we do with the **widget_tweaks** or **static** template tags. Note that after creating this file, you will have to manually stop the development server and start it again so Django can identify the new template tags.
 
-<figure class="highlight">
+```
 
     {% load form_tags %}
 
-</figure>
+```
 
 Then after that, we can use them in a template:
 
-<figure class="highlight">
+```
 
     {{ form.username|field_type }}
 
-</figure>
+```
 
 Will return:
 
-<figure class="highlight">
+```
 
     'TextInput'
 
-</figure>
+```
 
 Or in case of the **input_class**:
 
-<figure class="highlight">
+```
 
     {{ form.username|input_class }}
 
@@ -334,13 +334,13 @@ Or in case of the **input_class**:
     <!-- if the form is bound and invalid: -->
     'form-control is-invalid'
 
-</figure>
+```
 
 Now update the **form.html** to use the new template tags:
 
 **templates/includes/form.html**
 
-<figure class="highlight">
+```
 
     {% load form_tags widget_tweaks %}
 
@@ -369,7 +369,7 @@ Now update the **form.html** to use the new template tags:
       </div>
     {% endfor %}
 
-</figure>
+```
 
 Much better, right? Reduced the complexity of the template. It looks cleaner now. And it also solved the problem with the password field displaying a green border:
 
@@ -381,7 +381,7 @@ First, let’s just organize the **boards’** tests a little bit. Like we did w
 
 Add a new empty file named **test_templatetags.py**.
 
-<figure class="highlight">
+```
 
     myproject/
      |-- myproject/
@@ -405,25 +405,25 @@ Add a new empty file named **test_templatetags.py**.
      |    +-- manage.py
      +-- venv/
 
-</figure>
+```
 
 Fix the **test_views.py** imports:
 
 **boards/tests/test_views.py**
 
-<figure class="highlight">
+```
 
     from ..views import home, board_topics, new_topic
     from ..models import Board, Topic, Post
     from ..forms import NewTopicForm
 
-</figure>
+```
 
 Execute the tests just to make sure everything is working.
 
 **boards/tests/test_templatetags.py**
 
-<figure class="highlight">
+```
 
     from django import forms
     from django.test import TestCase
@@ -455,17 +455,17 @@ Execute the tests just to make sure everything is working.
             form = ExampleForm({'name': '', 'password': '123'})  # bound form (field + data)
             self.assertEquals('form-control is-invalid', input_class(form['name']))
 
-</figure>
+```
 
 We created a form class to be used in the tests then added test cases covering the possible scenarios in the two template tags.
 
-<figure class="highlight">
+```
 
     python manage.py test
 
-</figure>
+```
 
-<figure class="highlight">
+```
 
     Creating test database for alias 'default'...
     System check identified no issues (0 silenced).
@@ -476,6 +476,6 @@ We created a form class to be used in the tests then added test cases covering t
     OK
     Destroying test database for alias 'default'...
 
-</figure>
+```
 
 * * *

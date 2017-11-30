@@ -6,7 +6,7 @@ Let’s get back to the implementation of our project. This time we are going to
 
 **boards/views.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/376657085570a3dedf7e5f6e6fffc5e3#file-views-py-L66)</small>
 
-<figure class="highlight">
+```
 
     from django.shortcuts import redirect
     from django.views.generic import UpdateView
@@ -26,7 +26,7 @@ Let’s get back to the implementation of our project. This time we are going to
             post.save()
             return redirect('topic_posts', pk=post.topic.board.pk, topic_pk=post.topic.pk)
 
-</figure>
+```
 
 With the **UpdateView** and the **CreateView**, we have the option to either define **form_class** or the **fields** attribute. In the example above we are using the **fields** attribute to create a model form on-the-fly. Internally, Django will use a model form factory to compose a form of the **Post** model. Since it’s a very simple form with just the **message** field, we can afford to work like this. But for complex form definitions, it’s better to define a model form externally and refer to it here.
 
@@ -38,7 +38,7 @@ In this particular example, we had to override the **form_valid()** method so as
 
 **myproject/urls.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/376657085570a3dedf7e5f6e6fffc5e3#file-urls-py-L40)</small>
 
-<figure class="highlight">
+```
 
     from django.conf.urls import url
     from boards import views
@@ -49,13 +49,13 @@ In this particular example, we had to override the **form_valid()** method so as
             views.PostUpdateView.as_view(), name='edit_post'),
     ]
 
-</figure>
+```
 
 Now we can add the link to the edit page:
 
 **templates/topic_posts.html** <small>[(view complete file contents)](https://gist.github.com/vitorfs/589d31af9d06c5b21ec9b1623be0c357#file-topic_posts-html-L40)</small>
 
-<figure class="highlight">
+```
 
     {% if post.created_by == user %}
       <div class="mt-3">
@@ -65,11 +65,11 @@ Now we can add the link to the edit page:
       </div>
     {% endif %}
 
-</figure>
+```
 
 **templates/edit_post.html** <small>[(view complete file contents)](https://gist.github.com/vitorfs/376657085570a3dedf7e5f6e6fffc5e3#file-edit_post-html)</small>
 
-<figure class="highlight">
+```
 
     {% extends 'base.html' %}
 
@@ -91,7 +91,7 @@ Now we can add the link to the edit page:
       </form>
     {% endblock %}
 
-</figure>
+```
 
 Observe now how we are navigating through the post object: **post.topic.board.pk**. If we didn’t set the **context_object_name** to **post**, it would be available as: **object.topic.board.pk**. Got it?
 
@@ -103,7 +103,7 @@ Create a new test file named **test_view_edit_post.py** inside the **boards/test
 
 **boards/tests/test_view_edit_post.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/286917ce31687732eba4e545fc3cbdea)</small>
 
-<figure class="highlight">
+```
 
     from django.contrib.auth.models import User
     from django.test import TestCase
@@ -165,7 +165,7 @@ Create a new test file named **test_view_edit_post.py** inside the **boards/test
     class InvalidPostUpdateViewTests(PostUpdateViewTestCase):
         # ...
 
-</figure>
+```
 
 For now, the important parts are: **PostUpdateViewTestCase** is a class we defined to be reused across the other test cases. It’s just the basic setup, creating users, topic, boards, and so on.
 
@@ -175,13 +175,13 @@ The class **UnauthorizedPostUpdateViewTests** creates a new user, different from
 
 Let’s run the tests:
 
-<figure class="highlight">
+```
 
     python manage.py test boards.tests.test_view_edit_post
 
-</figure>
+```
 
-<figure class="highlight">
+```
 
     Creating test database for alias 'default'...
     System check identified no issues (0 silenced).
@@ -204,13 +204,13 @@ Let’s run the tests:
     FAILED (failures=2)
     Destroying test database for alias 'default'...
 
-</figure>
+```
 
 First, let’s fix the problem with the `@login_required` decorator. The way we use view decorators on class-based views is a little bit different. We need an extra import:
 
 **boards/views.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/826a6d421ebbeb80a0aee8e1b9b70398#file-views-py-L67)</small>
 
-<figure class="highlight">
+```
 
     from django.contrib.auth.decorators import login_required
     from django.shortcuts import redirect
@@ -234,19 +234,19 @@ First, let’s fix the problem with the `@login_required` decorator. The way we 
             post.save()
             return redirect('topic_posts', pk=post.topic.board.pk, topic_pk=post.topic.pk)
 
-</figure>
+```
 
 We can’t decorate the class directly with the `@login_required` decorator. We have to use the utility `@method_decorator`, and pass a decorator (or a list of decorators) and tell which method should be decorated. In class-based views it’s common to decorate the **dispatch** method. It’s an internal method Django use (defined inside the View class). All requests pass through this method, so it’s safe to decorate it.
 
 Run the tests:
 
-<figure class="highlight">
+```
 
     python manage.py test boards.tests.test_view_edit_post
 
-</figure>
+```
 
-<figure class="highlight">
+```
 
     Creating test database for alias 'default'...
     System check identified no issues (0 silenced).
@@ -263,7 +263,7 @@ Run the tests:
     FAILED (failures=1)
     Destroying test database for alias 'default'...
 
-</figure>
+```
 
 Okay! We fixed the `@login_required` problem. Now we have to deal with the other users editing any posts problem.
 
@@ -271,7 +271,7 @@ The easiest way to solve this problem is by overriding the `get_queryset` method
 
 **boards/views.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/667d8439ecf05e58f14fcc74672e48da)</small>
 
-<figure class="highlight">
+```
 
     @method_decorator(login_required, name='dispatch')
     class PostUpdateView(UpdateView):
@@ -292,19 +292,19 @@ The easiest way to solve this problem is by overriding the `get_queryset` method
             post.save()
             return redirect('topic_posts', pk=post.topic.board.pk, topic_pk=post.topic.pk)
 
-</figure>
+```
 
 With the line `queryset = super().get_queryset()` we are reusing the `get_queryset` method from the parent class, that is, the **UpateView** class. Then, we are adding an extra filter to the queryset, which is filtering the post using the logged in user, available inside the **request** object.
 
 Test it again:
 
-<figure class="highlight">
+```
 
     python manage.py test boards.tests.test_view_edit_post
 
-</figure>
+```
 
-<figure class="highlight">
+```
 
     Creating test database for alias 'default'...
     System check identified no issues (0 silenced).
@@ -315,7 +315,7 @@ Test it again:
     OK
     Destroying test database for alias 'default'...
 
-</figure>
+```
 
 All good!
 

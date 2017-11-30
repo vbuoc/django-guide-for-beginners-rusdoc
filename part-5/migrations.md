@@ -8,20 +8,20 @@ When Django applies a migration, it has a special table called **django_migratio
 
 So if we try to run the command again:
 
-<figure class="highlight">
+```
 
     python manage.py migrate
 
-</figure>
+```
 
-<figure class="highlight">
+```
 
     Operations to perform:
       Apply all migrations: admin, auth, boards, contenttypes, sessions
     Running migrations:
       No migrations to apply.
 
-</figure>
+```
 
 Django will know there’s nothing to do.
 
@@ -29,7 +29,7 @@ Let’s create a migration by adding a new field to the Topic model:
 
 **boards/models.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/816f47aa4df8e7b157df75e0ff209aac#file-models-py-L25)</small>
 
-<figure class="highlight">
+```
 
     class Topic(models.Model):
         subject = models.CharField(max_length=255)
@@ -41,13 +41,13 @@ Let’s create a migration by adding a new field to the Topic model:
         def __str__(self):
             return self.subject
 
-</figure>
+```
 
 Here we added a `PositiveIntegerField`. Since this field is going to store the number of page views, a negative page view wouldn’t make sense.
 
 Before we can use our new field, we have to update the database schema. Execute the `makemigrations` command:
 
-<figure class="highlight">
+```
 
     python manage.py makemigrations
 
@@ -55,13 +55,13 @@ Before we can use our new field, we have to update the database schema. Execute 
       boards/migrations/0003_topic_views.py
         - Add field views to topic
 
-</figure>
+```
 
 The `makemigrations` command automatically generated the **0003_topic_views.py** file, which will be used to modify the database, adding the **views** field.
 
 Now apply the migration by running the command `migrate`:
 
-<figure class="highlight">
+```
 
     python manage.py migrate
 
@@ -70,13 +70,13 @@ Now apply the migration by running the command `migrate`:
     Running migrations:
       Applying boards.0003_topic_views... OK
 
-</figure>
+```
 
 Now we can use it to keep track of the number of views a given topic is receiving:
 
 **boards/views.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/c0c97c1e050204d9152c59b4da2f9305#file-views-py-L41)</small>
 
-<figure class="highlight">
+```
 
     from django.shortcuts import get_object_or_404, render
     from .models import Topic
@@ -87,11 +87,11 @@ Now we can use it to keep track of the number of views a given topic is receivin
         topic.save()
         return render(request, 'topic_posts.html', {'topic': topic})
 
-</figure>
+```
 
 **templates/topics.html** <small>[(view complete file contents)](https://gist.github.com/vitorfs/70ebb1a06e1044387943ee83bafcd526)</small>
 
-<figure class="highlight">
+```
 
     {% for topic in topics %}
       <tr>
@@ -103,7 +103,7 @@ Now we can use it to keep track of the number of views a given topic is receivin
       </tr>
     {% endfor %}
 
-</figure>
+```
 
 Now open a topic and refresh the page a few times, and see if it’s counting the page views:
 

@@ -20,7 +20,7 @@ Similarly, copy the **bootstrap.min.js** file to our **js** folder as well.
 
 The final result should be:
 
-<figure class="highlight">
+```
 
     myproject/
      |-- myproject/
@@ -38,13 +38,13 @@ The final result should be:
      |    +-- manage.py
      +-- venv/
 
-</figure>
+```
 
 In the bottom of the **base.html** file, add the scripts _after_ the `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">endblock</span> <span class="w"></span> <span class="err">body</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>`:
 
 **templates/base.html**
 
-<figure class="highlight">
+```
 
     {% load static %}<!DOCTYPE html>
     <html>
@@ -66,7 +66,7 @@ In the bottom of the **base.html** file, add the scripts _after_ the `<span clas
       </body>
     </html>
 
-</figure>
+```
 
 If you found the instructions confusing, just download the files using the direct links below:
 
@@ -80,7 +80,7 @@ Now we can add the Bootstrap 4 dropdown menu:
 
 **templates/base.html**
 
-<figure class="highlight">
+```
 
     <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
       <div class="container">
@@ -106,7 +106,7 @@ Now we can add the Bootstrap 4 dropdown menu:
       </div>
     </nav>
 
-</figure>
+```
 
 ![Dropdown menu](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/dropdown.png)
 
@@ -118,7 +118,7 @@ It’s working. But the dropdown is showing regardless of the user being logged 
 
 We can improve it a little bit:
 
-<figure class="highlight">
+```
 
     <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
       <div class="container">
@@ -151,7 +151,7 @@ We can improve it a little bit:
       </div>
     </nav>
 
-</figure>
+```
 
 Now we are telling Django to show the dropdown menu if the user is logged in, and if not, show the log in and sign up buttons:
 

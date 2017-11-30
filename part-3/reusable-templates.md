@@ -6,7 +6,7 @@ Create a new file named **base.html** in the **templates** folder:
 
 **templates/base.html**
 
-<figure class="highlight">
+```
 
     {% load static %}<!DOCTYPE html>
     <html>
@@ -27,7 +27,7 @@ Create a new file named **base.html** in the **templates** folder:
       </body>
     </html>
 
-</figure>
+```
 
 This is going to be our master page. Every template we create, is going to **extend** this special template. Observe now we introduced the `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">block</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>` tag. It is used to reserve a space in the template, which a “child” template (which extends the master page) can insert code and HTML within that space.
 
@@ -37,7 +37,7 @@ Now let’s refactor our two templates: **home.html** and **topics.html**.
 
 **templates/home.html**
 
-<figure class="highlight">
+```
 
     {% extends 'base.html' %}
 
@@ -71,13 +71,13 @@ Now let’s refactor our two templates: **home.html** and **topics.html**.
       </table>
     {% endblock %}
 
-</figure>
+```
 
 The first line in the **home.html** template is `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">extends</span> <span class="w"></span> <span class="err">'base.html'</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>`. This tag is telling Django to use the **base.html** template as a master page. After that, we are using the the _blocks_ to put the unique content of the page.
 
 **templates/topics.html**
 
-<figure class="highlight">
+```
 
     {% extends 'base.html' %}
 
@@ -94,19 +94,19 @@ The first line in the **home.html** template is `<span class="p">{</span><span c
         <!-- just leaving it empty for now. we will add core here soon. -->
     {% endblock %}
 
-</figure>
+```
 
 In the **topics.html** template, we are changing the `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">block</span> <span class="w"></span> <span class="err">title</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>` default value. Notice that we can reuse the default value of the block by calling `<span class="p">{</span><span class="err">{</span> <span class="w"></span> <span class="err">block.super</span> <span class="w"></span> <span class="p">}</span><span class="err">}</span>`. So here we are playing with the website title, which we defined in the **base.html** as “Django Boards.” So for the “Python” board page, the title will be “Python - Django Boards,” for the “Random” board the title will be “Random - Django Boards.”
 
 Now let’s run the tests and see we didn’t break anything:
 
-<figure class="highlight">
+```
 
     python manage.py test
 
-</figure>
+```
 
-<figure class="highlight">
+```
 
     Creating test database for alias 'default'...
     System check identified no issues (0 silenced).
@@ -117,7 +117,7 @@ Now let’s run the tests and see we didn’t break anything:
     OK
     Destroying test database for alias 'default'...
 
-</figure>
+```
 
 Great! Everything is looking good.
 
@@ -125,7 +125,7 @@ Now that we have the **base.html** template, we can easily add a top bar with a 
 
 **templates/base.html**
 
-<figure class="highlight">
+```
 
     {% load static %}<!DOCTYPE html>
     <html>
@@ -153,7 +153,7 @@ Now that we have the **base.html** template, we can easily add a top bar with a 
       </body>
     </html>
 
-</figure>
+```
 
 ![Django Boards Header](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/django-boards-header-1.png)
 
@@ -169,7 +169,7 @@ Go to [fonts.google.com](https://fonts.google.com/), type “Django Boards” or
 
 Add the font in the **base.html** template:
 
-<figure class="highlight">
+```
 
     {% load static %}<!DOCTYPE html>
     <html>
@@ -185,19 +185,19 @@ Add the font in the **base.html** template:
       </body>
     </html>
 
-</figure>
+```
 
 Now create a new CSS file named **app.css** inside the **static/css** folder:
 
 **static/css/app.css**
 
-<figure class="highlight">
+```
 
     .navbar-brand {
       font-family: 'Peralta', cursive;
     }
 
-</figure>
+```
 
 ![Django Boards Logo](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/boards-logo.png)
 

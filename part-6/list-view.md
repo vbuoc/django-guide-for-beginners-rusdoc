@@ -4,7 +4,7 @@ We could refactor some of our existing views to take advantage of the CBV capabi
 
 **boards/views.py**
 
-<figure class="highlight">
+```
 
     from django.shortcuts import render
     from .models import Board
@@ -13,13 +13,13 @@ We could refactor some of our existing views to take advantage of the CBV capabi
         boards = Board.objects.all()
         return render(request, 'home.html', {'boards': boards})
 
-</figure>
+```
 
 Here is how we could rewrite it using a GCBV for models listing:
 
 **boards/views.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/5e248d9a4499e2a796c6ffee9cbb1125#file-views-py-L12)</small>
 
-<figure class="highlight">
+```
 
     from django.views.generic import ListView
     from .models import Board
@@ -29,13 +29,13 @@ Here is how we could rewrite it using a GCBV for models listing:
         context_object_name = 'boards'
         template_name = 'home.html'
 
-</figure>
+```
 
 Then we have to change the reference in the **urls.py** module:
 
 **myproject/urls.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/a0a826233d95a4cc53a75afc441db1e9#file-urls-py-L10)</small>
 
-<figure class="highlight">
+```
 
     from django.conf.urls import url
     from boards import views
@@ -45,13 +45,13 @@ Then we have to change the reference in the **urls.py** module:
         # ...
     ]
 
-</figure>
+```
 
 If we check the homepage we will see that nothing really changed, everything is working as expected. But we have to tweak our tests a little bit because now we are dealing with a class-based view:
 
 **boards/tests/test_view_home.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/e17216ce3d92110cf7e005ce3288c587)</small>
 
-<figure class="highlight">
+```
 
     from django.test import TestCase
     from django.urls import resolve
@@ -63,7 +63,7 @@ If we check the homepage we will see that nothing really changed, everything is 
             view = resolve('/')
             self.assertEquals(view.func.view_class, BoardListView)
 
-</figure>
+```
 
 ##### Pagination
 
@@ -75,13 +75,13 @@ From now on, we will be working on the **board_topics** view.
 
 First, let’s add some volume of posts. We could just use the application’s user interface and add several posts, or open the Python shell and write a small script to do it for us:
 
-<figure class="highlight">
+```
 
     python manage.py shell
 
-</figure>
+```
 
-<figure class="highlight">
+```
 
     from django.contrib.auth.models import User
     from boards.models import Board, Topic, Post
@@ -95,7 +95,7 @@ First, let’s add some volume of posts. We could just use the application’s u
         topic = Topic.objects.create(subject=subject, board=board, starter=user)
         Post.objects.create(message='Lorem ipsum...', topic=topic, created_by=user)
 
-</figure>
+```
 
 ![Topics](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-6/topics.png)
 
@@ -103,13 +103,13 @@ Good, now we have some data to play with.
 
 Before we jump into the code, let’s experiment a little bit more with the Python shell:
 
-<figure class="highlight">
+```
 
     python manage.py shell
 
-</figure>
+```
 
-<figure class="highlight">
+```
 
     from boards.models import Topic
 
@@ -124,23 +124,23 @@ Before we jump into the code, let’s experiment a little bit more with the Pyth
     # Let's save this queryset into a variable to paginate it
     queryset = Topic.objects.filter(board__name='Django').order_by('-last_updated')
 
-</figure>
+```
 
 It’s very important always define an ordering to a **QuerySet** you are going to paginate! Otherwise, it can give you inconsistent results.
 
 Now let’s import the **Paginator** utility:
 
-<figure class="highlight">
+```
 
     from django.core.paginator import Paginator
 
     paginator = Paginator(queryset, 20)
 
-</figure>
+```
 
 Here we are telling Django to paginate our **QuerySet** in pages of 20 each. Now let’s explore some of the paginator properties:
 
-<figure class="highlight">
+```
 
     # count the number of elements in the paginator
     paginator.count
@@ -169,31 +169,31 @@ Here we are telling Django to paginate our **QuerySet** in pages of 20 each. Now
     type(paginator)
     django.core.paginator.Paginator
 
-</figure>
+```
 
 Here we have to pay attention because if we try to get a page that doesn’t exist, the Paginator will throw an exception:
 
-<figure class="highlight">
+```
 
     paginator.page(7)
     EmptyPage: That page contains no results
 
-</figure>
+```
 
 Or if we try to pass an arbitrary parameter, which is not a page number:
 
-<figure class="highlight">
+```
 
     paginator.page('abc')
     PageNotAnInteger: That page number is not an integer
 
-</figure>
+```
 
 We have to keep those details in mind when designing the user interface.
 
 Now let’s explore the attributes and methods offered by the **Page** class a little bit:
 
-<figure class="highlight">
+```
 
     page = paginator.page(1)
 
@@ -216,7 +216,7 @@ Now let’s explore the attributes and methods offered by the **Page** class a l
     page.previous_page_number()
     EmptyPage: That page number is less than 1
 
-</figure>
+```
 
 ##### FBV Pagination
 
@@ -224,7 +224,7 @@ Here is how we do it using regular function-based views:
 
 **boards/views.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/16f0ac257439245fa6645af259d8846f#file-views-py-L19)</small>
 
-<figure class="highlight">
+```
 
     from django.db.models import Count
     from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
@@ -251,7 +251,7 @@ Here is how we do it using regular function-based views:
 
         return render(request, 'topics.html', {'board': board, 'topics': topics})
 
-</figure>
+```
 
 Now the trick part is to render the pages correctly using the Bootstrap 4 pagination component. But take the time to read the code and see if it makes sense for you. We are using here all the methods we played with before. And here in that context, `topics` is no longer a QuerySet but a `paginator.Page` instance.
 
@@ -259,7 +259,7 @@ Right after the topics HTML table, we can render the pagination component:
 
 **templates/topics.html** <small>[(view complete file contents)](https://gist.github.com/vitorfs/3101a1bd72125aeb45829659a5532bc6)</small>
 
-<figure class="highlight">
+```
 
     {% if topics.has_other_pages %}
       <nav aria-label="Topics pagination" class="mb-4">
@@ -302,7 +302,7 @@ Right after the topics HTML table, we can render the pagination component:
       </nav>
     {% endif %}
 
-</figure>
+```
 
 ![Pagination](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-6/paginate.png)
 
@@ -312,7 +312,7 @@ Below, the same implementation but this time using the **ListView**.
 
 **boards/views.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/323173bc56dec48fd83caf983d459421#file-views-py-L19)</small>
 
-<figure class="highlight">
+```
 
     class TopicListView(ListView):
         model = Topic
@@ -329,7 +329,7 @@ Below, the same implementation but this time using the **ListView**.
             queryset = self.board.topics.order_by('-last_updated').annotate(replies=Count('posts') - 1)
             return queryset
 
-</figure>
+```
 
 While using pagination with class-based views, the way we interact with the paginator in the template is a little bit different. It will make available the following variables in the template: **paginator**, **page_obj**, **is_paginated**, **object_list**, and also a variable with the name we defined in the **context_object_name**. In our case this extra variable will be named **topics**, and it will be equivalent to **object_list**.
 
@@ -341,7 +341,7 @@ Remember to update the **urls.py**:
 
 **myproject/urls.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/61f5345b7cf8b006b2901a61b8f8e348#file-urls-py-L37)</small>
 
-<figure class="highlight">
+```
 
     from django.conf.urls import url
     from boards import views
@@ -351,13 +351,13 @@ Remember to update the **urls.py**:
         url(r'^boards/(?P<pk>\d+)//figure>, views.TopicListView.as_view(), name='board_topics'),
     ]
 
-</figure>
+```
 
 Now let’s fix the template:
 
 **templates/topics.html** <small>[(view complete file contents)](https://gist.github.com/vitorfs/65095aa3eda78bafd22d5e2f94086d40#file-topics-html-L40)</small>
 
-<figure class="highlight">
+```
 
     {% block content %}
       <div class="mb-4">
@@ -411,13 +411,13 @@ Now let’s fix the template:
 
     {% endblock %}
 
-</figure>
+```
 
 Now take the time to run the tests and fix if needed.
 
 **boards/tests/test_view_board_topics.py**
 
-<figure class="highlight">
+```
 
     from django.test import TestCase
     from django.urls import resolve
@@ -429,7 +429,7 @@ Now take the time to run the tests and fix if needed.
             view = resolve('/boards/1/')
             self.assertEquals(view.func.view_class, TopicListView)
 
-</figure>
+```
 
 ##### Reusable Pagination Template
 
@@ -439,7 +439,7 @@ Let’s paginate the topic posts page, and then find a way to reuse the paginati
 
 **boards/views.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/53139ca0fd7c01b8459c2ff62828f963)</small>
 
-<figure class="highlight">
+```
 
     class PostListView(ListView):
         model = Post
@@ -458,11 +458,11 @@ Let’s paginate the topic posts page, and then find a way to reuse the paginati
             queryset = self.topic.posts.order_by('created_at')
             return queryset
 
-</figure>
+```
 
 Now update the **urls.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/428d58dbb61f9c2601bb7434150ea37f)</small>
 
-<figure class="highlight">
+```
 
     from django.conf.urls import url
     from boards import views
@@ -472,11 +472,11 @@ Now update the **urls.py** <small>[(view complete file contents)](https://gist.g
         url(r'^boards/(?P<pk>\d+)/topics/(?P<topic_pk>\d+)//figure>, views.PostListView.as_view(), name='topic_posts'),
     ]
 
-</figure>
+```
 
 Now we grab that pagination HTML snippet from the **topics.html** template, and create a new file named **pagination.html** inside the **templates/includes** folder, alongside with the **forms.html** file:
 
-<figure class="highlight">
+```
 
     myproject/
      |-- myproject/
@@ -493,11 +493,11 @@ Now we grab that pagination HTML snippet from the **topics.html** template, and 
      |    +-- manage.py
      +-- venv/
 
-</figure>
+```
 
 **templates/includes/pagination.html**
 
-<figure class="highlight">
+```
 
     {% if is_paginated %}
       <nav aria-label="Topics pagination" class="mb-4">
@@ -540,13 +540,13 @@ Now we grab that pagination HTML snippet from the **topics.html** template, and 
       </nav>
     {% endif %}
 
-</figure>
+```
 
 Now in the **topic_posts.html** template we use it:
 
 **templates/topic_posts.html** <small>[(view complete file contents)](https://gist.github.com/vitorfs/df5b16bb16c1134ba4e03218dce250d7)</small>
 
-<figure class="highlight">
+```
 
     {% block content %}
 
@@ -592,7 +592,7 @@ Now in the **topic_posts.html** template we use it:
 
     {% endblock %}
 
-</figure>
+```
 
 Don’t forget to change the main forloop to `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">for</span> <span class="w"></span> <span class="err">post</span> <span class="w"></span> <span class="err">in</span> <span class="w"></span> <span class="err">posts</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>`.
 
@@ -600,7 +600,7 @@ We can also update the previous template, the **topics.html** template to use th
 
 **templates/topics.html** <small>[(view complete file contents)](https://gist.github.com/vitorfs/9198ad8f91cd889f315ade7e4eb62710#file-topics-html-L40)</small>
 
-<figure class="highlight">
+```
 
     {% block content %}
       <div class="mb-4">
@@ -615,7 +615,7 @@ We can also update the previous template, the **topics.html** template to use th
 
     {% endblock %}
 
-</figure>
+```
 
 Just for testing purpose, you could just add a few posts (or create some using the Python Shell) and change the **paginate_by** to a low number, say 2, and see how it’s looking like:
 
@@ -625,7 +625,7 @@ Update the test cases:
 
 **boards/tests/test_view_topic_posts.py**
 
-<figure class="highlight">
+```
 
     from django.test import TestCase
     from django.urls import resolve
@@ -637,6 +637,6 @@ Update the test cases:
             view = resolve('/boards/1/topics/1/')
             self.assertEquals(view.func.view_class, PostListView)
 
-</figure>
+```
 
 * * *

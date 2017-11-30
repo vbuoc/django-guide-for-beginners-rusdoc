@@ -28,7 +28,7 @@ First thing, let’s create a new URL route named **new_topic**:
 
 **myproject/urls.py**
 
-<figure class="highlight">
+```
 
     from django.conf.urls import url
     from django.contrib import admin
@@ -42,7 +42,7 @@ First thing, let’s create a new URL route named **new_topic**:
         url(r'^admin/', admin.site.urls),
     ]
 
-</figure>
+```
 
 The way we are building the URL will help us identify the correct **Board**.
 
@@ -50,7 +50,7 @@ Now let’s create the **new_topic** view function:
 
 **boards/views.py**
 
-<figure class="highlight">
+```
 
     from django.shortcuts import render, get_object_or_404
     from .models import Board
@@ -59,7 +59,7 @@ Now let’s create the **new_topic** view function:
         board = get_object_or_404(Board, pk=pk)
         return render(request, 'new_topic.html', {'board': board})
 
-</figure>
+```
 
 For now, the **new_topic** view function is looking exactly the same as the **board_topics**. That’s on purpose, let’s take a step at a time.
 
@@ -67,7 +67,7 @@ Now we just need a template named **new_topic.html** to see some code working:
 
 **templates/new_topic.html**
 
-<figure class="highlight">
+```
 
     {% extends 'base.html' %}
 
@@ -83,7 +83,7 @@ Now we just need a template named **new_topic.html** to see some code working:
 
     {% endblock %}
 
-</figure>
+```
 
 For now we just have the breadcrumb assuring the navigation. Observe that we included the URL back to the **board_topics** view.
 
@@ -107,7 +107,7 @@ We can already add some tests:
 
 **boards/tests.py**
 
-<figure class="highlight">
+```
 
     from django.core.urlresolvers import reverse
     from django.urls import resolve
@@ -145,7 +145,7 @@ We can already add some tests:
             response = self.client.get(new_topic_url)
             self.assertContains(response, 'href="{0}"'.format(board_topics_url))
 
-</figure>
+```
 
 A quick summary of the tests of our new class **NewTopicTests**:
 
@@ -157,13 +157,13 @@ A quick summary of the tests of our new class **NewTopicTests**:
 
 Run the tests:
 
-<figure class="highlight">
+```
 
     python manage.py test
 
-</figure>
+```
 
-<figure class="highlight">
+```
 
     Creating test database for alias 'default'...
     System check identified no issues (0 silenced).
@@ -174,13 +174,13 @@ Run the tests:
     OK
     Destroying test database for alias 'default'...
 
-</figure>
+```
 
 Good, now it’s time to start creating the form.
 
 **templates/new_topic.html**
 
-<figure class="highlight">
+```
 
     {% extends 'base.html' %}
 
@@ -207,7 +207,7 @@ Good, now it’s time to start creating the form.
       </form>
     {% endblock %}
 
-</figure>
+```
 
 This is a raw HTML form created by hand using the CSS classes provided by Bootstrap 4\. It looks like this:
 
@@ -223,41 +223,41 @@ Django protects all **POST** requests using a **CSRF Token** (Cross-Site Request
 
 The result of the **csrf_token** template tag:
 
-<figure class="highlight">
+```
 
     {% csrf_token %}
 
-</figure>
+```
 
 Is a hidden field that’s submitted along with the other form data:
 
-<figure class="highlight">
+```
 
     <input type="hidden" name="csrfmiddlewaretoken" value="jG2o6aWj65YGaqzCpl0TYTg5jn6SctjzRZ9KmluifVx0IVaxlwh97YarZKs54Y32">
 
-</figure>
+```
 
 Another thing, we have to set the **name** of the HTML inputs. The **name** will be used to retrieve the data on the server side.
 
-<figure class="highlight">
+```
 
     <input type="text" class="form-control" id="id_subject" name="subject">
     <textarea class="form-control" id="id_message" name="message" rows="5"></textarea>
 
-</figure>
+```
 
 Here is how we retrieve the data:
 
-<figure class="highlight">
+```
 
     subject = request.POST['subject']
     message = request.POST['message']
 
-</figure>
+```
 
 So, a naïve implementation of a view that grabs the data from the HTML and starts a new topic can be written like this:
 
-<figure class="highlight">
+```
 
     from django.contrib.auth.models import User
     from django.shortcuts import render, redirect, get_object_or_404
@@ -288,7 +288,7 @@ So, a naïve implementation of a view that grabs the data from the HTML and star
 
         return render(request, 'new_topic.html', {'board': board})
 
-</figure>
+```
 
 This view is only considering the _happy path_, which is receiving the data and saving it into the database. But there are some missing parts. We are not validating the data. The user could submit an empty form or a **subject** that’s bigger than 255 characters.
 
@@ -304,7 +304,7 @@ It looks like it worked. But we haven’t implemented the topics listing yet, so
 
 **templates/topics.html**
 
-<figure class="highlight">
+```
 
     {% extends 'base.html' %}
 
@@ -342,7 +342,7 @@ It looks like it worked. But we haven’t implemented the topics listing yet, so
       </table>
     {% endblock %}
 
-</figure>
+```
 
 ![Topics](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/topics-3.png)
 
@@ -352,7 +352,7 @@ Two new concepts here:
 
 We are using for the first time the **topics** property in the **Board** model. The **topics** property is created automatically by Django using a reverse relationship. In the previous steps, we created a **Topic** instance:
 
-<figure class="highlight">
+```
 
     def new_topic(request, pk):
         board = get_object_or_404(Board, pk=pk)
@@ -365,7 +365,7 @@ We are using for the first time the **topics** property in the **Board** model. 
             starter=user
         )
 
-</figure>
+```
 
 In the line `board=board`, we set the **board** field in **Topic** model, which is a `ForeignKey(Board)`. With that, now our **Board** instance is aware that it has an **Topic** instance associated with it.
 
@@ -375,11 +375,11 @@ Another important thing to note is that, inside Python code, we have to use pare
 
 The second thing is that we are making use of a `ForeignKey`:
 
-<figure class="highlight">
+```
 
     {{ topic.starter.username }}
 
-</figure>
+```
 
 Just create a _path_ through the property using dots. We can pretty much access any property of the **User** model. If we wanted the user’s email, we could use `topic.starter.email`.
 
@@ -387,7 +387,7 @@ Since we are already modifying the **topics.html** template, let’s create the 
 
 **templates/topics.html**
 
-<figure class="highlight">
+```
 
     {% block content %}
       <div class="mb-4">
@@ -399,7 +399,7 @@ Since we are already modifying the **topics.html** template, let’s create the 
       </table>
     {% endblock %}
 
-</figure>
+```
 
 ![Topics](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/topics-4.png)
 
@@ -407,7 +407,7 @@ We can include a test to make sure the user can reach the **New topic** view fro
 
 **boards/tests.py**
 
-<figure class="highlight">
+```
 
     class BoardTopicsTests(TestCase):
         # ...
@@ -422,7 +422,7 @@ We can include a test to make sure the user can reach the **New topic** view fro
             self.assertContains(response, 'href="{0}"'.format(homepage_url))
             self.assertContains(response, 'href="{0}"'.format(new_topic_url))
 
-</figure>
+```
 
 Basically here I renamed the old **test_board_topics_view_contains_link_back_to_homepage** method and add an extra `assertContains`. This test is now responsible for making sure our view contains the required navigation links.
 
@@ -432,7 +432,7 @@ Before we code the previous form example in a Django way, let’s write some tes
 
 **boards/tests.py**
 
-<figure class="highlight">
+```
 
     ''' new imports below '''
     from django.contrib.auth.models import User
@@ -485,7 +485,7 @@ Before we code the previous form example in a Django way, let’s write some tes
             self.assertFalse(Topic.objects.exists())
             self.assertFalse(Post.objects.exists())
 
-</figure>
+```
 
 First thing, the **tests.py** file is already starting to get big. We will improve it soon, breaking the tests into several files. But for now, let’s keep working on it.
 
@@ -497,13 +497,13 @@ First thing, the **tests.py** file is already starting to get big. We will impro
 
 Let’s run the tests:
 
-<figure class="highlight">
+```
 
     python manage.py test
 
-</figure>
+```
 
-<figure class="highlight">
+```
 
     Creating test database for alias 'default'...
     System check identified no issues (0 silenced).
@@ -529,7 +529,7 @@ Let’s run the tests:
     FAILED (failures=1, errors=1)
     Destroying test database for alias 'default'...
 
-</figure>
+```
 
 We have one failing test and one error. Both related to invalid user input. Instead of trying to fix it with the current implementation, let’s make those tests pass using the Django Forms API.
 
@@ -543,7 +543,7 @@ Let’s create a new file named **forms.py** inside the **boards**’ folder:
 
 **boards/forms.py**
 
-<figure class="highlight">
+```
 
     from django import forms
     from .models import Topic
@@ -555,7 +555,7 @@ Let’s create a new file named **forms.py** inside the **boards**’ folder:
             model = Topic
             fields = ['subject', 'message']
 
-</figure>
+```
 
 This is our first form. It’s a `ModelForm` associated with the **Topic** model. The `subject` in the `fields` list inside the **Meta** class is referring to the `subject` field in the **Topic** class. Now observe that we are defining an extra field named `message`. This refers to the message in the **Post** we want to save.
 
@@ -563,7 +563,7 @@ Now we have to refactor our **views.py**:
 
 **boards/views.py**
 
-<figure class="highlight">
+```
 
     from django.contrib.auth.models import User
     from django.shortcuts import render, redirect, get_object_or_404
@@ -590,11 +590,11 @@ Now we have to refactor our **views.py**:
             form = NewTopicForm()
         return render(request, 'new_topic.html', {'board': board, 'form': form})
 
-</figure>
+```
 
 This is how we use the forms in a view. Let me remove the extra noise so we can focus on the core of the form processing:
 
-<figure class="highlight">
+```
 
     if request.method == 'POST':
         form = NewTopicForm(request.POST)
@@ -605,7 +605,7 @@ This is how we use the forms in a view. Let me remove the extra noise so we can 
         form = NewTopicForm()
     return render(request, 'new_topic.html', {'form': form})
 
-</figure>
+```
 
 First we check if the request is a **POST** or a **GET**. If the request came from a **POST**, it means the user is submitting some data to the server. So we instantiate a form instance passing the **POST** data to the form: `form = NewTopicForm(request.POST)`.
 
@@ -617,13 +617,13 @@ If the request was a **GET**, we just initialize a new and empty form using `for
 
 Let’s run the tests and see how is everything:
 
-<figure class="highlight">
+```
 
     python manage.py test
 
-</figure>
+```
 
-<figure class="highlight">
+```
 
     Creating test database for alias 'default'...
     System check identified no issues (0 silenced).
@@ -634,7 +634,7 @@ Let’s run the tests and see how is everything:
     OK
     Destroying test database for alias 'default'...
 
-</figure>
+```
 
 We even fixed the last two tests.
 
@@ -644,7 +644,7 @@ Let’s update the **new_topic.html** template to fully use the Django Forms API
 
 **templates/new_topic.html**
 
-<figure class="highlight">
+```
 
     {% extends 'base.html' %}
 
@@ -664,7 +664,7 @@ Let’s update the **new_topic.html** template to fully use the Django Forms API
       </form>
     {% endblock %}
 
-</figure>
+```
 
 The `form` have three rendering options: `form.as_table`, `form.as_ul`, and `form.as_p`. It’s a quick way to render all the fields of a form. As the name suggests, the `as_table` uses table tags to format the inputs, the `as_ul` creates an HTML list of inputs, etc.
 
@@ -696,7 +696,7 @@ It also handles help texts, which can be defined both in a **Form** class or in 
 
 **boards/forms.py**
 
-<figure class="highlight">
+```
 
     from django import forms
     from .models import Topic
@@ -712,7 +712,7 @@ It also handles help texts, which can be defined both in a **Form** class or in 
             model = Topic
             fields = ['subject', 'message']
 
-</figure>
+```
 
 ![Help Text](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/help-text.png)
 
@@ -720,7 +720,7 @@ We can also set extra attributes to a form field:
 
 **boards/forms.py**
 
-<figure class="highlight">
+```
 
     from django import forms
     from .models import Topic
@@ -738,7 +738,7 @@ We can also set extra attributes to a form field:
             model = Topic
             fields = ['subject', 'message']
 
-</figure>
+```
 
 ![Form Placeholder](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/form-placeholder.png)
 
@@ -750,17 +750,17 @@ When working with Bootstrap or any other Front-End library, I like to use a Djan
 
 Let’s start off by installing it:
 
-<figure class="highlight">
+```
 
     pip install django-widget-tweaks
 
-</figure>
+```
 
 Now add it to the `INSTALLED_APPS`:
 
 **myproject/settings.py**
 
-<figure class="highlight">
+```
 
     INSTALLED_APPS = [
         'django.contrib.admin',
@@ -775,13 +775,13 @@ Now add it to the `INSTALLED_APPS`:
         'boards',
     ]
 
-</figure>
+```
 
 Now let’s take it into use:
 
 **templates/new_topic.html**
 
-<figure class="highlight">
+```
 
     {% extends 'base.html' %}
 
@@ -817,36 +817,36 @@ Now let’s take it into use:
       </form>
     {% endblock %}
 
-</figure>
+```
 
 ![Bootstrap Form](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/bootstrap-form.png)
 
 There it is! So, here we are using the **django-widget-tweaks**. First, we load it in the template by using the `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">load</span> <span class="w"></span> <span class="err">widget_tweaks</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>` template tag. Then the usage:
 
-<figure class="highlight">
+```
 
     {% render_field field class="form-control" %}
 
-</figure>
+```
 
 The `render_field` tag is not part of Django; it lives inside the package we installed. To use it we have to pass a form field instance as the first parameter, and then after we can add arbitrary HTML attributes to complement it. It will be useful because then we can assign classes based on certain conditions.
 
 Some examples of the `render_field` template tag:
 
-<figure class="highlight">
+```
 
     {% render_field form.subject class="form-control" %}
     {% render_field form.message class="form-control" placeholder=form.message.label %}
     {% render_field field class="form-control" placeholder="Write a message!" %}
     {% render_field field style="font-size: 20px" %}
 
-</figure>
+```
 
 Now to implement the Bootstrap 4 validation tags, we can change the **new_topic.html** template:
 
 **templates/new_topic.html**
 
-<figure class="highlight">
+```
 
     <form method="post" novalidate>
       {% csrf_token %}
@@ -883,7 +883,7 @@ Now to implement the Bootstrap 4 validation tags, we can change the **new_topic.
       <button type="submit" class="btn btn-success">Post</button>
     </form>
 
-</figure>
+```
 
 The result is this:
 
@@ -903,7 +903,7 @@ The template code looks a little bit complicated, right? Well, the good news is 
 
 In the **templates** folder, create a new folder named **includes**:
 
-<figure class="highlight">
+```
 
     myproject/
      |-- myproject/
@@ -918,13 +918,13 @@ In the **templates** folder, create a new folder named **includes**:
      |    +-- manage.py
      +-- venv/
 
-</figure>
+```
 
 Now inside the **includes** folder, create a file named **form.html**:
 
 **templates/includes/form.html**
 
-<figure class="highlight">
+```
 
     {% load widget_tweaks %}
 
@@ -955,13 +955,13 @@ Now inside the **includes** folder, create a file named **form.html**:
       </div>
     {% endfor %}
 
-</figure>
+```
 
 Now we change our **new_topic.html** template:
 
 **templates/new_topic.html**
 
-<figure class="highlight">
+```
 
     {% extends 'base.html' %}
 
@@ -981,7 +981,7 @@ Now we change our **new_topic.html** template:
       </form>
     {% endblock %}
 
-</figure>
+```
 
 As the name suggests, the `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">include</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>` is used to _include_ HTML templates in another template. It’s a very useful way to reuse HTML components in a project.
 
@@ -993,7 +993,7 @@ Now we are using Django Forms; we can add more tests to make sure it is running 
 
 **boards/tests.py**
 
-<figure class="highlight">
+```
 
     # ... other imports
     from .forms import NewTopicForm
@@ -1018,7 +1018,7 @@ Now we are using Django Forms; we can add more tests to make sure it is running 
             self.assertEquals(response.status_code, 200)
             self.assertTrue(form.errors)
 
-</figure>
+```
 
 Now we are using the `assertIsInstance` method for the first time. Basically we are grabbing the form instance in the context data, and checking if it is a `NewTopicForm`. In the last test, we added the `self.assertTrue(form.errors)` to make sure the form is showing errors when the data is invalid.
 

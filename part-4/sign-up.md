@@ -6,7 +6,7 @@ Let’s start by creating the sign up view. First thing, create a new route in t
 
 **myproject/urls.py**
 
-<figure class="highlight">
+```
 
     from django.conf.urls import url
     from django.contrib import admin
@@ -22,15 +22,15 @@ Let’s start by creating the sign up view. First thing, create a new route in t
         url(r'^admin/', admin.site.urls),
     ]
 
-</figure>
+```
 
 Notice how we are importing the **views** module from the **accounts** app in a different way:
 
-<figure class="highlight">
+```
 
     from accounts import views as accounts_views
 
-</figure>
+```
 
 We are giving an alias because otherwise, it would clash with the **boards’** views. We can improve the **urls.py** design later on. But for now, let’s focus on the authentication features.
 
@@ -38,20 +38,20 @@ Now edit the **views.py** inside the **accounts** app and create a new view name
 
 **accounts/views.py**
 
-<figure class="highlight">
+```
 
     from django.shortcuts import render
 
     def signup(request):
         return render(request, 'signup.html')
 
-</figure>
+```
 
 Create the new template, named **signup.html**:
 
 **templates/signup.html**
 
-<figure class="highlight">
+```
 
     {% extends 'base.html' %}
 
@@ -59,7 +59,7 @@ Create the new template, named **signup.html**:
       <h2>Sign up</h2>
     {% endblock %}
 
-</figure>
+```
 
 Open the URL **http://127.0.0.1:8000/signup/** in the browser, check if everything is working:
 
@@ -69,7 +69,7 @@ Time to write some tests:
 
 **accounts/tests.py**
 
-<figure class="highlight">
+```
 
     from django.core.urlresolvers import reverse
     from django.urls import resolve
@@ -86,17 +86,17 @@ Time to write some tests:
             view = resolve('/signup/')
             self.assertEquals(view.func, signup)
 
-</figure>
+```
 
 Testing the status code (200 = success) and if the URL **/signup/** is returning the correct view function.
 
-<figure class="highlight">
+```
 
     python manage.py test
 
-</figure>
+```
 
-<figure class="highlight">
+```
 
     Creating test database for alias 'default'...
     System check identified no issues (0 silenced).
@@ -107,13 +107,13 @@ Testing the status code (200 = success) and if the URL **/signup/** is returning
     OK
     Destroying test database for alias 'default'...
 
-</figure>
+```
 
 For the authentication views (sign up, log in, password reset, etc.) we won’t use the top bar or the breadcrumb. We can still use the **base.html** template. It just needs some tweaks:
 
 **templates/base.html**
 
-<figure class="highlight">
+```
 
     {% load static %}<!DOCTYPE html>
     <html>
@@ -144,7 +144,7 @@ For the authentication views (sign up, log in, password reset, etc.) we won’t 
       </body>
     </html>
 
-</figure>
+```
 
 I marked with comments the new bits in the **base.html** template. The block `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">block</span> <span class="w"></span> <span class="err">stylesheet</span> <span class="w"></span> <span class="err">%</span><span class="p">}{</span><span class="err">%</span> <span class="w"></span> <span class="err">endblock</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>` will be used to add extra CSS, specific to some pages.
 
@@ -154,7 +154,7 @@ Now on the **signup.html** template, instead of using the `<span class="p">{</sp
 
 **templates/signup.html**
 
-<figure class="highlight">
+```
 
     {% extends 'base.html' %}
 
@@ -162,7 +162,7 @@ Now on the **signup.html** template, instead of using the `<span class="p">{</sp
       <h2>Sign up</h2>
     {% endblock %}
 
-</figure>
+```
 
 ![Sign up](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/signup-2.png)
 
@@ -172,7 +172,7 @@ Time to create the sign up form. Django has a built-in form named **UserCreation
 
 **accounts/views.py**
 
-<figure class="highlight">
+```
 
     from django.contrib.auth.forms import UserCreationForm
     from django.shortcuts import render
@@ -181,11 +181,11 @@ Time to create the sign up form. Django has a built-in form named **UserCreation
         form = UserCreationForm()
         return render(request, 'signup.html', {'form': form})
 
-</figure>
+```
 
 **templates/signup.html**
 
-<figure class="highlight">
+```
 
     {% extends 'base.html' %}
 
@@ -200,7 +200,7 @@ Time to create the sign up form. Django has a built-in form named **UserCreation
       </div>
     {% endblock %}
 
-</figure>
+```
 
 ![Sign up](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/signup-3.png)
 
@@ -208,7 +208,7 @@ Looking a little bit messy, right? We can use our **form.html** template to make
 
 **templates/signup.html**
 
-<figure class="highlight">
+```
 
     {% extends 'base.html' %}
 
@@ -223,7 +223,7 @@ Looking a little bit messy, right? We can use our **form.html** template to make
       </div>
     {% endblock %}
 
-</figure>
+```
 
 ![Sign up](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/signup-4.png)
 
@@ -231,7 +231,7 @@ Uh, almost there. Currently, our **form.html** partial template is displaying so
 
 **templates/includes/form.html**
 
-<figure class="highlight">
+```
 
     {% load widget_tweaks %}
 
@@ -249,7 +249,7 @@ Uh, almost there. Currently, our **form.html** partial template is displaying so
       </div>
     {% endfor %}
 
-</figure>
+```
 
 Basically, in the previous template we added the option `safe` to the `field.help_text`: `<span class="p">{</span><span class="err">{</span> <span class="w"></span> <span class="err">field.help_text|safe</span> <span class="w"></span> <span class="p">}</span><span class="err">}</span>`.
 
@@ -261,7 +261,7 @@ Now let’s implement the business logic in the **signup** view:
 
 **accounts/views.py**
 
-<figure class="highlight">
+```
 
     from django.contrib.auth import login as auth_login
     from django.contrib.auth.forms import UserCreationForm
@@ -278,7 +278,7 @@ Now let’s implement the business logic in the **signup** view:
             form = UserCreationForm()
         return render(request, 'signup.html', {'form': form})
 
-</figure>
+```
 
 A basic form processing with a small detail: the **login** function (renamed to **auth_login** to avoid clashing with the built-in login view).
 
@@ -308,7 +308,7 @@ How can we know if it worked? Well, we can edit the **base.html** template to ad
 
 **templates/base.html**
 
-<figure class="highlight">
+```
 
     {% block body %}
       <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
@@ -337,7 +337,7 @@ How can we know if it worked? Well, we can edit the **base.html** template to ad
       </div>
     {% endblock body %}
 
-</figure>
+```
 
 ![Sign up](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/signup-8.png)
 
@@ -347,7 +347,7 @@ Let’s now improve our test cases:
 
 **accounts/tests.py**
 
-<figure class="highlight">
+```
 
     from django.contrib.auth.forms import UserCreationForm
     from django.core.urlresolvers import reverse
@@ -374,7 +374,7 @@ Let’s now improve our test cases:
             form = self.response.context.get('form')
             self.assertIsInstance(form, UserCreationForm)
 
-</figure>
+```
 
 We changed a little bit the **SignUpTests** class. Defined a **setUp** method, moved the response object to there. Then now we are also testing if there are a form and the CSRF token in the response.
 
@@ -382,7 +382,7 @@ Now we are going to test a successful sign up. This time, let’s create a new c
 
 **accounts/tests.py**
 
-<figure class="highlight">
+```
 
     from django.contrib.auth.models import User
     from django.contrib.auth.forms import UserCreationForm
@@ -424,13 +424,13 @@ Now we are going to test a successful sign up. This time, let’s create a new c
             user = response.context.get('user')
             self.assertTrue(user.is_authenticated)
 
-</figure>
+```
 
 Run the tests.
 
 Using a similar strategy, now let’s create a new class for sign up tests when the data is invalid:
 
-<figure class="highlight">
+```
 
     from django.contrib.auth.models import User
     from django.contrib.auth.forms import UserCreationForm
@@ -463,7 +463,7 @@ Using a similar strategy, now let’s create a new class for sign up tests when 
         def test_dont_create_user(self):
             self.assertFalse(User.objects.exists())
 
-</figure>
+```
 
 ##### Adding the Email Field to the Form
 
@@ -473,7 +473,7 @@ Create a file named **forms.py** inside the **accounts** folder:
 
 **accounts/forms.py**
 
-<figure class="highlight">
+```
 
     from django import forms
     from django.contrib.auth.forms import UserCreationForm
@@ -485,13 +485,13 @@ Create a file named **forms.py** inside the **accounts** folder:
             model = User
             fields = ('username', 'email', 'password1', 'password2')
 
-</figure>
+```
 
 Now, instead of using the **UserCreationForm** in our **views.py**, let’s import the new form, **SignUpForm**, and use it instead:
 
 **accounts/views.py**
 
-<figure class="highlight">
+```
 
     from django.contrib.auth import login as auth_login
     from django.shortcuts import render, redirect
@@ -509,7 +509,7 @@ Now, instead of using the **UserCreationForm** in our **views.py**, let’s impo
             form = SignUpForm()
         return render(request, 'signup.html', {'form': form})
 
-</figure>
+```
 
 Just with this small change, everything is already working:
 
@@ -517,7 +517,7 @@ Just with this small change, everything is already working:
 
 Remember to change the test case to use the **SignUpForm** instead of **UserCreationForm**:
 
-<figure class="highlight">
+```
 
     from .forms import SignUpForm
 
@@ -542,17 +542,17 @@ Remember to change the test case to use the **SignUpForm** instead of **UserCrea
 
         # ...
 
-</figure>
+```
 
 The previous test case would still pass because since **SignUpForm** extends the **UserCreationForm**, _it is_ an instance of **UserCreationForm**.
 
 Now let’s think about what happened for a moment. We added a new form field:
 
-<figure class="highlight">
+```
 
     fields = ('username', 'email', 'password1', 'password2')
 
-</figure>
+```
 
 And it automatically reflected in the HTML template. It’s good, right? Well, depends. What if in the future, a new developer wanted to re-use the **SignUpForm** for something else, and add some extra fields to it. Then those new fields would also show up in the **signup.html**, which may not be the desired behavior. This change could pass unnoticed, and we don’t want any surprises.
 
@@ -560,7 +560,7 @@ So let’s create a new test, that verifies the HTML inputs in the template:
 
 **accounts/tests.py**
 
-<figure class="highlight">
+```
 
     class SignUpTests(TestCase):
         # ...
@@ -575,7 +575,7 @@ So let’s create a new test, that verifies the HTML inputs in the template:
             self.assertContains(self.response, 'type="email"', 1)
             self.assertContains(self.response, 'type="password"', 2)
 
-</figure>
+```
 
 ##### Improving the Tests Layout
 
@@ -587,7 +587,7 @@ Now, move the **tests.py** file to inside the **tests** folder, and rename it to
 
 The final result should be the following:
 
-<figure class="highlight">
+```
 
     myproject/
      |-- myproject/
@@ -609,13 +609,13 @@ The final result should be the following:
      |    +-- manage.py
      +-- venv/
 
-</figure>
+```
 
 Note that since we are using relative import within the context of the apps, we need to fix the imports in the new **test_view_signup.py**:
 
 **accounts/tests/test_view_signup.py**
 
-<figure class="highlight">
+```
 
     from django.contrib.auth.models import User
     from django.core.urlresolvers import reverse
@@ -625,7 +625,7 @@ Note that since we are using relative import within the context of the apps, we 
     from ..views import signup
     from ..forms import SignUpForm
 
-</figure>
+```
 
 We are using relative imports inside the app modules so we can have the freedom to rename the Django app later on, without having to fix all the absolute imports.
 
@@ -633,7 +633,7 @@ Now let’s create a new test file, to test the **SignUpForm**. Add a new test f
 
 **accounts/tests/test_form_signup.py**
 
-<figure class="highlight">
+```
 
     from django.test import TestCase
     from ..forms import SignUpForm
@@ -645,7 +645,7 @@ Now let’s create a new test file, to test the **SignUpForm**. Add a new test f
             actual = list(form.fields)
             self.assertSequenceEqual(expected, actual)
 
-</figure>
+```
 
 It looks very strict, right? For example, if in the future we have to change the **SignUpForm**, to include the user’s first and last name, we will probably end up having to fix a few test cases, even if we didn’t break anything.
 
@@ -661,7 +661,7 @@ Go to [https://www.toptal.com/designers/subtlepatterns/](https://www.toptal.com/
 
 Then after that, create a new CSS file named **accounts.css** in the **static/css**. The result should be the following:
 
-<figure class="highlight">
+```
 
     myproject/
      |-- myproject/
@@ -680,13 +680,13 @@ Then after that, create a new CSS file named **accounts.css** in the **static/cs
      |    +-- manage.py
      +-- venv/
 
-</figure>
+```
 
 Now edit the **accounts.css** file:
 
 **static/css/accounts.css**
 
-<figure class="highlight">
+```
 
     body {
       background-image: url(../img/shattered.png);
@@ -705,13 +705,13 @@ Now edit the **accounts.css** file:
       text-decoration: none;
     }
 
-</figure>
+```
 
 In the **signup.html** template, we can change it to make use of the new CSS and also take the Bootstrap 4 card components into use:
 
 **templates/signup.html**
 
-<figure class="highlight">
+```
 
     {% extends 'base.html' %}
 
@@ -746,7 +746,7 @@ In the **signup.html** template, we can change it to make use of the new CSS and
       </div>
     {% endblock %}
 
-</figure>
+```
 
 With that, this should be our sign up page right now:
 

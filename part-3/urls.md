@@ -12,7 +12,7 @@ We will start by editing the **urls.py** inside the **myproject** folder:
 
 **myproject/urls.py**
 
-<figure class="highlight">
+```
 
     from django.conf.urls import url
     from django.contrib import admin
@@ -25,7 +25,7 @@ We will start by editing the **urls.py** inside the **myproject** folder:
         url(r'^admin/', admin.site.urls),
     ]
 
-</figure>
+```
 
 This time let’s take a moment and analyze the `urlpatterns` and `url`.
 
@@ -37,11 +37,11 @@ A project can have many **urls.py** distributed among the apps. But Django needs
 
 **myproject/settings.py**
 
-<figure class="highlight">
+```
 
     ROOT_URLCONF = 'myproject.urls'
 
-</figure>
+```
 
 It already comes configured, so you don’t need to change anything here.
 
@@ -51,12 +51,12 @@ If Django finds a match, it will pass the request to the **view function**, whic
 
 This is the anatomy of the `url` function:
 
-<figure class="highlight">
+```
 
     def url(regex, view, kwargs=None, name=None):
         # ...
 
-</figure>
+```
 
 *   **regex**: A regular expression for matching URL patterns in strings. Note that these regular expressions do not search **GET** or **POST** parameters. In a request to **http://127.0.0.1:8000/boards/?page=2** only **/boards/** will be processed.
 *   **view**: A view function used to process the user request for a matched URL. It also accepts the return of the **django.conf.urls.include** function, which is used to reference an external **urls.py** file. You can, for example, use it to define a set of app specific URLs, and include it in the root URLconf using a prefix. We will explore more on this concept later on.
@@ -69,7 +69,7 @@ This is the anatomy of the `url` function:
 
 Basic URLs are very simple to create. It’s just a matter of matching strings. For example, let’s say we wanted to create an “about” page, it could be defined like this:
 
-<figure class="highlight">
+```
 
     from django.conf.urls import url
     from boards import views
@@ -79,11 +79,11 @@ Basic URLs are very simple to create. It’s just a matter of matching strings. 
         url(r'^about//figure>, views.about, name='about'),
     ]
 
-</figure>
+```
 
 We can also create deeper URL structures:
 
-<figure class="highlight">
+```
 
     from django.conf.urls import url
     from boards import views
@@ -98,11 +98,11 @@ We can also create deeper URL structures:
         url(r'^privacy//figure>, views.privacy_policy, name='privacy_policy'),
     ]
 
-</figure>
+```
 
 Those are some examples of simple URL routing. For all the examples above, the view function will follow this structure:
 
-<figure class="highlight">
+```
 
     def about(request):
         # do something...
@@ -113,7 +113,7 @@ Those are some examples of simple URL routing. For all the examples above, the v
         # return some data along with the view...
         return render(request, 'about_company.html', {'company_name': 'Simple Complex'})
 
-</figure>
+```
 
 ##### Advanced URLs
 
@@ -121,7 +121,7 @@ A more advanced usage of URL routing is achieved by taking advantage of the rege
 
 For example, to create a profile page, like many services do like github.com/vitorfs or twitter.com/vitorfs, where “vitorfs” is my username, we can do the following:
 
-<figure class="highlight">
+```
 
     from django.conf.urls import url
     from boards import views
@@ -131,13 +131,13 @@ For example, to create a profile page, like many services do like github.com/vit
         url(r'^(?P<username>[\w.@+-]+)//figure>, views.user_profile, name='user_profile'),
     ]
 
-</figure>
+```
 
 This will match all valid usernames for a Django User model.
 
 Now observe that the example above is a very _permissive_ URL. That means it will match lots of URL patterns because it is defined in the root of the URL, with no prefix like **/profile/<username>/**. In this case, if we wanted to define a URL named **/about/**, we would have do define it _before_ the username URL pattern:
 
-<figure class="highlight">
+```
 
     from django.conf.urls import url
     from boards import views
@@ -148,7 +148,7 @@ Now observe that the example above is a very _permissive_ URL. That means it wil
         url(r'^(?P<username>[\w.@+-]+)//figure>, views.user_profile, name='user_profile'),
     ]
 
-</figure>
+```
 
 If the “about” page was defined _after_ the username URL pattern, Django would never find it, because the word “about” would match the username regex, and the view `user_profile` would be processed instead of the `about` view function.
 
@@ -170,50 +170,50 @@ The whole idea of this kind of URL routing is to create dynamic pages where part
 
 Initially, we will be working with the **Board** ID to create a dynamic page for the **Topics**. Let’s read again the example I gave at the beginning of the **URLs** section:
 
-<figure class="highlight">
+```
 
     url(r'^boards/(?P<pk>\d+)//figure>, views.board_topics, name='board_topics')
 
-</figure>
+```
 
 The regex `\d+` will match an integer of arbitrary size. This integer will be used to retrieve the **Board** from the database. Now observe that we wrote the regex as `(?P<pk>\d+)`, this is telling Django to capture the value into a keyword argument named **pk**.
 
 Here is how we write a view function for it:
 
-<figure class="highlight">
+```
 
     def board_topics(request, pk):
         # do something...
 
-</figure>
+```
 
 Because we used the `(?P<pk>\d+)` regex, the keyword argument in the `board_topics` must be named **pk**.
 
 If we wanted to use any name, we could do it like this:
 
-<figure class="highlight">
+```
 
     url(r'^boards/(\d+)//figure>, views.board_topics, name='board_topics')
 
-</figure>
+```
 
 Then the view function could be defined like this:
 
-<figure class="highlight">
+```
 
     def board_topics(request, board_id):
         # do something...
 
-</figure>
+```
 
 Or like this:
 
-<figure class="highlight">
+```
 
     def board_topics(request, id):
         # do something...
 
-</figure>
+```
 
 The name wouldn’t matter. But it’s a good practice to use named parameters because when we start composing bigger URLs capturing multiple IDs and variables, it will be easier to read.
 
@@ -237,7 +237,7 @@ First, edit the **urls.py** adding our new URL route:
 
 **myproject/urls.py**
 
-<figure class="highlight">
+```
 
     from django.conf.urls import url
     from django.contrib import admin
@@ -250,13 +250,13 @@ First, edit the **urls.py** adding our new URL route:
         url(r'^admin/', admin.site.urls),
     ]
 
-</figure>
+```
 
 Now let’s create the view function `board_topics`:
 
 **boards/views.py**
 
-<figure class="highlight">
+```
 
     from django.shortcuts import render
     from .models import Board
@@ -268,13 +268,13 @@ Now let’s create the view function `board_topics`:
         board = Board.objects.get(pk=pk)
         return render(request, 'topics.html', {'board': board})
 
-</figure>
+```
 
 In the **templates** folder, create a new template named **topics.html**:
 
 **templates/topics.html**
 
-<figure class="highlight">
+```
 
     {% load static %}<!DOCTYPE html>
     <html>
@@ -293,7 +293,7 @@ In the **templates** folder, create a new template named **topics.html**:
       </body>
     </html>
 
-</figure>
+```
 
 <div class="info">
 
@@ -309,7 +309,7 @@ Time to write some tests! Edit the **tests.py** file and add the following tests
 
 **boards/tests.py**
 
-<figure class="highlight">
+```
 
     from django.core.urlresolvers import reverse
     from django.urls import resolve
@@ -338,7 +338,7 @@ Time to write some tests! Edit the **tests.py** file and add the following tests
             view = resolve('/boards/1/')
             self.assertEquals(view.func, board_topics)
 
-</figure>
+```
 
 A few things to note here. This time we used the `setUp` method. In the setup method, we created a **Board** instance to use in the tests. We have to do that because the Django testing suite doesn’t run your tests against the current database. To run the tests Django creates a new database on the fly, applies all the model migrations, runs the tests, and when done, destroys the testing database.
 
@@ -350,15 +350,15 @@ So in the `setUp` method, we prepare the environment to run the tests, so to sim
 
 Now it’s time to run the tests:
 
-<figure class="highlight">
+```
 
     python manage.py test
 
-</figure>
+```
 
 And the output:
 
-<figure class="highlight">
+```
 
     Creating test database for alias 'default'...
     System check identified no issues (0 silenced).
@@ -376,7 +376,7 @@ And the output:
     FAILED (errors=1)
     Destroying test database for alias 'default'...
 
-</figure>
+```
 
 The test **test_board_topics_view_not_found_status_code** failed. We can see in the Traceback it returned an exception “boards.models.DoesNotExist: Board matching query does not exist.”
 
@@ -388,7 +388,7 @@ We want to show a **404 Page Not Found**. So let’s refactor our view:
 
 **boards/views.py**
 
-<figure class="highlight">
+```
 
     from django.shortcuts import render
     from django.http import Http404
@@ -404,17 +404,17 @@ We want to show a **404 Page Not Found**. So let’s refactor our view:
             raise Http404
         return render(request, 'topics.html', {'board': board})
 
-</figure>
+```
 
 Let’s test again:
 
-<figure class="highlight">
+```
 
     python manage.py test
 
-</figure>
+```
 
-<figure class="highlight">
+```
 
     Creating test database for alias 'default'...
     System check identified no issues (0 silenced).
@@ -425,7 +425,7 @@ Let’s test again:
     OK
     Destroying test database for alias 'default'...
 
-</figure>
+```
 
 Yay! Now it’s working as expected.
 
@@ -437,7 +437,7 @@ Now that’s a very common use case. In fact, Django has a shortcut to try to ge
 
 So let’s refactor the **board_topics** view again:
 
-<figure class="highlight">
+```
 
     from django.shortcuts import render, get_object_or_404
     from .models import Board
@@ -449,17 +449,17 @@ So let’s refactor the **board_topics** view again:
         board = get_object_or_404(Board, pk=pk)
         return render(request, 'topics.html', {'board': board})
 
-</figure>
+```
 
 Changed the code? Test it.
 
-<figure class="highlight">
+```
 
     python manage.py test
 
-</figure>
+```
 
-<figure class="highlight">
+```
 
     Creating test database for alias 'default'...
     System check identified no issues (0 silenced).
@@ -470,7 +470,7 @@ Changed the code? Test it.
     OK
     Destroying test database for alias 'default'...
 
-</figure>
+```
 
 Didn’t break anything. We can proceed with the development.
 
@@ -482,7 +482,7 @@ We can start by writing some tests for the `HomeTests` class:
 
 **boards/tests.py**
 
-<figure class="highlight">
+```
 
     class HomeTests(TestCase):
         def setUp(self):
@@ -501,7 +501,7 @@ We can start by writing some tests for the `HomeTests` class:
             board_topics_url = reverse('board_topics', kwargs={'pk': self.board.pk})
             self.assertContains(self.response, 'href="{0}"'.format(board_topics_url))
 
-</figure>
+```
 
 Observe that now we added a **setUp** method for the **HomeTests** as well. That’s because now we are going to need a **Board** instance and also we moved the **url** and **response** to the **setUp**, so we can reuse the same response in the new test.
 
@@ -509,13 +509,13 @@ The new test here is the **test_home_view_contains_link_to_topics_page**. Here w
 
 Let’s run the tests:
 
-<figure class="highlight">
+```
 
     python manage.py test
 
-</figure>
+```
 
-<figure class="highlight">
+```
 
     Creating test database for alias 'default'...
     System check identified no issues (0 silenced).
@@ -533,7 +533,7 @@ Let’s run the tests:
     FAILED (failures=1)
     Destroying test database for alias 'default'...
 
-</figure>
+```
 
 Now we can write the code that will make this test pass.
 
@@ -541,7 +541,7 @@ Edit the **home.html** template:
 
 **templates/home.html**
 
-<figure class="highlight">
+```
 
     <!-- code suppressed for brevity -->
     <tbody>
@@ -559,23 +559,23 @@ Edit the **home.html** template:
     </tbody>
     <!-- code suppressed for brevity -->
 
-</figure>
+```
 
 So basically we changed the line:
 
-<figure class="highlight">
+```
 
     {{ board.name }}
 
-</figure>
+```
 
 To:
 
-<figure class="highlight">
+```
 
     <a href="{% url 'board_topics' board.pk %}">{{ board.name }}</a>
 
-</figure>
+```
 
 Always use the `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">url</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>` template tag to compose the applications URLs. The first parameter is the **name** of the URL (defined in the URLconf, i.e., the **urls.py**), then you can pass an arbitrary number of arguments as needed.
 
@@ -583,13 +583,13 @@ If it were a simple URL, like the homepage, it would be just `<span class="p">{<
 
 Save the file and run the tests again:
 
-<figure class="highlight">
+```
 
     python manage.py test
 
-</figure>
+```
 
-<figure class="highlight">
+```
 
     Creating test database for alias 'default'...
     System check identified no issues (0 silenced).
@@ -600,7 +600,7 @@ Save the file and run the tests again:
     OK
     Destroying test database for alias 'default'...
 
-</figure>
+```
 
 Good! Now we can check how it looks in the web browser:
 
@@ -610,7 +610,7 @@ Now the link back. We can write the test first:
 
 **boards/tests.py**
 
-<figure class="highlight">
+```
 
     class BoardTopicsTests(TestCase):
         # code suppressed for brevity...
@@ -621,17 +621,17 @@ Now the link back. We can write the test first:
             homepage_url = reverse('home')
             self.assertContains(response, 'href="{0}"'.format(homepage_url))
 
-</figure>
+```
 
 Run the tests:
 
-<figure class="highlight">
+```
 
     python manage.py test
 
-</figure>
+```
 
-<figure class="highlight">
+```
 
     Creating test database for alias 'default'...
     System check identified no issues (0 silenced).
@@ -650,13 +650,13 @@ Run the tests:
     FAILED (failures=1)
     Destroying test database for alias 'default'...
 
-</figure>
+```
 
 Update the board topics template:
 
 **templates/topics.html**
 
-<figure class="highlight">
+```
 
     {% load static %}<!DOCTYPE html>
     <html>
@@ -671,17 +671,17 @@ Update the board topics template:
       </body>
     </html>
 
-</figure>
+```
 
 Run the tests:
 
-<figure class="highlight">
+```
 
     python manage.py test
 
-</figure>
+```
 
-<figure class="highlight">
+```
 
     Creating test database for alias 'default'...
     System check identified no issues (0 silenced).
@@ -692,7 +692,7 @@ Run the tests:
     OK
     Destroying test database for alias 'default'...
 
-</figure>
+```
 
 ![Board Topics with Link](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-3/board_topics.png)
 

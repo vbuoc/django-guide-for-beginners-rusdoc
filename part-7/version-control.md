@@ -18,44 +18,26 @@ If you don’t have Git installed on your local machine, grab the installed from
 
 First thing, set your identity:
 
-<figure class="highlight">
-
 ```
 git config --global user.name "Vitor Freitas"
 git config --global user.email vitor@simpleisbetterthancomplex.com
 ```
 
-</figure>
-
 In the project root (the same directory as **manage.py** is), initialize a git repository:
-
-<figure class="highlight">
 
 ```
 git init
 ```
 
-</figure>
-
-<figure class="highlight">
-
 ```
 Initialized empty Git repository in /Users/vitorfs/Development/myproject/.git/
 ```
 
-</figure>
-
 Check the status of the repository:
-
-<figure class="highlight">
 
 ```
 git status
 ```
-
-</figure>
-
-<figure class="highlight">
 
 ```
 On branch master
@@ -76,8 +58,6 @@ Untracked files:
 nothing added to commit but untracked files present (use "git add" to track)
 ```
 
-</figure>
-
 Before we proceed in adding the source files, create a new file named **.gitignore** in the project root. This special file will help us keep the repository clean, without unnecessary files like cache files or logs for example.
 
 You can grab a [generic .gitignore file for Python projects](https://github.com/github/gitignore/blob/master/Python.gitignore) from GitHub.
@@ -87,8 +67,6 @@ Make sure to rename it from **Python.gitignore** to just **.gitignore** (the dot
 You can complement the **.gitignore** file telling it to ignore SQLite database files for example:
 
 **.gitignore**
-
-<figure class="highlight">
 
 ```
 __pycache__/
@@ -101,29 +79,19 @@ venv/
 *.sqlite3
 ```
 
-</figure>
-
 Now add the files to the repository:
-
-<figure class="highlight">
 
 ```
 git add .
 ```
 
-</figure>
-
 Notice the dot here. The command above is telling Git to add _all_ untracked files within the current directory.
 
 Now make the first commit:
 
-<figure class="highlight">
-
 ```
 git commit -m "Initial commit"
 ```
-
-</figure>
 
 Always write a comment telling what this commit is about, briefly describing what have you changed.
 
@@ -141,17 +109,11 @@ After you create the repository you should see something like this:
 
 Now let’s configure it as our remote repository:
 
-<figure class="highlight">
-
 ```
 git remote add origin git@github.com:sibtc/django-boards.git
 ```
 
-</figure>
-
 Now push the code to the remote server, that is, to the GitHub repository:
-
-<figure class="highlight">
 
 ```
 git push origin master
@@ -165,8 +127,6 @@ remote: Resolving deltas: 100% (10/10), done.
 To git@github.com:sibtc/django-boards.git
  * [new branch]      master -> master
 ```
-
-</figure>
 
 ![GitHub](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-7/github3.png)
 

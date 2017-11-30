@@ -4,7 +4,7 @@ Okay, so, this is going to be our last view. After that, we will be working on i
 
 **accounts/views.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/ea62417b7a450050f2feeeb69b775996)</small>
 
-<figure class="highlight">
+```
 
     from django.contrib.auth.decorators import login_required
     from django.contrib.auth.models import User
@@ -22,11 +22,11 @@ Okay, so, this is going to be our last view. After that, we will be working on i
         def get_object(self):
             return self.request.user
 
-</figure>
+```
 
 **myproject/urls.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/27d87452e7584cb8c489625f507ed7aa#file-urls-py-L32)</small>
 
-<figure class="highlight">
+```
 
     from django.conf.urls import url
     from accounts import views as accounts_views
@@ -36,11 +36,11 @@ Okay, so, this is going to be our last view. After that, we will be working on i
         url(r'^settings/account//figure>, accounts_views.UserUpdateView.as_view(), name='my_account'),
     ]
 
-</figure>
+```
 
 **templates/my_account.html**
 
-<figure class="highlight">
+```
 
     {% extends 'base.html' %}
 
@@ -62,7 +62,7 @@ Okay, so, this is going to be our last view. After that, we will be working on i
       </div>
     {% endblock %}
 
-</figure>
+```
 
 ![My Account](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-6/account.png)
 

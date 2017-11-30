@@ -4,7 +4,7 @@ At the moment we already have a view named `home` displaying “Hello, World!”
 
 **myproject/urls.py**
 
-<figure class="highlight">
+```
 
     from django.conf.urls import url
     from django.contrib import admin
@@ -16,18 +16,18 @@ At the moment we already have a view named `home` displaying “Hello, World!”
         url(r'^admin/', admin.site.urls),
     ]
 
-</figure>
+```
 
 **boards/views.py**
 
-<figure class="highlight">
+```
 
     from django.http import HttpResponse
 
     def home(request):
         return HttpResponse('Hello, World!')
 
-</figure>
+```
 
 We can use this as our starting point. If you recall our wireframes, the [Figure 5](#figure-5) showed how the homepage should look like. What we want to do is display a list of boards in a table alongside with some other information.
 
@@ -35,7 +35,7 @@ The first thing to do is import the **Board** model and list all the existing bo
 
 **boards/views.py**
 
-<figure class="highlight">
+```
 
     from django.http import HttpResponse
     from .models import Board
@@ -51,7 +51,7 @@ The first thing to do is import the **Board** model and list all the existing bo
 
         return HttpResponse(response_html)
 
-</figure>
+```
 
 And the result would be this simple HTML page:
 
@@ -63,7 +63,7 @@ But let’s stop right here. We are not going very far rendering HTML like this.
 
 Create a new folder named **templates** alongside with the **boards** and **mysite** folders:
 
-<figure class="highlight">
+```
 
     myproject/
      |-- myproject/
@@ -73,13 +73,13 @@ Create a new folder named **templates** alongside with the **boards** and **mysi
      |    +-- manage.py
      +-- venv/
 
-</figure>
+```
 
 Now within the **templates** folder, create an HTML file named **home.html**:
 
 **templates/home.html**
 
-<figure class="highlight">
+```
 
     <!DOCTYPE html>
     <html>
@@ -97,7 +97,7 @@ Now within the **templates** folder, create an HTML file named **home.html**:
       </body>
     </html>
 
-</figure>
+```
 
 In the example above we are mixing raw HTML with some special tags `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">for</span> <span class="w"></span> <span class="err">...</span> <span class="w"></span> <span class="err">in</span> <span class="w"></span> <span class="err">...</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>` and `<span class="p">{</span><span class="err">{</span> <span class="w"></span> <span class="err">variable</span> <span class="w"></span> <span class="p">}</span><span class="err">}</span>`. They are part of the Django Template Language. The example above shows how to iterate over a list of objects using a `for`. The `<span class="p">{</span><span class="err">{</span> <span class="w"></span> <span class="err">board.name</span> <span class="w"></span> <span class="p">}</span><span class="err">}</span>` renders the name of the board in the HTML template, generating a dynamic HTML document.
 
@@ -105,7 +105,7 @@ Before we can use this HTML page, we have to tell Django where to find our appli
 
 Open the **settings.py** inside the **myproject** directory and search for the `TEMPLATES` variable and set the `DIRS` key to `os.path.join(BASE_DIR, 'templates')`:
 
-<figure class="highlight">
+```
 
     TEMPLATES = [
         {
@@ -125,19 +125,19 @@ Open the **settings.py** inside the **myproject** directory and search for the `
         },
     ]
 
-</figure>
+```
 
 Basically what this line is doing is finding the full path of your project directory and appending “/templates” to it.
 
 We can debug this using the Python shell:
 
-<figure class="highlight">
+```
 
     python manage.py shell
 
-</figure>
+```
 
-<figure class="highlight">
+```
 
     from django.conf import settings
 
@@ -149,7 +149,7 @@ We can debug this using the Python shell:
     os.path.join(settings.BASE_DIR, 'templates')
     '/Users/vitorfs/Development/myproject/templates'
 
-</figure>
+```
 
 See? It’s just pointing to the **templates** folder we created in the previous steps.
 
@@ -157,7 +157,7 @@ Now we can update our **home** view:
 
 **boards/views.py**
 
-<figure class="highlight">
+```
 
     from django.shortcuts import render
     from .models import Board
@@ -166,7 +166,7 @@ Now we can update our **home** view:
         boards = Board.objects.all()
         return render(request, 'home.html', {'boards': boards})
 
-</figure>
+```
 
 The resulting HTML:
 
@@ -176,7 +176,7 @@ We can improve the HTML template to use a table instead:
 
 **templates/home.html**
 
-<figure class="highlight">
+```
 
     <!DOCTYPE html>
     <html>
@@ -213,7 +213,7 @@ We can improve the HTML template to use a table instead:
       </body>
     </html>
 
-</figure>
+```
 
 ![Boards Homepage render](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/boards-homepage-render-2.png)
 
@@ -227,7 +227,7 @@ Let’s write our first test. For now, we will be working in the **tests.py** fi
 
 **boards/tests.py**
 
-<figure class="highlight">
+```
 
     from django.core.urlresolvers import reverse
     from django.test import TestCase
@@ -238,7 +238,7 @@ Let’s write our first test. For now, we will be working in the **tests.py** fi
             response = self.client.get(url)
             self.assertEquals(response.status_code, 200)
 
-</figure>
+```
 
 This is a very simple test case but extremely useful. We are testing the _status code_ of the response. The status code 200 means **success**.
 
@@ -250,13 +250,13 @@ If there were an uncaught exception, syntax error, or anything, Django would ret
 
 To execute the Django’s test suite:
 
-<figure class="highlight">
+```
 
     python manage.py test
 
-</figure>
+```
 
-<figure class="highlight">
+```
 
     Creating test database for alias 'default'...
     System check identified no issues (0 silenced).
@@ -267,7 +267,7 @@ To execute the Django’s test suite:
     OK
     Destroying test database for alias 'default'...
 
-</figure>
+```
 
 Now we can test if Django returned the correct view function for the requested URL. This is also a useful test because as we progress with the development, you will see that the **urls.py** module can get very big and complex. The URL conf is all about resolving regex. There are some cases where we have a very permissive URL, so Django can end up returning the wrong view function.
 
@@ -275,7 +275,7 @@ Here’s how we do it:
 
 **boards/tests.py**
 
-<figure class="highlight">
+```
 
     from django.core.urlresolvers import reverse
     from django.urls import resolve
@@ -292,19 +292,19 @@ Here’s how we do it:
             view = resolve('/')
             self.assertEquals(view.func, home)
 
-</figure>
+```
 
 In the second test, we are making use of the `resolve` function. Django uses it to match a requested URL with a list of URLs listed in the **urls.py** module. This test will make sure the URL `/`, which is the root URL, is returning the home view.
 
 Test it again:
 
-<figure class="highlight">
+```
 
     python manage.py test
 
-</figure>
+```
 
-<figure class="highlight">
+```
 
     Creating test database for alias 'default'...
     System check identified no issues (0 silenced).
@@ -315,17 +315,17 @@ Test it again:
     OK
     Destroying test database for alias 'default'...
 
-</figure>
+```
 
 To see more detail about the test execution, set the **verbosity** to a higher level:
 
-<figure class="highlight">
+```
 
     python manage.py test --verbosity=2
 
-</figure>
+```
 
-<figure class="highlight">
+```
 
     Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
     Operations to perform:
@@ -359,7 +359,7 @@ To see more detail about the test execution, set the **verbosity** to a higher l
     OK
     Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
 
-</figure>
+```
 
 Verbosity determines the amount of notification and debug information that will be printed to the console; 0 is no output, 1 is normal output, and 2 is verbose output.
 
@@ -373,7 +373,7 @@ With so many front-end component libraries available, there’s no reason for us
 
 In the project root directory, alongside with the **boards**, **templates**, and **myproject** folders, create a new folder named **static**, and within the **static** folder create another one named **css**:
 
-<figure class="highlight">
+```
 
     myproject/
      |-- myproject/
@@ -385,7 +385,7 @@ In the project root directory, alongside with the **boards**, **templates**, and
      |    +-- manage.py
      +-- venv/
 
-</figure>
+```
 
 Go to [getbootstrap.com](https://getbootstrap.com/docs/4.0/getting-started/download/#compiled-css-and-js) and download the latest version:
 
@@ -395,7 +395,7 @@ Download the **Compiled CSS and JS** version.
 
 In your computer, extract the **bootstrap-4.0.0-beta-dist.zip** file you downloaded from the Bootstrap website, copy the file **css/bootstrap.min.css** to our project’s css folder:
 
-<figure class="highlight">
+```
 
     myproject/
      |-- myproject/
@@ -408,11 +408,11 @@ In your computer, extract the **bootstrap-4.0.0-beta-dist.zip** file you downloa
      |    +-- manage.py
      +-- venv/
 
-</figure>
+```
 
 The next step is to instruct Django where to find the static files. Open the **settings.py**, scroll to the bottom of the file and just after the `STATIC_URL`, add the following:
 
-<figure class="highlight">
+```
 
     STATIC_URL = '/static/'
 
@@ -420,7 +420,7 @@ The next step is to instruct Django where to find the static files. Open the **s
         os.path.join(BASE_DIR, 'static'),
     ]
 
-</figure>
+```
 
 Same thing as the `TEMPLATES` directory, remember?
 
@@ -428,7 +428,7 @@ Now we have to load the static files (the Bootstrap CSS file) in our template:
 
 **templates/home.html**
 
-<figure class="highlight">
+```
 
     {% load static %}<!DOCTYPE html>
     <html>
@@ -442,7 +442,7 @@ Now we have to load the static files (the Bootstrap CSS file) in our template:
       </body>
     </html>
 
-</figure>
+```
 
 First we load the Static Files App template tags by using the `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">load</span> <span class="w"></span> <span class="err">static</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>` in the beginning of the template.
 
@@ -458,7 +458,7 @@ Refreshing the page **127.0.0.1:8000** we can see it worked:
 
 Now we can edit the template so to take advantage of the Bootstrap CSS:
 
-<figure class="highlight">
+```
 
     {% load static %}<!DOCTYPE html>
     <html>
@@ -499,7 +499,7 @@ Now we can edit the template so to take advantage of the Bootstrap CSS:
       </body>
     </html>
 
-</figure>
+```
 
 The result now:
 

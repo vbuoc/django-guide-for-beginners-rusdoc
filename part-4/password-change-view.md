@@ -4,14 +4,14 @@ This view is meant to be used by logged in users that want to change their passw
 
 **myproject/urls.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/0927898f37831cad0d6a4ec538b8a002#file-urls-py-L31)</small>
 
-<figure class="highlight">
+```
 
     url(r'^settings/password//figure>, auth_views.PasswordChangeView.as_view(template_name='password_change.html'),
         name='password_change'),
     url(r'^settings/password/done//figure>, auth_views.PasswordChangeDoneView.as_view(template_name='password_change_done.html'),
         name='password_change_done'),
 
-</figure>
+```
 
 Those views only works for logged in users. They make use of a view decorator named `@login_required`. This decorator prevents non-authorized users to access this page. If the user is not logged in, Django will redirect them to the login page.
 
@@ -19,15 +19,15 @@ Now we have to define what is the login URL of our application in the **settings
 
 **myproject/settings.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/2d3a2c45df7deb025b8206c5a9b55e12#file-settings-py-L133)</small>
 
-<figure class="highlight">
+```
 
     LOGIN_URL = 'login'
 
-</figure>
+```
 
 **templates/password_change.html**
 
-<figure class="highlight">
+```
 
     {% extends 'base.html' %}
 
@@ -49,13 +49,13 @@ Now we have to define what is the login URL of our application in the **settings
       </div>
     {% endblock %}
 
-</figure>
+```
 
 ![Change Password](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/password_change.png)
 
 **templates/password_change_done.html**
 
-<figure class="highlight">
+```
 
     {% extends 'base.html' %}
 
@@ -73,7 +73,7 @@ Now we have to define what is the login URL of our application in the **settings
       <a href="{% url 'home' %}" class="btn btn-secondary">Return to home page</a>
     {% endblock %}
 
-</figure>
+```
 
 ![Change Password Successful](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-4/password_change_done.png)
 
@@ -83,7 +83,7 @@ I will list below new types of tests. You can check all the tests I wrote for th
 
 **accounts/tests/test_view_password_change.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/03e2f20a4c1e693c9b22b343503fb461#file-test_view_password_change-py-L40)</small>
 
-<figure class="highlight">
+```
 
     class LoginRequiredPasswordChangeTests(TestCase):
         def test_redirection(self):
@@ -92,13 +92,13 @@ I will list below new types of tests. You can check all the tests I wrote for th
             response = self.client.get(url)
             self.assertRedirects(response, f'{login_url}?next={url}')
 
-</figure>
+```
 
 The test above tries to access the **password_change** view without being logged in. The expected behavior is to redirect the user to the login page.
 
 **accounts/tests/test_view_password_change.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/03e2f20a4c1e693c9b22b343503fb461#file-test_view_password_change-py-L48)</small>
 
-<figure class="highlight">
+```
 
     class PasswordChangeTestCase(TestCase):
         def setUp(self, data={}):
@@ -107,13 +107,13 @@ The test above tries to access the **password_change** view without being logged
             self.client.login(username='john', password='old_password')
             self.response = self.client.post(self.url, data)
 
-</figure>
+```
 
 Here we defined a new class named **PasswordChangeTestCase**. It does a basic setup, creating a user and making a **POST** request to the **password_change** view. In the next set of test cases, we are going to use this class instead of the **TestCase** class and test a successful request and an invalid request:
 
 **accounts/tests/test_view_password_change.py** <small>[(view complete file contents)](https://gist.github.com/vitorfs/03e2f20a4c1e693c9b22b343503fb461#file-test_view_password_change-py-L60)</small>
 
-<figure class="highlight">
+```
 
     class SuccessfulPasswordChangeTests(PasswordChangeTestCase):
         def setUp(self):
@@ -165,7 +165,7 @@ Here we defined a new class named **PasswordChangeTestCase**. It does a basic se
             self.user.refresh_from_db()
             self.assertTrue(self.user.check_password('old_password'))
 
-</figure>
+```
 
 The `refresh_from_db()` method make sure we have the latest state of the data. It forces Django to query the database again to update the data. We have to do it because the **change_password** view update the password in the database. So to test if the password _really_ changed, we have to grab the latest data from the database.
 
