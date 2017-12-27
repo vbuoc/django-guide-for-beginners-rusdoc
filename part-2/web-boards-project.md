@@ -60,21 +60,21 @@
 
 ![Class Diagram Topic and Post Association](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/class-diagram-topic-post.png)
 
-A **Topic** should have at least one **Post** (the starter **Post**), and it may also have many **Posts** (`1..*`). A **Post** must be associated with one, and only one **Topic** (`1`).
+**Topic** должен иметь как минимум один **Post** (начальное сообщение), а так же там может быть множество сообщений (`1..*`). **Post** должен быть связан только с одним **Topic** (`1`).
 
-![Class Diagram Topic and User Association](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/class-diagram-topic-user.png) A **Topic** must have one, and only one **User** associated with: the topic starter **User** (`1`). And a **User** may have many or none **Topics** (`0..*`).
+![Class Diagram Topic and User Association](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/class-diagram-topic-user.png)
 
-![Class Diagram Post and User Association](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/class-diagram-post-user.png) A **Post** must have one, and only one **User** associated with: **created by** (`1`). A **User** may have many or none **Posts** (`0..*`). The second association between **Post** and **User** is a _direct association_ (see the arrow at the end of the line), meaning we are interested only in one side of the relationship which is what **User** has edited a given **Post**. It will be translated into the **updated by** field. The multiplicity says `0..1`, meaning the **updated by** field may be null (the **Post** wasn’t edited) and at most may be associated with only one **User**.
+**Topic** должен иметь связь только с одним **User**, который его создал(`1`). У **User** может быть много **Topic** или ни одного (`0..*`).
 
-Another way to draw this class diagram is emphasizing the fields rather than in the relationship between the models:
+![Class Diagram Post and User Association](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/class-diagram-post-user.png) 
 
-<div id="figure-4">
+A **Post** должен иметь один и только один **User**, связанный с: **created by** (`1`). A **User** может иметь много или ни одного **Post** (`0 .. *`). Вторая связь между **Post** и **User** является _прямой ассоциацией_ (см. Стрелку в конце строки), что означает, что нас интересует только одна сторона отношения, которая является тем, что **Пользователь** отредактировал данный **Post**. Он будет переведен в поле **updated by**. Множество `0..1`, значит, что поле **updated by** может быть пустым (**Post** не изменялся) или может быть связано только с одним **User**.
+
+Другой способ нарисовать эту диаграмму классов - подчеркнуть поля, а не отношения между моделями:
 
 ![Class Diagram Attributes](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/class-diagram-attributes.png)
 
-<small>Figure 4: Class diagram emphasizing the attributes (fields) of the classes (models)</small>
-
-</div>
+*Рис. 4: Диаграмма классов, подчеркивающая атрибуты(поля) классов(моделей)*
 
 The representation above is equivalent to the previous one, and it’s also closer to what we are going to design using the Django Models API. In this representation, we can see more clearly that in the **Post** model the associations **topic**, **created by**, and **updated by** became model fields. Another interesting thing to note is that in the **Topic** model we have now an _operation_ (a class method) named **posts()**. We are going to achieve this by implementing a reverse relationship, where Django will automatically execute a query in the database to return a list of all the **Posts** that belongs to a specific **Topic**.
 
