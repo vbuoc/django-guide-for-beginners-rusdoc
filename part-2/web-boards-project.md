@@ -4,61 +4,63 @@
 
 Не знаю, как вы, но я узнаю намного больше через практические примеры и сниппеты кода. Мне сложно понять принцип, когда в примерах написано `Class A`, `Class B` или классическое `foo(bar)`. И я бы не хотел делать это в этом руководстве.
 
-So, before we get into the fun part, playing with models, views, and everything. Let’s just take a moment and discuss very briefly about this project we are going to develop.
+Теперь, прежде чем мы приступим к веселой части, играя с моделями, представлениями и всем остальным, давайте поверхностно о проекте, который мы будем разрабатывать.
 
-If you already have experience with Web development and feel it’s too much detail, you can just skim through the pictures to have an idea what we are going to build and then jump to the **Models** section of this tutorial.
+Если вы уже имеете опыт Web-разработки и считаете, что здесь все слишком подробно, просто гляньте на картинки, чтобы иметь представление о том, что мы будем делать и переходите к части [**Модели**](/part-2/models.md).
 
-But if you are new to Web development, I highly suggest that you keep reading. It will give you some good insights on modeling and design of Web applications. Web development, and software development in general, is not just about coding.
+Если же вы новичок, я настоятельно рекомендую продолжить чтение. Это даст вам некоторые навыки моделирования и проектирования Web-приложений. Web-разработка, да и вообще разработка - не только про код.
 
 ![Rocket Science](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/Pixton_Comic_Rocket_Science.png)
 
-##### Use Case Diagram
+## Диаграмма использования
 
-Our project is a discussion board (a forum). The whole idea is to maintain several **boards**, which will behave like categories. Then, inside a specific board, a user can start a new discussion by creating a new **topic**. In this topic, other users can engage in the discussion posting replies.
+Наш проект - нечто наподобие форума. Основная мысль в том, чтобы иметь несколько **"Досок"**, которые будут являться нашими категориями. А в каждой отдельной доске пользователь может начать новое обсуждение, создавая **"топик"**. В этом топике остальные пользователи могут вступить в обсуждение и оставлять ответы.
 
-We will need to find a way to differentiate a regular user from an admin user because only the admins are supposed to create new boards. Below, an overview of our main use cases and the role of each type of user:
+Нам нужен способ отличить обычного пользователя от администратора, поскольку администраторы могут создавать новые доски. Ниже представлены наши основные способы использования и роли каждого пользователя:
 
 ![Use Case Diagram](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/use-case-diagram.png)
 
-<small>Figure 1: Use case diagram of the core functionalities offered by the Web Board</small>
+*Рис. 1: Диаграмма использования базового функционала*
 
-##### Class Diagram
+## Диаграмма классов
 
-From the Use Case Diagram, we can start thinking concerning the **entities** of our project. The entities are the models we will create, and it’s very closely related to the data our Django app will process.
+Из диаграммы использования мы можем начать размышлять о **"сущностях"** нашего проекта. Сущности - модели, которые мы будем создавать. И это очень близко к данным, которые наше Django-приложение будет обрабатывать.
 
-For us to be able to implement the use cases described in the previous section, we will need to implement at least the following models: **Board**, **Topic**, **Post**, and **User**.
+Для того, чтомы мы могли реализовать варианты использования, приведенные на предыдущем рисунки, нам нужно реализовать следующие модели: **Board**, **Topic**, **Post** и **User**.
 
 ![Basic Class Diagram](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/basic-class-diagram.png)
 
-<small>Figure 2: Draft of the class diagram of the Web Board</small>
+*Рис. 2: Черновик диаграммы классов*
 
-It’s also important to take the time to think about how do models will relate to each other. What the solid lines are telling us is that, in a **Topic**, we will need to have a field to identify which **Board** it belongs to. Similarly, the **Post** will need a field to represent which **Topic** it belongs so that we can list in the discussions only **Posts** created within a specific **Topic**. Finally, we will need fields in both the **Topic** to know who started the discussion and in the **Post** so we can identify who is posting the reply.
+Так же важно подумать, как модели будут отновится друг к другу. Сплошные линии говорят нам, что **Topic** должен содержать поле, определяющее, к какой доске он относится. Также **Post** должен содержать поле для пределение, к какому **Topic** он относится, чтобы мы могли отобразить только те посты, которые относятся к текущему обсужению. Так же нам нужны поля в **Topic** и **Post**, чтобы мы могли узнать, кто создал обсуждение и кто оставил сообщение.
 
-We could also have an association with the **Board** and the **User** model, so we could identify who created a given **Board**. But this information is not relevant for the application. There are other ways to track this information, you will see later on.
+Теперь, когда у нас есть базовое представление необходимых классов, мы можем подумать, какую информацию будет содержать каждая модель. Это может стать сложным очень быстро. Так что постарайтейсб сфокусироваться на главном - данных, которые нам нужны на старте. Остальное будет возможность добавить, используя **миграции**, о которых вы узнаете позже. 
 
-Now that we have the basic class representation, we have to think what kind of information each of those models will carry. This sort of thing can get complicated very easily. So try to focus on the important bits. The information that you need to start the development. Later on, we can improve the model using **migrations**, which you will see in great detail in the next tutorial.
-
-But for now, this would be a basic representation of our models’ fields:
+А пока базовым представлением наших данных будут следующие поля:
 
 ![Class Diagram](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/class-diagram.png)
 
-<small>Figure 3: Class diagram emphasizing the relationship between the classes (models)</small>
+*Рис. 3: Диаграмма классов, описывающая отношения этих классов*
 
-This class diagram has the emphasis on the relationship between the models. Those lines and arrows will eventually be translated into fields later on.
+Эта диаграмма классов включает отношения между моделями. Эти линии и стрелки потом будут переведены в поля.
 
-For the **Board** model, we will start with two fields: **name** and **description**. The **name** field has to be unique, so to avoid duplicated board names. The **description** is just to give a hint of what the board is all about.
+Касаемо модели **Board**, мы начнем с двух полей: **name** и **description**. Поле **name** должно быть уникальным, чтобы избежать дублирования имен досок. **description** - только будет давать подсказку, о чем вообще эта доска.
 
-The **Topic** model will be composed of four fields: **subject**, **last update** date which will be used to define the topics ordering, **topic starter** to identify the **User** who started the **Topic**, and a field called **board** to define which **Board** a specific **Topic** belongs to.
+Модель **Topic** будет состоять из четырех полей: **subject**, **last update** - дата, которая будет определять порядок порядок топиков, **topic starter** - чтобы определить, какой пользователь создал топик, и поле **board**, чтобы определить, к какой доске относится топик.
 
-The **Post** model will have a **message** field, which will be used to store the text of the post replies, a **created at** date and time field mainly used to order the **Posts** within a **Topic**, an **updated at** date and time field to inform the **Users** when and if a given **Post** has been edited. Like the date and time fields, we will also have to reference the **User** model: **created by** and **updated by**.
+Модель **Post** будет иметь поле **message**, которое будет использоваться для хранения текста постов ответов, поле **created at** с датой и временем, которое в основном будет использоваться для сортровки сообщений в топике, **updated at** с датой и временем, чтобы информировать пользователей о том, что пост был изменен, если это имело место быть. Так же, у нас должна быть ссылка на **User**: **created by** и **updated by**.
 
-Finally, the **User** model. In the class diagram, I only mentioned the fields **username**, **password**, **email** and **is superuser** flag because that’s pretty much all we are going to use for now. It’s important to note that we won’t need to create a **User** model because Django already comes with a built-in **User** model inside the **contrib** package. We are going to use it.
+Наконец, модель **User**. В диаграмме классов я только упомянул поля **username**, **password**, **email** и флаг **is superuser**, поскольку это все, что мы будем использовать на данный момент. Так же важно помнить, что мы не должны создавать модель **User**, поскольку Django уже содержит в себе модель в пакете `contrib`. Мы будем использовать ее.
 
-Regarding the multiplicity in the class diagram (the numbers `1`, `0..*`, etc.), here’s how you read it:
+Что касается множественности в диаграмме классов (числа `1`, `0..*` и т.д.), вот как мы будем их читать:
 
-![Class Diagram Board and Topic Association](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/class-diagram-board-topic.png) A **Topic** must be associated with exactly one (`1`) **Board** (which means it cannot be null), and a **Board** may be associated with many **Topics** or none (`0..*`). Which means a **Board** may exist without a single **Topic**.
+![Class Diagram Board and Topic Association](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/class-diagram-board-topic.png)
 
-![Class Diagram Topic and Post Association](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/class-diagram-topic-post.png) A **Topic** should have at least one **Post** (the starter **Post**), and it may also have many **Posts** (`1..*`). A **Post** must be associated with one, and only one **Topic** (`1`).
+**Topic** должен быть связан только с одной(`1`) доской **Board**(что также означает, что оно не может быть `None`), а **Board** может быть связанна с многими **Topic** или ни с одним(`0..*`). Это означает, что **Board** может существовать без единого **Topic**.
+
+![Class Diagram Topic and Post Association](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/class-diagram-topic-post.png)
+
+A **Topic** should have at least one **Post** (the starter **Post**), and it may also have many **Posts** (`1..*`). A **Post** must be associated with one, and only one **Topic** (`1`).
 
 ![Class Diagram Topic and User Association](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/class-diagram-topic-user.png) A **Topic** must have one, and only one **User** associated with: the topic starter **User** (`1`). And a **User** may have many or none **Topics** (`0..*`).
 
