@@ -137,5 +137,3 @@ pip install django
 Теперь все готово!
 
 ![End Installation](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-1/Pixton_Comic_End_Installation.png)
-
-> [Новый проект](/part-1/new-project.md)

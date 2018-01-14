@@ -1,6 +1,6 @@
 # Интерфейс администратора Django
 
-> Оригинал: https://simpleisbetterthancomplex.com/series/2017/09/04/a-complete-beginners-guide-to-django-part-1.html
+> Оригинал: https://simpleisbetterthancomplex.com/series/2017/09/11/a-complete-beginners-guide-to-django-part-2.html
 
 Когда мы начинаем новый проект, Django уже обладает **Интерфейсом администратора Django**, который можно увидеть в `INSTALLED_APPS` в `settings.py`.
 

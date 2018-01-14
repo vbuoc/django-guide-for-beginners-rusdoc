@@ -1,510 +1,490 @@
-Views, Templates, and Static Files > Оригинал: https://simpleisbetterthancomplex.com/series/2017/09/11/a-complete-beginners-guide-to-django-part-2.html
+# Представления, шаблоны и статические файлы
 
-At the moment we already have a view named `home` displaying “Hello, World!” in the homepage of our application.
+> Оригинал: https://simpleisbetterthancomplex.com/series/2017/09/11/a-complete-beginners-guide-to-django-part-2.html
+
+На данный момент у нас уже есть представление, называемое `home`, отображающее “Hello, World!” в корне нашего приложения
 
 **myproject/urls.py**
 
-```
+```python
+from django.conf.urls import url
+from django.contrib import admin
 
-    from django.conf.urls import url
-    from django.contrib import admin
+from boards import views
 
-    from boards import views
-
-    urlpatterns = [
-        url(r'^/figure>, views.home, name='home'),
-        url(r'^admin/', admin.site.urls),
-    ]
+urlpatterns = [
+    url(r'^$', views.home, name='home'),
+    url(r'^admin/', admin.site.urls),
+]
 
 ```
 
 **boards/views.py**
 
+```python
+from django.http import HttpResponse
+
+def home(request):
+    return HttpResponse('Hello, World!')
+
 ```
 
-    from django.http import HttpResponse
+Мы можем импользовать это, как нашу отправную точку. Если вы вернетесь и посмотрите, на наши макеты, вы увидите, как главная страница должна выглядеть. Все, что мы хотим, это отобразить список досок в таблице с небольшим количеством дополнительной информации.
 
-    def home(request):
-        return HttpResponse('Hello, World!')
-
-```
-
-We can use this as our starting point. If you recall our wireframes, the [Figure 5](#figure-5) showed how the homepage should look like. What we want to do is display a list of boards in a table alongside with some other information.
-
-The first thing to do is import the **Board** model and list all the existing boards:
+Первое, что нам нужно сделать - испортировать модель **Board** и получить список всех существующих досок:
 
 **boards/views.py**
 
+```python
+from django.http import HttpResponse
+from .models import Board
+
+def home(request):
+    boards = Board.objects.all()
+    boards_names = list()
+
+    for board in boards:
+        boards_names.append(board.name)
+
+    response_html = '<br>'.join(boards_names)
+
+    return HttpResponse(response_html)
+
 ```
 
-    from django.http import HttpResponse
-    from .models import Board
-
-    def home(request):
-        boards = Board.objects.all()
-        boards_names = list()
-
-        for board in boards:
-            boards_names.append(board.name)
-
-        response_html = '<br>'.join(boards_names)
-
-        return HttpResponse(response_html)
-
-```
-
-And the result would be this simple HTML page:
+Результатом будет простая страница:
 
 ![Boards Homepage HttpResponse](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/boards-homepage-httpresponse.png)
 
-But let’s stop right here. We are not going very far rendering HTML like this. For this simple view, all we need is a list of boards; then the rendering part is a job for the **Django Template Engine**.
+Но давайте остановимся здесь. Мы не собираемся слишком глубоко погружаться в рендеринг HTML. Для этого простого представления все, что нам нужно - список досок. Остальное - работа для **Django Template Engine**.
 
-##### Django Template Engine Setup
+## Django Template Engine Setup
 
-Create a new folder named **templates** alongside with the **boards** and **mysite** folders:
+Создайте новую дирректорию **templates**, рядом с **boards** и **mysite**:
 
+```bash
+myproject/
+    |-- myproject/
+    |    |-- boards/
+    |    |-- myproject/
+    |    |-- templates/   <-- here!
+    |    +-- manage.py
+    +-- venv/
 ```
 
-    myproject/
-     |-- myproject/
-     |    |-- boards/
-     |    |-- myproject/
-     |    |-- templates/   <-- here!
-     |    +-- manage.py
-     +-- venv/
-
-```
-
-Now within the **templates** folder, create an HTML file named **home.html**:
+Теперь создайте внутри данной папки HTML файл **home.html**:
 
 **templates/home.html**
 
+```html
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Boards</title>
+</head>
+
+<body>
+    <h1>Boards</h1>
+
+    {% for board in boards %} {{ board.name }}
+    <br> {% endfor %}
+
+</body>
+
+</html>
 ```
 
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="utf-8">
-        <title>Boards</title>
-      </head>
-      <body>
-        <h1>Boards</h1>
+В примере выше мы смешали чистый HTML и специальные тэги `{% for ... in ... %}` и `{{ variable }}`. Они - часть языка шаблонов Django. Пример выше показывает, как проитерироваться через список объектов, используя `for`. `{{ board.name }}` рендерит имя доски в шаблоне HTML, генерируя динамический HTML документ.
 
-        {% for board in boards %}
-          {{ board.name }} <br>
-        {% endfor %}
+Прежде чем мы используем эту HTML страницу, мы должны указать Django, где ей искать шаблоны приложений.
 
-      </body>
-    </html>
+Откройте **settings.py** внутри **myproject**, найдите переменную `TEMPLATES` и установите `DIRS` в `os.path.join(BASE_DIR, 'templates')`:
 
-```
-
-In the example above we are mixing raw HTML with some special tags `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">for</span> <span class="w"></span> <span class="err">...</span> <span class="w"></span> <span class="err">in</span> <span class="w"></span> <span class="err">...</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>` and `<span class="p">{</span><span class="err">{</span> <span class="w"></span> <span class="err">variable</span> <span class="w"></span> <span class="p">}</span><span class="err">}</span>`. They are part of the Django Template Language. The example above shows how to iterate over a list of objects using a `for`. The `<span class="p">{</span><span class="err">{</span> <span class="w"></span> <span class="err">board.name</span> <span class="w"></span> <span class="p">}</span><span class="err">}</span>` renders the name of the board in the HTML template, generating a dynamic HTML document.
-
-Before we can use this HTML page, we have to tell Django where to find our application’s templates.
-
-Open the **settings.py** inside the **myproject** directory and search for the `TEMPLATES` variable and set the `DIRS` key to `os.path.join(BASE_DIR, 'templates')`:
-
-```
-
-    TEMPLATES = [
-        {
-            'BACKEND': 'django.template.backends.django.DjangoTemplates',
-            'DIRS': [
-                os.path.join(BASE_DIR, 'templates')
+```python
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [
+            os.path.join(BASE_DIR, 'templates')
+        ],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
             ],
-            'APP_DIRS': True,
-            'OPTIONS': {
-                'context_processors': [
-                    'django.template.context_processors.debug',
-                    'django.template.context_processors.request',
-                    'django.contrib.auth.context_processors.auth',
-                    'django.contrib.messages.context_processors.messages',
-                ],
-            },
         },
-    ]
+    },
+]
 
 ```
 
-Basically what this line is doing is finding the full path of your project directory and appending “/templates” to it.
+По сути, эта строка указывает полный путь к проекту и добавляет в конец "/templates".
 
-We can debug this using the Python shell:
+Мы можем проверить это через Python shell:
 
-```
-
-    python manage.py shell
-
-```
+```bash
+$ python manage.py shell
 
 ```
 
-    from django.conf import settings
+```python
 
-    settings.BASE_DIR
-    '/Users/vitorfs/Development/myproject'
+>>> from django.conf import settings
 
-    import os
+>>> settings.BASE_DIR
+'/Users/vitorfs/Development/myproject'
 
-    os.path.join(settings.BASE_DIR, 'templates')
-    '/Users/vitorfs/Development/myproject/templates'
+>>> import os
+
+>>> os.path.join(settings.BASE_DIR, 'templates')
+'/Users/vitorfs/Development/myproject/templates'
 
 ```
 
-See? It’s just pointing to the **templates** folder we created in the previous steps.
+Видите? Она указывает на папку **templates**, которую мы указали на предыдущих шагах.
 
-Now we can update our **home** view:
+Теперь мы можем обновить наше представление **home**:
 
 **boards/views.py**
 
+```python
+from django.shortcuts import render
+from .models import Board
+
+def home(request):
+    boards = Board.objects.all()
+    return render(request, 'home.html', {'boards': boards})
+
 ```
 
-    from django.shortcuts import render
-    from .models import Board
-
-    def home(request):
-        boards = Board.objects.all()
-        return render(request, 'home.html', {'boards': boards})
-
-```
-
-The resulting HTML:
+Итоговый HTML:
 
 ![Boards Homepage render](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/boards-homepage-render.png)
 
-We can improve the HTML template to use a table instead:
+Мы можем улучшить HTML, используя таблицу:
 
 **templates/home.html**
 
-```
+```html
+<!DOCTYPE html>
+<html>
 
-    <!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="utf-8">
-        <title>Boards</title>
-      </head>
-      <body>
-        <h1>Boards</h1>
+<head>
+    <meta charset="utf-8">
+    <title>Boards</title>
+</head>
 
-        <table border="1">
-          <thead>
+<body>
+    <h1>Boards</h1>
+
+    <table border="1">
+        <thead>
             <tr>
-              <th>Board</th>
-              <th>Posts</th>
-              <th>Topics</th>
-              <th>Last Post</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for board in boards %}
-              <tr>
-                <td>
-                  {{ board.name }}<br>
-                  <small style="color: #888">{{ board.description }}</small>
-                </td>
-                <td>0</td>
-                <td>0</td>
-                <td></td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-      </body>
-    </html>
-
-```
-
-![Boards Homepage render](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/boards-homepage-render-2.png)
-
-##### Testing the Homepage
-
-![Testing Comic](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/Pixton_Comic_Testing.png)
-
-This is going to be a recurrent subject, and we are going to explore together different concepts and strategies throughout the whole tutorial series.
-
-Let’s write our first test. For now, we will be working in the **tests.py** file inside the **boards** app:
-
-**boards/tests.py**
-
-```
-
-    from django.core.urlresolvers import reverse
-    from django.test import TestCase
-
-    class HomeTests(TestCase):
-        def test_home_view_status_code(self):
-            url = reverse('home')
-            response = self.client.get(url)
-            self.assertEquals(response.status_code, 200)
-
-```
-
-This is a very simple test case but extremely useful. We are testing the _status code_ of the response. The status code 200 means **success**.
-
-We can check the status code of the response in the console:
-
-![Response 200](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/test-homepage-view-status-code-200.png)
-
-If there were an uncaught exception, syntax error, or anything, Django would return a status code **500** instead, which means **Internal Server Error**. Now, imagine our application has 100 views. If we wrote just this simple test for all our views, with just one command, we would be able to test if all views are returning a success code, so the user does not see any error message anywhere. Without automate tests, we would need to check each page, one by one.
-
-To execute the Django’s test suite:
-
-```
-
-    python manage.py test
-
-```
-
-```
-
-    Creating test database for alias 'default'...
-    System check identified no issues (0 silenced).
-    .
-    ----------------------------------------------------------------------
-    Ran 1 test in 0.041s
-
-    OK
-    Destroying test database for alias 'default'...
-
-```
-
-Now we can test if Django returned the correct view function for the requested URL. This is also a useful test because as we progress with the development, you will see that the **urls.py** module can get very big and complex. The URL conf is all about resolving regex. There are some cases where we have a very permissive URL, so Django can end up returning the wrong view function.
-
-Here’s how we do it:
-
-**boards/tests.py**
-
-```
-
-    from django.core.urlresolvers import reverse
-    from django.urls import resolve
-    from django.test import TestCase
-    from .views import home
-
-    class HomeTests(TestCase):
-        def test_home_view_status_code(self):
-            url = reverse('home')
-            response = self.client.get(url)
-            self.assertEquals(response.status_code, 200)
-
-        def test_home_url_resolves_home_view(self):
-            view = resolve('/')
-            self.assertEquals(view.func, home)
-
-```
-
-In the second test, we are making use of the `resolve` function. Django uses it to match a requested URL with a list of URLs listed in the **urls.py** module. This test will make sure the URL `/`, which is the root URL, is returning the home view.
-
-Test it again:
-
-```
-
-    python manage.py test
-
-```
-
-```
-
-    Creating test database for alias 'default'...
-    System check identified no issues (0 silenced).
-    ..
-    ----------------------------------------------------------------------
-    Ran 2 tests in 0.027s
-
-    OK
-    Destroying test database for alias 'default'...
-
-```
-
-To see more detail about the test execution, set the **verbosity** to a higher level:
-
-```
-
-    python manage.py test --verbosity=2
-
-```
-
-```
-
-    Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
-    Operations to perform:
-      Synchronize unmigrated apps: messages, staticfiles
-      Apply all migrations: admin, auth, boards, contenttypes, sessions
-    Synchronizing apps without migrations:
-      Creating tables...
-        Running deferred SQL...
-    Running migrations:
-      Applying contenttypes.0001_initial... OK
-      Applying auth.0001_initial... OK
-      Applying admin.0001_initial... OK
-      Applying admin.0002_logentry_remove_auto_add... OK
-      Applying contenttypes.0002_remove_content_type_name... OK
-      Applying auth.0002_alter_permission_name_max_length... OK
-      Applying auth.0003_alter_user_email_max_length... OK
-      Applying auth.0004_alter_user_username_opts... OK
-      Applying auth.0005_alter_user_last_login_null... OK
-      Applying auth.0006_require_contenttypes_0002... OK
-      Applying auth.0007_alter_validators_add_error_messages... OK
-      Applying auth.0008_alter_user_username_max_length... OK
-      Applying boards.0001_initial... OK
-      Applying sessions.0001_initial... OK
-    System check identified no issues (0 silenced).
-    test_home_url_resolves_home_view (boards.tests.HomeTests) ... ok
-    test_home_view_status_code (boards.tests.HomeTests) ... ok
-
-    ----------------------------------------------------------------------
-    Ran 2 tests in 0.017s
-
-    OK
-    Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
-
-```
-
-Verbosity determines the amount of notification and debug information that will be printed to the console; 0 is no output, 1 is normal output, and 2 is verbose output.
-
-##### Static Files Setup
-
-Static files are the CSS, JavaScripts, Fonts, Images, or any other resources we may use to compose the user interface.
-
-As it is, Django doesn’t serve those files. Except during the development process, so to make our lives easier. But Django provides some features to help us manage the static files. Those features are available in the **django.contrib.staticfiles** application already listed in the `INSTALLED_APPS` configuration.
-
-With so many front-end component libraries available, there’s no reason for us keep rendering basic HTML documents. We can easily add Bootstrap 4 to our project. Bootstrap is an open source toolkit for developing with HTML, CSS, and JavaScript.
-
-In the project root directory, alongside with the **boards**, **templates**, and **myproject** folders, create a new folder named **static**, and within the **static** folder create another one named **css**:
-
-```
-
-    myproject/
-     |-- myproject/
-     |    |-- boards/
-     |    |-- myproject/
-     |    |-- templates/
-     |    |-- static/       <-- here
-     |    |    +-- css/     <-- and here
-     |    +-- manage.py
-     +-- venv/
-
-```
-
-Go to [getbootstrap.com](https://getbootstrap.com/docs/4.0/getting-started/download/#compiled-css-and-js) and download the latest version:
-
-![Bootstrap Download](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/bootstrap-download.png)
-
-Download the **Compiled CSS and JS** version.
-
-In your computer, extract the **bootstrap-4.0.0-beta-dist.zip** file you downloaded from the Bootstrap website, copy the file **css/bootstrap.min.css** to our project’s css folder:
-
-```
-
-    myproject/
-     |-- myproject/
-     |    |-- boards/
-     |    |-- myproject/
-     |    |-- templates/
-     |    |-- static/
-     |    |    +-- css/
-     |    |         +-- bootstrap.min.css    <-- here
-     |    +-- manage.py
-     +-- venv/
-
-```
-
-The next step is to instruct Django where to find the static files. Open the **settings.py**, scroll to the bottom of the file and just after the `STATIC_URL`, add the following:
-
-```
-
-    STATIC_URL = '/static/'
-
-    STATICFILES_DIRS = [
-        os.path.join(BASE_DIR, 'static'),
-    ]
-
-```
-
-Same thing as the `TEMPLATES` directory, remember?
-
-Now we have to load the static files (the Bootstrap CSS file) in our template:
-
-**templates/home.html**
-
-```
-
-    {% load static %}<!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="utf-8">
-        <title>Boards</title>
-        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-      </head>
-      <body>
-        <!-- body suppressed for brevity ... -->
-      </body>
-    </html>
-
-```
-
-First we load the Static Files App template tags by using the `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">load</span> <span class="w"></span> <span class="err">static</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>` in the beginning of the template.
-
-The template tag `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">static</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>` is used to compose the URL where the resource lives. In this case, the `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">static</span> <span class="w"></span> <span class="err">'css/bootstrap.min.css'</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>` will return **/static/css/bootstrap.min.css**, which is equivalent to **http://127.0.0.1:8000/static/css/bootstrap.min.css**.
-
-The `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">static</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>` template tag uses the `STATIC_URL` configuration in the **settings.py** to compose the final URL. For example, if you hosted your static files in a subdomain like **https://static.example.com/**, we would set the `STATIC_URL=https://static.example.com/` then the `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">static</span> <span class="w"></span> <span class="err">'css/bootstrap.min.css'</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>` would return **https://static.example.com/css/bootstrap.min.css**.
-
-If none of this makes sense for you at the moment, don’t worry. Just remember to use the `<span class="p">{</span><span class="err">%</span> <span class="w"></span> <span class="err">static</span> <span class="w"></span> <span class="err">%</span><span class="p">}</span>` whenever you need to refer to a CSS, JavaScript or image file. Later on, when we start working with Deployment, we will discuss more it. For now, we are all set up.
-
-Refreshing the page **127.0.0.1:8000** we can see it worked:
-
-![Boards Homepage Bootstrap](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/boards-homepage-bootstrap.png)
-
-Now we can edit the template so to take advantage of the Bootstrap CSS:
-
-```
-
-    {% load static %}<!DOCTYPE html>
-    <html>
-      <head>
-        <meta charset="utf-8">
-        <title>Boards</title>
-        <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
-      </head>
-      <body>
-        <div class="container">
-          <ol class="breadcrumb my-4">
-            <li class="breadcrumb-item active">Boards</li>
-          </ol>
-          <table class="table">
-            <thead class="thead-inverse">
-              <tr>
                 <th>Board</th>
                 <th>Posts</th>
                 <th>Topics</th>
                 <th>Last Post</th>
-              </tr>
-            </thead>
-            <tbody>
-              {% for board in boards %}
-                <tr>
-                  <td>
+            </tr>
+        </thead>
+        <tbody>
+            {% for board in boards %}
+            <tr>
+                <td>
                     {{ board.name }}
-                    <small class="text-muted d-block">{{ board.description }}</small>
-                  </td>
-                  <td class="align-middle">0</td>
-                  <td class="align-middle">0</td>
-                  <td></td>
-                </tr>
-              {% endfor %}
-            </tbody>
-          </table>
-        </div>
-      </body>
-    </html>
+                    <br>
+                    <small style="color: #888">{{ board.description }}</small>
+                </td>
+                <td>0</td>
+                <td>0</td>
+                <td></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+
+</html>
+```
+
+![Boards Homepage render](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/boards-homepage-render-2.png)
+
+## Тестирование главной страницы
+
+![Testing Comic](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/Pixton_Comic_Testing.png)
+
+Это будет повторяющейся темой, и мы собираемся совместно изучить различные концепции и стратегии на протяжении всей серии обучающих программ.
+
+Давайте напишем наш первый тест. Сейчас мы будем работать в **tests.py** внутри приложения **boards**:
+
+**boards/tests.py**
+
+```python
+from django.core.urlresolvers import reverse
+from django.test import TestCase
+
+class HomeTests(TestCase):
+    def test_home_view_status_code(self):
+        url = reverse('home')
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 200)
+```
+
+Это крайне простой тест, но очень полезный. Мы тестируем _код статуса_ ответа на знапрос. Статус 200 означает **OK**.
+
+Мы можем проверить код статуса ответа в консоли:
+
+![Response 200](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/test-homepage-view-status-code-200.png)
+
+Если будет поймано исключение, ошибка синтаксиса или что-либо еще, Django вернет **500**, что означает **Внутренняя ошибка сервера**. Сейчас, представьте, что приложение имеет 100 представлений. Если мы напишем один простой тест для всех этих представлений, с помощью всего лишь одной команды мы сможем протестировать их. Таким образом, пользователь не увидит ошибок. Без автоматизированных тестов, нам нужно будет тестировать каждую страницу отдельно.
+
+Чтобы запустить тесты:
+
+```bash
+$ python manage.py test
+```
+
+```
+Creating test database for alias 'default'...
+System check identified no issues (0 silenced).
+.
+----------------------------------------------------------------------
+Ran 1 test in 0.041s
+
+OK
+Destroying test database for alias 'default'...
+```
+
+Теперь мы можем проверить, что Django вернул правильное представление на запрошенный URL-адрес. Это так же полезный тест, поскольку, продолжая разработку вы увидите, что **urls.py** может быть очень большим и сложным. 
+
+Вот как мы это сделаем:
+
+**boards/tests.py**
+
+```python
+from django.core.urlresolvers import reverse
+from django.urls import resolve
+from django.test import TestCase
+from .views import home
+
+class HomeTests(TestCase):
+    def test_home_view_status_code(self):
+        url = reverse('home')
+        response = self.client.get(url)
+        self.assertEquals(response.status_code, 200)
+
+    def test_home_url_resolves_home_view(self):
+        view = resolve('/')
+        self.assertEquals(view.func, home)
+```
+
+Во втором тесте мы используем функцию `resolve`. Django использует это для того, чтобы сопоставить URL и представление, представленное в модуле **urls.py**. Этот тест будет проверять, что URL-адрес `/` вызывает представление `home`.
+
+Давайте запустим тесты:
+
+```bash
+$ python manage.py test
+```
+
+```
+Creating test database for alias 'default'...
+System check identified no issues (0 silenced).
+..
+----------------------------------------------------------------------
+Ran 2 tests in 0.027s
+
+OK
+Destroying test database for alias 'default'...
+```
+
+Чтобы увидеть больше информации, укажите флаг **verbosity** и задайте уровень:
+
+```bash 
+$ python manage.py test --verbosity=2
+```
+
+```
+Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+Operations to perform:
+    Synchronize unmigrated apps: messages, staticfiles
+    Apply all migrations: admin, auth, boards, contenttypes, sessions
+Synchronizing apps without migrations:
+    Creating tables...
+    Running deferred SQL...
+Running migrations:
+    Applying contenttypes.0001_initial... OK
+    Applying auth.0001_initial... OK
+    Applying admin.0001_initial... OK
+    Applying admin.0002_logentry_remove_auto_add... OK
+    Applying contenttypes.0002_remove_content_type_name... OK
+    Applying auth.0002_alter_permission_name_max_length... OK
+    Applying auth.0003_alter_user_email_max_length... OK
+    Applying auth.0004_alter_user_username_opts... OK
+    Applying auth.0005_alter_user_last_login_null... OK
+    Applying auth.0006_require_contenttypes_0002... OK
+    Applying auth.0007_alter_validators_add_error_messages... OK
+    Applying auth.0008_alter_user_username_max_length... OK
+    Applying boards.0001_initial... OK
+    Applying sessions.0001_initial... OK
+System check identified no issues (0 silenced).
+test_home_url_resolves_home_view (boards.tests.HomeTests) ... ok
+test_home_view_status_code (boards.tests.HomeTests) ... ok
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.017s
+
+OK
+Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+```
+
+Детализация (Verbosity) определяет количество уведомлений и отладочной информации, которая будет выведена в консоль; 0 - нет вывода, 1 - обычный вывод, 2 - детальный вывод.
+
+## Настройка статических файлов
+
+Статические файлы - CSS, JavaScripts, Шрифты, Изображения и любые другие ресурсы, которые мы можем использовать для построения нашего интерфейса.
+
+По умолчанию, Django не работает с этими файлами. За исключением времени, пока идет разработка. Но Django предоставляет некоторые возможности для управления статическими файлами. Эти возможности сосредоточены в приложении `django.contrib.staticfiles`, которое уже есть в конфигурации `INSTALLED_APPS`.
+
+С таким большим количеством библиотек, нет причин рендерить честый HTML. Мы можем просто добавить BootStrap 4 в наш проект. Это Инструмент с открытым исходным кодом для разработки на HTML, CSS, JavaScript.
+
+В папке приложения, рядом с папками **boards**, **templates** и **myproject**, создайте новую папку с названием **static**, а внутри создайте папку **css**:
+
+
+```
+myproject/
+    |-- myproject/
+    |    |-- boards/
+    |    |-- myproject/
+    |    |-- templates/
+    |    |-- static/       <-- здесь
+    |    |    +-- css/     <-- и здесь
+    |    +-- manage.py
+    +-- venv/
 
 ```
 
-The result now:
+пройдите на [getbootstrap.com](https://getbootstrap.com/docs/4.0/getting-started/download/#compiled-css-and-js) и загрузите последнюю версию:
+
+![Bootstrap Download](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/bootstrap-download.png)
+
+Загрузите версию **Compiled CSS and JS**.
+
+Распакуйте содержимое загруженного архива и скопируйте **css/bootstrap.min.css** в вашу папку **css**:
+
+```
+myproject/
+    |-- myproject/
+    |    |-- boards/
+    |    |-- myproject/
+    |    |-- templates/
+    |    |-- static/
+    |    |    +-- css/
+    |    |         +-- bootstrap.min.css    <-- сюда
+    |    +-- manage.py
+    +-- venv/
+
+```
+
+Теперь укажите Django, где искать статические файлы. Откройте **settings.py**, опуститесь в конец файла и после `STATIC_URL` добавьте:
+
+```python
+STATIC_URL = '/static/'
+
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+```
+
+Так же, как для папки `TEMPLATES`.
+
+Теперь у нас есть возможность подключать статические файлы в наш шаблон:
+
+**templates/home.html**
+
+```html
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Boards</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+</head>
+
+<body>
+    <!-- body suppressed for brevity ... -->
+</body>
+
+</html>
+```
+
+Сначала мы загружаем тэг статических файлов, используя `{% load static %}` в начале шаблона. 
+
+Тэг `{% static %}` используется для указания, где находится ресурс. В этом случае `{% static 'css/bootstrap.min.css' %}` вернет **/static/css/bootstrap.min.css**, что является относительным путем к нашему ресурсу.
+
+Тэг `{% static %}` использует `STATIC_URL` параметр из **settings.py**, чтобы собрать конечный URL. Например, если вы храните статику на поддомене, например **https://static.example.com/**, вы должны указать `STATIC_URL=https://static.example.com/`, а затем `{% static css/bootstrap.min.css %}`, что вернет **https://static.example.com/css/bootstrap.min.css**.
+
+Если что-то не понятно пока - не волнуйтесь. Просто помните, что необходимо использовать `{% static %}`, когда вы хотите сослаться на CSS, JS или картинку. Позже, когда мы будем разбираться с развертыванием, мы обсудим это подробнее. На данный момент мы закончили с настройкой.
+
+Обновив страницу **127.0.0.1:8000** мы можем увидеть, что это сработало.
+
+![Boards Homepage Bootstrap](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/boards-homepage-bootstrap.png)
+
+Теперь мы можем переделать шаблон, чтобы использовать преимущества Bootstrap CSS:
+
+```html
+{% load static %}
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Boards</title>
+    <link rel="stylesheet" href="{% static 'css/bootstrap.min.css' %}">
+</head>
+
+<body>
+    <div class="container">
+        <ol class="breadcrumb my-4">
+            <li class="breadcrumb-item active">Boards</li>
+        </ol>
+        <table class="table">
+            <thead class="thead-inverse">
+                <tr>
+                    <th>Board</th>
+                    <th>Posts</th>
+                    <th>Topics</th>
+                    <th>Last Post</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for board in boards %}
+                <tr>
+                    <td>
+                        {{ board.name }}
+                        <small class="text-muted d-block">{{ board.description }}</small>
+                    </td>
+                    <td class="align-middle">0</td>
+                    <td class="align-middle">0</td>
+                    <td></td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>
+
+```
+
+Вот что получилось:
 
 ![Boards Homepage Bootstrap](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-2/boards-homepage-bootstrap-2.png)
 
-So far we are adding new boards using the interactive console (`python manage.py shell`). But we need a better way to do it. In the next section, we are going to implement an admin interface for the website administrator manage it.
-
-* * *
+Далее мы реализуем интерфейс администратора, чтобы управлять приложением.

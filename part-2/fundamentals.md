@@ -1,6 +1,6 @@
 # Основы
 
-> Оригинал: https://simpleisbetterthancomplex.com/series/2017/09/04/a-complete-beginners-guide-to-django-part-1.html
+> Оригинал: https://simpleisbetterthancomplex.com/series/2017/09/11/a-complete-beginners-guide-to-django-part-2.html
 
 В предыдущем уроке мы установили все необходимое. Надеюсь, у вас стоит Python 3.6 и Django установленна в виртуальное окружение. Мы уже создали проект, с которым будем играть дальше. В этом уроке мы продолжим писать код в том же проекте.
 
@@ -20,7 +20,3 @@
 Исходный код доступен на Github. Проект на данной стадии доступен под номером релиза `v0.1-lw`:
 
 [https://github.com/sibtc/django-beginners-guide/tree/v0.2-lw](https://github.com/sibtc/django-beginners-guide/tree/v0.2-lw)
-
-> [<< Предыдущий урок](/part-1/getting-started.md)
-
-> [Седующий урок >>](/part-3/advanced-concepts.md)

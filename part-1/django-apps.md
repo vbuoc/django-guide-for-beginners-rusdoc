@@ -23,7 +23,7 @@ django-admin startapp boards
 
 Эта команда стоздаст нам следующую структуру:
 
-```
+```bash
 myproject/
  |-- myproject/
  |    |-- boards/                <-- our new django app!
@@ -87,5 +87,3 @@ INSTALLED_APPS = [
 ```
 
 По аналогии с квадратами и кругами из предыдущей иллюстрации, желтый круг - наше приложение `boards`, а `django.contrib.admin` или `django.contrib.auth` - красные круги.
-
-> ["Hello World"](/part-1/hello-world.md)

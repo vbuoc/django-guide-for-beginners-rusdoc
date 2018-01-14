@@ -27,5 +27,3 @@
 Исходный код доступен на Github. Проект на данной стадии доступен под номером релиза `v0.1-lw`:
 
 [https://github.com/sibtc/django-beginners-guide/tree/v0.1-lw](https://github.com/sibtc/django-beginners-guide/tree/v0.1-lw)
-
-> [Седующий урок >>](/part-2/fundamentals.md)

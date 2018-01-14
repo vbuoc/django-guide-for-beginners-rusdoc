@@ -51,5 +51,3 @@ python manage.py runserver
 ![Hello, World!](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-1/hello-world.png)
 
 Вы только что создали свое первое представление.
-
-> [Начиная работу](/part-1/getting-started.md)

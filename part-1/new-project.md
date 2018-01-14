@@ -47,5 +47,3 @@ python manage.py runserver
 ![It worked!](https://simpleisbetterthancomplex.com/media/series/beginners-guide/1.11/part-1/it-worked.png)
 
 Нажмите `Control + C` для остановки сервера разработки.
-
-> [Приложения Django](/part-1/django-apps.md)
